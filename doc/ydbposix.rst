@@ -7,7 +7,7 @@ YDB Posix
    :depth: 5
 
 -------------------------------------------------------------
-OVERVIEW
+Overview
 -------------------------------------------------------------
 
 ydbposix is a simple plugin to allow YottaDB (https://yottadb.com/) application code to use selected POSIX functions on POSIX (UNIX/Linux) editions of YottaDB. ydbposix provides a set of low-level calls wrapping and closely matching their corresponding POSIX functions, and a set of high-level entryrefs that provide a further layer of wrapping to make the functionality available in a form more familiar to M programmers.
@@ -22,24 +22,17 @@ ydbposix consists of the following files:
 
   - ydbposix.xc_proto - a prototype to generate the call-out table used by YottaDB to map M entryrefs to C entry points.
 
-  - Makefile - for use by GNU make to build, test, install and uninstall the package.
+  - CMakeLists.txt - To build, test, install and uninstall the package.
 
   - _POSIX.m - wraps the C code with M-like functionality to provide ^%POSIX entryrefs.
 
   - posixtest.m - a simple test to check for correct installation and operation of ydbposix.
 
 -------------------------------------------------------------
-INSTALLATION
+Installation
 -------------------------------------------------------------
 
-.. note::
-   Both the Makefile and CMake file can be used to compile, but the cmake build should be preferred.
-
-++++++++++++++++
-With CMake
-++++++++++++++++
-
-First, setup the YottaDB environment variables.
+First, set up the YottaDB environment variables.
 
 .. parsed-literal::
    source /usr/local/lib/yottadb/r122/ydb_env_set
@@ -51,35 +44,9 @@ Then make and make install:
    cmake ..
    make && sudo make install
 
-++++++++++++++++++++
-With Makefile
-++++++++++++++++++++
-
-ydbposix comes with a Makefile that you can use with GNU make to build, test, install and uninstall the package. Depending on the platform, GNU make may be available via "gmake" or "make" command. Building, testing, and using ydbposix does not require root access.  Installing the plugin in the $ydb_dist/plugin subdirectory requires root access. The targets in the Makefile designated for external use are:
-
-  - all: creates libydbposix.so (the shared library of C code that wraps POSIX functions) and ydbposix.xc (although this is a text file, the first line points to libydbposix.so and ydbposix.xc must therefore be created by the Makefile
-
-  - clean: delete object files and ydbposix.xc
-
-  - install: executed as root to install ydbposix in $ydb_dist/plugin
-
-  - test: after building ydbposix and before installation, a quick test for correct operation of the plugin
-
-  - uninstall: executed as root to remove an installed plugin from under a YottaDB installation
-
-The following targets also exist, but are intended for use within the Makefile rather than for external invocation: ydbposix.o, ydbposix.xc, and libydbposix.so.
-
-Make always needs the following environment variable to be set: ydb_dist, the directory where YottaDB is installed. If you plan to install the plugin for multiple YottaDB versions, please use "make clean" before repeating the build, because the build includes libyottadb.h from $ydb_dist.
-
-Depending on your YottaDB installation, some make targets may need additional environment variables to be set:
-
-  - make test sends a LOG_WARNING severity message and a LOG_INFO severity message and reads the syslog file for each to verify the messages. Although posixtest.m tries to make reasonable guesses about the location of the files on your system, it has no way to know how you have syslog configured. If you see a "FAIL syslog ..." output message repeat the test with the environment variable syslog_warning set to the location of the syslog file for LOG_WARNING messages. If you see a "FAIL SYSLOG ..." output message, repeat the test with the environment variable syslog_info set to the location of the syslog file for LOG_INFO messages. In particular, a test on Red Hat Enterprise Linux may require $syslog_info to be "/var/log/messages".
-
-  - if your YottaDB installation includes UTF-8 support (i.e., if it has a utf8 sub-directory), ``make install`` requires the environment variable LC_CTYPE to specify a valid UTF-8 locale, and depending on how libicu is built on your system, may require the ydb_icu_version to have the ICU version number. 
-
 
 -------------------------------------------------------------
-TESTING
+Testing
 -------------------------------------------------------------
 
 The expected output of make test is as below; manually verify whether the statement about Daylight Savings Time is correct.
@@ -131,7 +98,7 @@ The expected output of make test is as below; manually verify whether the statem
 
 
 -------------------------------------------------------------
-USE
+Use
 -------------------------------------------------------------
 
 For use by YottaDB, the environment variable ydb_xc_ydbposix must point to ydbposix.xc ($ydb_dist/plugin/ydbposix.xc after make install), the location of the ydbposix.xc file; and the environment variable ydb_routines must allow YottaDB processes to find the %POSIX entryrefs. Depending on your platform, this includes a $ydb_routines term of the form $ydb_dist/plugin/o/_POSIX.so or $ydb_dist/plugin/o($ydb_dist/plugin/r) for M mode processes and $ydb_dist/plugin/o/utf8/_POSIX.so or $ydb_dist/plugin/o/utf8($ydb_dist/plugin/r) for UTF-8 mode processes.
