@@ -3,10 +3,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 project(YDBPosix C MUMPS)
 cmake_minimum_required(VERSION 2.8)
 
-
 # Find YottaDB
 find_package(YOTTADB REQUIRED)
 include_directories("${YOTTADB_INCLUDE_DIRS}")
+
+if(MUMPS_UTF8_MODE)
+  set(ydb_install_dir ${YOTTADB_INCLUDE_DIRS}/utf8/plugin)
+else()
+  set(ydb_install_dir ${YOTTADB_INCLUDE_DIRS}/plugin)
+endif()
 
 # Compile the plugin
 add_library(ydbposix SHARED
@@ -14,7 +19,7 @@ add_library(ydbposix SHARED
 )
 
 install(TARGETS ydbposix
-  DESTINATION ${YOTTADB_INCLUDE_DIRS}/plugins/
+  DESTINATION ${ydb_install_dir}
 )
 
 # Add commands to compile .m files
@@ -26,30 +31,22 @@ add_library(_POSIX SHARED
 SET_TARGET_PROPERTIES(_POSIX PROPERTIES PREFIX "")
 
 install(FILES _POSIX.m
-  DESTINATION ${YOTTADB_INCLUDE_DIRS}/plugins/r/
+  DESTINATION ${ydb_install_dir}/r/
 ) 
 
-if(NOT MUMPS_UTF8_MODE)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_POSIX.so
-    DESTINATION ${YOTTADB_INCLUDE_DIRS}/plugins/o/
-  )
-else()
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_POSIX.so
-    DESTINATION ${YOTTADB_INCLUDE_DIRS}/plugins/o/utf8/
-  )
-endif()
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_POSIX.so
+  DESTINATION ${ydb_install_dir}/o/
+)
 
 # Handle the .xc file
-
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gtmposix.xc
-	COMMAND sed 's/sizeofptr/${CMAKE_SIZEOF_VOID_P}/g' ${CMAKE_CURRENT_SOURCE_DIR}/gtmposix.xc_proto > ${CMAKE_CURRENT_BINARY_DIR}/gtmposix.xc
-  DEPENDS ydbposix
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ydbposix.xc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ydbposix.xc
 )
 
-add_custom_target(place_gtmposix_xc ALL
-	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gtmposix.xc
+add_custom_target(place_ydbposix_xc ALL
+	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ydbposix.xc
 )
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gtmposix.xc
-	DESTINATION ${YOTTADB_INCLUDE_DIRS}/plugins
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ydbposix.xc
+	DESTINATION ${ydb_install_dir}/
 )

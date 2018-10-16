@@ -1,4 +1,4 @@
-
+@ydb_install_dir@/libydbposix.so
 chmod:			gtm_status_t posix_chmod(I:gtm_char_t*, I:gtm_int_t, O:gtm_int_t*)
 clockgettime:		gtm_status_t posix_clock_gettime(I:gtm_int_t, O:gtm_long_t*, O:gtm_long_t*, O:gtm_int_t*)
 clockval:		gtm_status_t posixhelper_clockval(I:gtm_char_t*, O:gtm_int_t*)
@@ -10,7 +10,7 @@ mkdir:			gtm_status_t posix_mkdir(I:gtm_char_t*, I:gtm_int_t, O:gtm_int_t*)
 mkdtemp:		gtm_status_t posix_mkdtemp(IO:gtm_char_t*, O:gtm_int_t*)
 mktime:			gtm_status_t posix_mktime(I:gtm_int_t, I:gtm_int_t, I:gtm_int_t, I:gtm_int_t, I:gtm_int_t, I:gtm_int_t, O:gtm_int_t*, O:gtm_int_t*, IO:gtm_int_t*, O:gtm_long_t*, O:gtm_int_t*)
 realpath:		gtm_status_t posix_realpath(I:gtm_char_t*, O:gtm_string_t*[4097], O:gtm_int_t*)
-regcomp:		gtm_status_t posix_regcomp(O:gtm_string_t* [sizeofptr], I:gtm_char_t*, I:gtm_int_t, O:gtm_int_t*)
+regcomp:		gtm_status_t posix_regcomp(O:gtm_string_t* [@CMAKE_SIZEOF_VOID_P@], I:gtm_char_t*, I:gtm_int_t, O:gtm_int_t*)
 regconst:		gtm_status_t posixhelper_regconst(I:gtm_char_t*, O:gtm_int_t*)
 regexec:		gtm_status_t posix_regexec(I:gtm_string_t*, I:gtm_char_t*, I:gtm_int_t, IO:gtm_string_t*, I:gtm_int_t, O:gtm_int_t*)
 regfree:		gtm_status_t posix_regfree(I:gtm_string_t*)
