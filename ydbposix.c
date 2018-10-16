@@ -584,6 +584,31 @@ gtm_status_t posix_utimes(int argc, gtm_char_t *file, gtm_int_t *err_num)
 	return (gtm_status_t)*err_num;
 }
 
+/* Utility routines used by Helper routines below */
+
+gtm_status_t posixutil_searchstrtab(char *tblstr[], gtm_int_t tblval[], gtm_int_t tblsize, char *str, gtm_int_t *strval)
+{
+	gtm_int_t compflag, current, first, last;
+
+	first = 0;
+	last = tblsize - 1;
+	for (; ;)
+	{
+		current = (first + last) / 2;
+		compflag = strcmp(tblstr[current], str);
+		if (0 == compflag)
+		{
+			*strval = tblval[current];
+			return (gtm_status_t)0;
+		}
+		if (first == last)
+			return (gtm_status_t)1;
+		if (0 > compflag)
+			first = (first == current) ? (current + 1) : current;
+		else
+			last = current;
+	}
+}
 /* Helper routines */
 
 /* Given a clock name, provide the numeric value */
@@ -647,28 +672,3 @@ gtm_status_t posixhelper_syslogconst(int argc, gtm_char_t *symconst, gtm_int_t *
 	return posixutil_searchstrtab(priority, priority_values, sizeof(priority) / sizeof(priority[0]), symconst, symval);
 }
 
-/* Utility routines used by other functions above */
-
-gtm_status_t posixutil_searchstrtab(char *tblstr[], gtm_int_t tblval[], gtm_int_t tblsize, char *str, gtm_int_t *strval)
-{
-	gtm_int_t compflag, current, first, last;
-
-	first = 0;
-	last = tblsize - 1;
-	for (; ;)
-	{
-		current = (first + last) / 2;
-		compflag = strcmp(tblstr[current], str);
-		if (0 == compflag)
-		{
-			*strval = tblval[current];
-			return (gtm_status_t)0;
-		}
-		if (first == last)
-			return (gtm_status_t)1;
-		if (0 > compflag)
-			first = (first == current) ? (current + 1) : current;
-		else
-			last = current;
-	}
-}

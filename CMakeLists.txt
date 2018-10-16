@@ -15,7 +15,7 @@ endif()
 
 # Compile the plugin
 add_library(ydbposix SHARED
-  gtmposix.c
+  ydbposix.c
 )
 
 install(TARGETS ydbposix

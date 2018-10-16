@@ -54,16 +54,16 @@ posixtest	; test POSIX plugin
 
 	; Check mktime()
 	set tmp=$zdate(dh1,"YYYY:MM:DD:24:60:SS:DAY","","0,1,2,3,4,5,6"),isdst=-1
-	set retval=$&gtmposix.mktime($piece(tmp,":",1)-1900,$piece(tmp,":",2)-1,+$piece(tmp,":",3),+$piece(tmp,":",4),+$piece(tmp,":",5),+$piece(tmp,":",6),.wday,.yday,.isdst,.tvsec,.errno)
+	set retval=$&ydbposix.mktime($piece(tmp,":",1)-1900,$piece(tmp,":",2)-1,+$piece(tmp,":",3),+$piece(tmp,":",4),+$piece(tmp,":",5),+$piece(tmp,":",6),.wday,.yday,.isdst,.tvsec,.errno)
 	write "Daylight Savings Time is ",$select('isdst:"not ",1:""),"in effect",!
-	set retval=$&gtmposix.localtime(tvsec,.sec,.min,.hour,.mday,.mon,.year,.wday,.yday,.isdst,.errno)
+	set retval=$&ydbposix.localtime(tvsec,.sec,.min,.hour,.mday,.mon,.year,.wday,.yday,.isdst,.errno)
 	set computeddh1=($$FUNC^%DATE(mon+1_"/"_mday_"/"_(1900+year))_","_($$FUNC^%TI($translate($justify(hour,2)_$justify(min,2)," ",0))+sec))
 	if $piece(tmp,":",7)=wday&(dh1=computeddh1) write "PASS mktime()",!
 	else  write "FAIL mktime() $horolog=",dh1," Computed=",computeddh1,!
 
         ; Check that we get at least fractional second times - this test has 1 in 10**12 chance of failing incorrectly
         set tmp="PASS Microsecond resolution"
-        for i=0:1  set retval=$&gtmposix.gettimeofday(.tvsec,.tvusec,.errno) quit:tvusec  set:i $extract(tmp,1,4)="FAIL"
+        for i=0:1  set retval=$&ydbposix.gettimeofday(.tvsec,.tvusec,.errno) quit:tvusec  set:i $extract(tmp,1,4)="FAIL"
         write tmp,!
         set tv=tvusec/1E6+tvsec
 
@@ -139,7 +139,7 @@ posixtest	; test POSIX plugin
 
         ; Check signal & STATFILE
         set file="GTM_JOBEXAM.ZSHOW_DMP_"_$j_"_1"
-        if $&gtmposix.signalval("SIGUSR1",.result)!$zsigproc($j,result) write "FAIL signal",!
+        if $&ydbposix.signalval("SIGUSR1",.result)!$zsigproc($j,result) write "FAIL signal",!
         else  write "PASS signal",!
         set retval=$$STATFILE^%POSIX(file,.stat) write:'retval "FAIL STATFILE",!
         if ((stat("mtime")-(stat("atime")+stat("ctime")/2)'>1)&(tvsec-1'>stat("ctime"))) write "PASS STATFILE.times",!
@@ -177,16 +177,16 @@ posixtest	; test POSIX plugin
 
         ; Check setenv and unsetenv
         if 1=setenvtst do
-        . set retval=$&gtmposix.setenv("gtmposixtest",dir,0,.errno)
-        . set tmp=$ztrnlnm("gtmposixtest") if tmp=dir write "PASS setenv",!
-        . else  write "FAIL setenv $ztrnlnm(""gtmposixtest"")=",tmp," should be ",dir,!
-        . set retval=$&gtmposix.unsetenv("gtmposixtest",.errno)
-        . set tmp=$ztrnlnm("gtmposixtest") if '$length(tmp) write "PASS unsetenv",!
-        . else  write "FAIL unsetenv $ztrnlnm(""gtmposixtest"")=",tmp," should be unset",!
+        . set retval=$&ydbposix.setenv("ydbposixtest",dir,0,.errno)
+        . set tmp=$ztrnlnm("ydbposixtest") if tmp=dir write "PASS setenv",!
+        . else  write "FAIL setenv $ztrnlnm(""ydbposixtest"")=",tmp," should be ",dir,!
+        . set retval=$&ydbposix.unsetenv("ydbposixtest",.errno)
+        . set tmp=$ztrnlnm("ydbposixtest") if '$length(tmp) write "PASS unsetenv",!
+        . else  write "FAIL unsetenv $ztrnlnm(""ydbposixtest"")=",tmp," should be unset",!
 
         ; Check rmdir
         kill out1,out2
-        set retval=$&gtmposix.rmdir(dir,.errno)
+        set retval=$&ydbposix.rmdir(dir,.errno)
         open "statfile":(shell="/bin/sh":command="$gtm_dist/mumps -run %XCMD 'd statfile^%POSIX("""_dir_""",.stat)'":stderr="statfileerr":readonly)::"pipe"
         use "statfile" for i=1:1 read tmp quit:$zeof  set out1(i)=tmp
         use "statfileerr" for i=1:1 read tmp quit:$zeof  set out2(i)=tmp
@@ -204,7 +204,7 @@ posixtest	; test POSIX plugin
         set retval=$$STATFILE^%POSIX(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
         if stat("ino") write "PASS MKTMPDIR",!
         else  write "FAIL MKTMPDIR stat(ino)=",stat("ino"),!
-        set retval=$&gtmposix.rmdir(dir,.errno)
+        set retval=$&ydbposix.rmdir(dir,.errno)
 
         ; Check mkdir
         set dir="/tmp/posixtest"_$j_$$^%RANDSTR(6)
@@ -212,7 +212,7 @@ posixtest	; test POSIX plugin
         set retval=$$STATFILE^%POSIX(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
         if stat("ino") write "PASS mkdir",!
         else  write "FAIL mkdir stat(ino)=",stat("ino"),!
-        set retval=$&gtmposix.rmdir(dir,.errno)
+        set retval=$&ydbposix.rmdir(dir,.errno)
 
         ; Check MKDIR
         set dir="/tmp/posixtest"_$j_$$^%RANDSTR(6)
@@ -220,7 +220,7 @@ posixtest	; test POSIX plugin
         set retval=$$STATFILE^%POSIX(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
         if stat("ino") write "PASS MKDIR",!
         else  write "FAIL MKDIR stat(ino)=",stat("ino"),!
-        set retval=$&gtmposix.rmdir(dir,.errno)
+        set retval=$&ydbposix.rmdir(dir,.errno)
 
 	; Check UMASK and UTIMES
 	set mode1=$$filemodeconst^%POSIX("S_IWUSR")

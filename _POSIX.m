@@ -10,8 +10,8 @@
 ;									;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Current gtmposix version.
-GTMPOSIXVERSION	;r2
+; Current ydbposix version.
+YDBPOSIXVERSION	;r3
 
 %POSIX	; High level wrappers to low level POSIX functions
 	set:'$length($etrap)&(("B"=$ztrap)!'$length($ztrap)) $etrap="set $etrap=""use $principal write $zstatus,! zhalt 1"" set tmp1=$piece($ecode,"","",2),tmp2=$text(@tmp1) if $length(tmp2) write $text(+0),@$piece(tmp2,"";"",2),! zhalt +$extract(tmp1,2,$length(tmp1))"
@@ -25,7 +25,7 @@ CHMOD(name,mode)
 	quit:$quit retval quit
 chmod(name,mode)
 	new errno
-	if $&gtmposix.chmod(name,$select(mode'=+mode:$$filemodeconst(mode),1:mode),.errno)
+	if $&ydbposix.chmod(name,$select(mode'=+mode:$$filemodeconst(mode),1:mode),.errno)
 	quit:$quit 1 quit
 
 ; Retrieve the time of the specified clock
@@ -35,12 +35,12 @@ CLOCKGETTIME(clock,sec,nsec)
 	quit:$quit retval quit
 clockgettime(clock,sec,nsec)
 	new errno
-	if $&gtmposix.clockgettime($select(clock'=+clock:$$clockval(clock),1:clock),.sec,.nsec,.errno)
+	if $&ydbposix.clockgettime($select(clock'=+clock:$$clockval(clock),1:clock),.sec,.nsec,.errno)
 	quit:$quit 1 quit
 clockval(clock)	; get numeric value for the specified clock
 	quit:$data(%POSIX("clock",clock)) %POSIX("clock",clock)
 	new clockval
-	if $&gtmposix.clockval(clock,.clockval)
+	if $&ydbposix.clockval(clock,.clockval)
 	set %POSIX("clock",clock)=clockval
 	quit clockval
 
@@ -51,14 +51,14 @@ CP(source,dest)
 	quit:$quit retval quit
 cp(source,dest)
 	new errno
-	if $&gtmposix.cp(source,dest,.errno)
+	if $&ydbposix.cp(source,dest,.errno)
 	quit:$quit 1 quit
 
 ; Get value for symbolic file modes - only lower case because this is an internal utility routine
 filemodeconst(sym)	; get numeric value for file mode symbolic constant
 	quit:$data(%POSIX("filemode",sym)) %POSIX("filemode",sym)
 	new symval
-	if $&gtmposix.filemodeconst(sym,.symval)
+	if $&ydbposix.filemodeconst(sym,.symval)
 	set %POSIX("filemode",sym)=symval
 	quit symval
 
@@ -69,7 +69,7 @@ MKDIR(dirname,mode)
 	quit:$quit retval quit
 mkdir(dirname,mode)
 	new errno
-	if $&gtmposix.mkdir(dirname,$select(mode'=+mode:$$filemodeconst(mode),1:mode),.errno)
+	if $&ydbposix.mkdir(dirname,$select(mode'=+mode:$$filemodeconst(mode),1:mode),.errno)
 	quit:$quit 1 quit
 
 ; Convert  a  broken-down  time  structure to calendar time representation.
@@ -79,7 +79,7 @@ MKTIME(year,mon,mday,hour,min,sec,wday,yday,isdst,unixtime)
 	quit:$quit retval quit
 mktime(year,mon,mday,hour,min,sec,wday,yday,isdst,unixtime)
 	new errno
-	if $&gtmposix.mktime(year,mon,mday,hour,min,sec,.wday,.yday,.isdst,.unixtime,.errno)
+	if $&ydbposix.mktime(year,mon,mday,hour,min,sec,.wday,.yday,.isdst,.unixtime,.errno)
 	quit:$quit 1 quit
 
 ; Create a temporary directory
@@ -91,7 +91,7 @@ mktmpdir(template)
 	new errno,mode,retval,savetemplate
 	set:"XXXXXX"'=$extract(template,$length(template)-5,$length(template)) $ecode=",U254,"
 	set savetemplate=template
-	do &gtmposix.mkdtemp(.template,.errno)
+	do &ydbposix.mkdtemp(.template,.errno)
 	set retval=0
 	if (savetemplate=template) do
 	. set $extract(template,$length(template)-5,$length(template))=$$^%RANDSTR(6)
@@ -105,7 +105,7 @@ REALPATH(name,realpath)
 	quit:$quit retval quit
 realpath(name,realpath)
 	new errno
-	if $&gtmposix.realpath(name,.realpath,.errno)
+	if $&ydbposix.realpath(name,.realpath,.errno)
 	quit:$quit 1 quit
 
 ; Discard a previously compiled regular expression - *must* be passed by variable name
@@ -114,7 +114,7 @@ REGFREE(pregstr)
 	set retval=$$regfree(pregstr)
 	quit:$quit retval quit
 regfree(pregstr)
-	if $&gtmposix.regfree(@pregstr)
+	if $&ydbposix.regfree(@pregstr)
 	zkill @pregstr
 	quit:$quit 1 quit
 
@@ -130,7 +130,7 @@ regmatch(str,patt,pattflags,matchflags,matchresults,maxresults)
 	. if $increment(pfval,$select(nextpf'=+nextpf:$$regsymval(nextpf),1:nextpf))
 	else  set pfval=0
 	do:'$data(%POSIX("regmatch",patt,pfval))
-	. if $&gtmposix.regcomp(.pregstr,patt,pfval,.errno)
+	. if $&ydbposix.regcomp(.pregstr,patt,pfval,.errno)
 	. zkill %POSIX("regcomp","errno")
 	. set %POSIX("regmatch",patt,pfval)=pregstr
 	set:'$data(maxresults) maxresults=1
@@ -139,12 +139,12 @@ regmatch(str,patt,pattflags,matchflags,matchresults,maxresults)
 	. set nextmf=$piece(matchflags,"+",i)
 	. if $increment(mfval,$select(nextmf'=+nextmf:$$regsymval(nextmf),1:nextmf))
 	else  set mfval=0
-	if $&gtmposix.regexec(%POSIX("regmatch",patt,pfval),str,maxresults,.resultbuf,mfval,.matchsuccess)
+	if $&ydbposix.regexec(%POSIX("regmatch",patt,pfval),str,maxresults,.resultbuf,mfval,.matchsuccess)
 	zkill %POSIX("regexec","errno")
 	do:matchsuccess
 	. kill matchresults
 	. set regmatchtsize=$$regsymval("sizeof(regmatch_t)"),j=1 for i=1:1:maxresults do  if 'matchresults(i,"start") kill matchresults(i) quit
-	. . if $&gtmposix.regofft2offsets($zextract(resultbuf,j,$increment(j,regmatchtsize)-1),.nextrmso,.nextrmeo)
+	. . if $&ydbposix.regofft2offsets($zextract(resultbuf,j,$increment(j,regmatchtsize)-1),.nextrmso,.nextrmeo)
 	. . set matchresults(i,"start")=1+nextrmso
 	. . set matchresults(i,"end")=1+nextrmeo
 	quit:$quit matchsuccess quit
@@ -153,7 +153,7 @@ regmatch(str,patt,pattflags,matchflags,matchresults,maxresults)
 regsymval(sym)
 	quit:$data(%POSIX("regmatch",sym)) %POSIX("regmatch",sym)
 	new symval
-	if $&gtmposix.regconst(sym,.symval)
+	if $&ydbposix.regconst(sym,.symval)
 	set %POSIX("regmatch",sym)=symval
 	quit symval
 
@@ -164,7 +164,7 @@ RMDIR(dirname)
 	quit:$quit retval quit
 rmdir(dirname)
 	new errno
-	if $&gtmposix.rmdir(dirname,.errno)
+	if $&ydbposix.rmdir(dirname,.errno)
 	quit:$quit 1 quit
 
 ; Set an environment variable
@@ -174,7 +174,7 @@ SETENV(name,value,overwrite)
 	quit:$quit retval quit
 setenv(name,value,overwrite)
 	new errno
-	if $&gtmposix.setenv(name,value,$get(overwrite),.errno)
+	if $&ydbposix.setenv(name,value,$get(overwrite),.errno)
 	quit:$quit 1 quit
 
 ; Return attributes for a file in a local variable passed in by reference
@@ -184,7 +184,7 @@ STATFILE(f,s)
 	quit:$quit retval quit
 statfile(f,s)
 	new atime,blksize,blocks,ctime,dev,errno,gid,ino,mode,mtime,natime,nctime,nlink,nmtime,rdev,retval,size,uid
-	if $&gtmposix.stat(f,.dev,.ino,.mode,.nlink,.uid,.gid,.rdev,.size,.blksize,.blocks,.atime,.natime,.mtime,.nmtime,.ctime,.nctime,.errno)
+	if $&ydbposix.stat(f,.dev,.ino,.mode,.nlink,.uid,.gid,.rdev,.size,.blksize,.blocks,.atime,.natime,.mtime,.nmtime,.ctime,.nctime,.errno)
 	kill s
 	set s("atime")=atime
 	set s("blksize")=blksize
@@ -211,7 +211,7 @@ SYMLINK(target,name)
 	quit:$quit retval quit
 symlink(target,name)
 	new errno
-	if $&gtmposix.symlink(target,name,.errno)
+	if $&ydbposix.symlink(target,name,.errno)
 	quit:$quit 1 quit
 
 ; Get configuration information
@@ -221,12 +221,12 @@ SYSCONF(name,value)
 	quit:$quit retval quit
 sysconf(name,value)
 	new errno
-	if $&gtmposix.sysconf($select(name'=+name:$$sysconfval(name),1:name),.value,.errno)
+	if $&ydbposix.sysconf($select(name'=+name:$$sysconfval(name),1:name),.value,.errno)
 	quit:$quit 1 quit
 sysconfval(option)	; get numeric value for the specified configuration option
 	quit:$data(%POSIX("sysconf",option)) %POSIX("sysconf",option)
 	new sysconfval
-	if $&gtmposix.sysconfval(option,.sysconfval)
+	if $&ydbposix.sysconfval(option,.sysconfval)
 	set %POSIX("sysconf",option)=sysconfval
 	quit sysconfval
 
@@ -240,12 +240,12 @@ syslog(message,facility,level)
 	else  set facility=$$syslogval("LOG_USER")
 	if $data(level)#10 set:level'=+level level=$$syslogval(level)
 	else  set level=$$syslogval("LOG_INFO")
-	if $&gtmposix.syslog(+facility+level,message)
+	if $&ydbposix.syslog(+facility+level,message)
 	quit:$quit 1 quit
 syslogval(msg)	; get numeric value for syslog symbolic constant
 	quit:$data(%POSIX("syslog",msg))#10 %POSIX("syslog",msg)
 	new msgval
-	if $&gtmposix.syslogconst(msg,.msgval)
+	if $&ydbposix.syslogconst(msg,.msgval)
 	set %POSIX("syslog",msg)=msgval
 	quit msgval
 
@@ -256,7 +256,7 @@ UNSETENV(name)
 	quit:$quit retval quit
 unsetenv(name)
 	new errno
-	if $&gtmposix.unsetenv(name,.errno)
+	if $&ydbposix.unsetenv(name,.errno)
 	quit:$quit 1 quit
 
 ; Set user's file mode creation mask
@@ -266,7 +266,7 @@ UMASK(mode,prevMode)
 	quit:$quit retval quit
 umask(mode,prevMode)
 	new errno
-	if $&gtmposix.umask($select(mode'=+mode:$$filemodeconst(mode),1:mode),.prevMode,.errno)
+	if $&ydbposix.umask($select(mode'=+mode:$$filemodeconst(mode),1:mode),.prevMode,.errno)
 	quit:$quit 1 quit
 
 ; Update the timestamp of a file
@@ -276,22 +276,22 @@ UTIMES(name)
 	quit:$quit retval quit
 utimes(name)
 	new errno
-	if $&gtmposix.utimes(name,.errno)
+	if $&ydbposix.utimes(name,.errno)
 	quit:$quit 1 quit
 
-; Provide a version number for this wrapper based on the value defined in GTMPOSIXVERSION's comment
+; Provide a version number for this wrapper based on the value defined in YDBPOSIXVERSION's comment
 VERSION() quit $$version
 version()
 	new ver
-	set ver=$piece($text(GTMPOSIXVERSION),";",2)
+	set ver=$piece($text(YDBPOSIXVERSION),";",2)
 	quit:$quit ver quit
 
 ; Extrinsic special variable that extends $HOROLOG and reports in microseconds
 ZHOROLOG()   quit $$zhorolog()
 zhorolog()
 	new day,errno,hour,isdst,mday,min,mon,retval,sec,tvsec,tvusec,wday,yday,year
-	if $&gtmposix.gettimeofday(.tvsec,.tvusec,.errno)
-	if $&gtmposix.localtime(tvsec,.sec,.min,.hour,.mday,.mon,.year,.wday,.yday,.isdst,.errno)
+	if $&ydbposix.gettimeofday(.tvsec,.tvusec,.errno)
+	if $&ydbposix.localtime(tvsec,.sec,.min,.hour,.mday,.mon,.year,.wday,.yday,.isdst,.errno)
 	quit:$quit $$FUNC^%DATE(mon+1_"/"_mday_"/"_(1900+year))_","_(((hour*60)+min)*60+sec)_$select(tvusec:tvusec*1E-6,1:"") quit
 
 ;	Error message texts
