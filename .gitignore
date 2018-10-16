@@ -1,1 +1,6 @@
 build/
+doc/_build/
+build*/
+doc/make.bat
+.tags
+.tags1
