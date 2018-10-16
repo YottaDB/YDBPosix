@@ -191,6 +191,50 @@ static const gtm_int_t sysconf_values[] =
 	_SC_VERSION
 };
 
+/* Prototypes */
+
+gtm_status_t posix_chmod(int argc, gtm_char_t *file, gtm_int_t mode, gtm_int_t *err_num);
+gtm_status_t posix_clock_gettime(int argc, gtm_int_t clk_id, gtm_long_t *tv_sec, gtm_long_t *tv_nsec, gtm_int_t *err_num);
+gtm_status_t posix_chmod(int argc, gtm_char_t *file, gtm_int_t mode, gtm_int_t *err_num);
+gtm_status_t posix_clock_gettime(int argc, gtm_int_t clk_id, gtm_long_t *tv_sec, gtm_long_t *tv_nsec, gtm_int_t *err_num);
+gtm_status_t posix_cp(int argc, gtm_char_t *source, gtm_char_t *dest, gtm_int_t *err_num);
+gtm_status_t posix_gettimeofday(int argc, gtm_long_t *tv_sec, gtm_long_t *tv_usec, gtm_int_t *err_num);
+gtm_status_t posix_localtime(int argc, gtm_long_t timep, gtm_int_t *sec, gtm_int_t *min, gtm_int_t *hour,
+			     gtm_int_t *mday, gtm_int_t *mon, gtm_int_t *year, gtm_int_t *wday,
+			     gtm_int_t *yday, gtm_int_t *isdst, gtm_int_t *err_num);
+gtm_status_t posix_mkdir(int argc, gtm_char_t *dirname, gtm_int_t mode, gtm_int_t *err_num);
+gtm_status_t posix_mkdtemp(int argc, gtm_char_t *template, gtm_int_t *err_num);
+gtm_status_t posix_mktime(int argc, gtm_int_t year, gtm_int_t mon, gtm_int_t mday, gtm_int_t hour,
+			  gtm_int_t min, gtm_int_t sec, gtm_int_t *wday, gtm_int_t *yday, gtm_int_t *isdst,
+			  gtm_long_t *unixtime, gtm_int_t *err_num);
+gtm_status_t posix_realpath(int argc, gtm_char_t *file, gtm_string_t *result, gtm_int_t *err_num);
+gtm_status_t posix_regcomp(int argc, gtm_string_t *pregstr, gtm_char_t *regex, gtm_int_t cflags, gtm_int_t *err_num);
+gtm_status_t posix_regexec(int argc, gtm_string_t *pregstr, gtm_char_t *string, gtm_int_t nmatch, gtm_string_t *pmatch,
+			   gtm_int_t eflags, gtm_int_t *matchsuccess);
+gtm_status_t posix_regfree(int argc, gtm_string_t *pregstr);
+gtm_status_t posix_rmdir(int argc, gtm_char_t *pathname, gtm_int_t *err_num);
+gtm_status_t posix_setenv(int argc, gtm_char_t *name, gtm_char_t *value, gtm_int_t overwrite, gtm_int_t *err_num);
+gtm_status_t posix_stat(int argc, gtm_char_t *fname, gtm_ulong_t *dev, gtm_ulong_t *ino, gtm_ulong_t *mode,
+			gtm_ulong_t *nlink, gtm_ulong_t *uid, gtm_ulong_t *gid, gtm_ulong_t *rdev, gtm_long_t *size,
+			gtm_long_t *blksize, gtm_long_t *blocks, gtm_long_t *atime, gtm_long_t *atimen, gtm_long_t *mtime,
+			gtm_long_t *mtimen, gtm_long_t *ctime, gtm_long_t *ctimen, gtm_int_t *err_num);
+gtm_status_t posix_symlink(int argc, gtm_char_t *target, gtm_char_t *name, gtm_int_t *err_num);
+gtm_status_t posix_sysconf(int argc, gtm_int_t name, gtm_long_t *value, gtm_int_t *err_num);
+gtm_status_t posix_syslog(int argc, gtm_int_t priority, gtm_char_t *message);
+gtm_status_t posix_umask(int argc, gtm_int_t mode, gtm_int_t *prev_mode, gtm_int_t *err_num);
+gtm_status_t posix_unsetenv(int argc, gtm_char_t *name, gtm_int_t *err_num);
+gtm_status_t posix_utimes(int argc, gtm_char_t *file, gtm_int_t *err_num);
+
+gtm_status_t posixutil_searchstrtab(const char *tblstr[], const gtm_int_t tblval[], gtm_int_t tblsize, char *str, gtm_int_t *strval);
+
+gtm_status_t posixhelper_clockval(int argc, gtm_char_t *symconst, gtm_int_t *symval);
+gtm_status_t posixhelper_filemodeconst(int argc, gtm_char_t *symconst, gtm_int_t *symval);
+gtm_status_t posixhelper_regconst(int argc, gtm_char_t *symconst, gtm_int_t *symval);
+gtm_status_t posixhelper_regofft2offsets(int argc, gtm_string_t *regofftbytes, gtm_int_t *rmso, gtm_int_t *rmeo);
+gtm_status_t posixhelper_signalval(int argc, gtm_char_t *symconst, gtm_int_t *symval);
+gtm_status_t posixhelper_sysconfval(int argc, gtm_char_t *symconst, gtm_int_t *symval);
+gtm_status_t posixhelper_syslogconst(int argc, gtm_char_t *symconst, gtm_int_t *symval);
+
 /* POSIX routines */
 
 gtm_status_t posix_chmod(int argc, gtm_char_t *file, gtm_int_t mode, gtm_int_t *err_num)
@@ -586,7 +630,7 @@ gtm_status_t posix_utimes(int argc, gtm_char_t *file, gtm_int_t *err_num)
 
 /* Utility routines used by Helper routines below */
 
-gtm_status_t posixutil_searchstrtab(char *tblstr[], gtm_int_t tblval[], gtm_int_t tblsize, char *str, gtm_int_t *strval)
+gtm_status_t posixutil_searchstrtab(const char *tblstr[], const gtm_int_t tblval[], gtm_int_t tblsize, char *str, gtm_int_t *strval)
 {
 	gtm_int_t compflag, current, first, last;
 
