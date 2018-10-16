@@ -14,15 +14,11 @@ ydbposix consists of the following files:
 
 - ydbposix.xc\_proto - a prototype to generate the call-out table used by YottaDB to map M entryrefs to C entry points, as described in the Programmers Guide.
 
-- Makefile - for use by GNU make to build, test, install and uninstall the package.
+- CMakeLists.txt - To build, test, install and uninstall the package.
 
 - \_POSIX.m - wraps the C code with M-like functionality to provide ^%POSIX entryrefs.
 
 - posixtest.m - a simple test to check for correct installation and operation of ydbposix.
-
-- readme.txt - this file
-
-
 
 Both the Makefile and CMake file can be used to compile, but the cmake build should be preferred.
 

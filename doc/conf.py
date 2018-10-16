@@ -62,7 +62,7 @@ author = u'Ranjani Hathaway'
 # built documents.
 #
 # The short X.Y version.
-version = u''
+version = u'r3'
 # The full version, including alpha/beta/rc tags.
 release = u''
 
