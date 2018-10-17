@@ -19,11 +19,7 @@ cmake_minimum_required(VERSION 2.8)
 find_package(YOTTADB REQUIRED)
 include_directories("${YOTTADB_INCLUDE_DIRS}")
 
-if(MUMPS_UTF8_MODE)
-  set(ydb_install_dir ${YOTTADB_INCLUDE_DIRS}/utf8/plugin)
-else()
-  set(ydb_install_dir ${YOTTADB_INCLUDE_DIRS}/plugin)
-endif()
+set(ydb_install_dir ${YOTTADB_INCLUDE_DIRS}/plugin)
 
 # Compile the plugin
 add_library(ydbposix SHARED
@@ -38,17 +34,23 @@ install(TARGETS ydbposix
 
 add_library(_POSIX SHARED
   _POSIX.m
-  )
+)
 
 SET_TARGET_PROPERTIES(_POSIX PROPERTIES PREFIX "")
 
 install(FILES _POSIX.m
   DESTINATION ${ydb_install_dir}/r/
-) 
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_POSIX.so
-  DESTINATION ${ydb_install_dir}/o/
 )
+
+if(MUMPS_UTF8_MODE)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_POSIX.so
+    DESTINATION ${ydb_install_dir}/o/utf8
+  )
+else()
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_POSIX.so
+    DESTINATION ${ydb_install_dir}/o/
+  )
+endif()
 
 # Handle the .xc file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ydbposix.xc.in
@@ -56,9 +58,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ydbposix.xc.in
 )
 
 add_custom_target(place_ydbposix_xc ALL
-	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ydbposix.xc
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ydbposix.xc
 )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ydbposix.xc
-	DESTINATION ${ydb_install_dir}/
+  DESTINATION ${ydb_install_dir}/
 )
