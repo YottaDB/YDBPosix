@@ -1,14 +1,18 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;									;
-; Copyright (c) 2012-2015 Fidelity National Information 	;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;								;
+; Copyright (c) 2012-2015 Fidelity National Information		;
 ; Services, Inc. and/or its subsidiaries. All rights reserved.	;
-;									;
-;	This source code contains the intellectual property		;
-;	of its copyright holder(s), and is made available		;
-;	under a license.  If you do not know the terms of		;
-;	the license, please stop and do not read further.		;
-;									;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;								;
+; Copyright (c) 2018 YottaDB LLC. and/or its subsidiaries.	;
+; All rights reserved.						;
+;								;
+;	This source code contains the intellectual property	;
+;	of its copyright holder(s), and is made available	;
+;	under a license.  If you do not know the terms of	;
+;	the license, please stop and do not read further.	;
+;								;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 posixtest	; test POSIX plugin
 	; Initialization
         new ddzh,dh1,dh2,dir,file,errno,gid,hour,i,io,isdst,min,month,msg,os,oslist,out,result,retval,sec,stat
@@ -17,19 +21,12 @@ posixtest	; test POSIX plugin
         set os=$piece($zv," ",3)
         set setenvtst=1
         set arch=$piece($zv," ",4)
-        if "HP-PA"=arch set setenvtst=0
-	 if "Solaris"=os  do
-        . open "unamer":(shell="/bin/sh":command="uname -r")::"pipe"
-        . use "unamer" read opsver
-        . close "unamer"
-        . if "5.9"=opsver set setenvtst=0
         set syslog1=$ztrnlnm("syslog_warning")
-        set:'$length(syslog1) syslog1=$select("AIX"=os!("Solaris"=os)!("OSF1"=os):"/usr/library/syslog/syslog","HP-UX"=os:"/var/adm/syslog/syslog.log","Linux"=os:"/var/log/messages",1:"")
+        set:'$length(syslog1) syslog1=$zsearch("/var/log/syslog","")
+        set:'$length(syslog1) syslog1=$zsearch("/var/log/messages","")
         if '$length(syslog1) write "FAIL syslog1 is null string",! quit
-        if '$length($zsearch(syslog1,154)) write "FAIL file syslog1=",syslog1," does not exist",! quit
         set syslog2=$ztrnlnm("syslog_info")
-        set:'$length(syslog2) syslog2=$select("AIX"=os!("Solaris"=os)!("OSF1"=os):"/usr/library/syslog/syslog","HP-UX"=os:"/var/adm/syslog/syslog.log","Linux"=os:"/var/log/user.log",1:"")
-        set tmp=$zsearch(syslog2,155) if '$length(tmp) write "tmp=",tmp,!,"FAIL file syslog2=",syslog2," does not exist",! quit
+	set:'$length(syslog2) syslog2=syslog1
 
         ; Get version - check it later
         set ver1=$$version^%POSIX
@@ -138,7 +135,7 @@ posixtest	; test POSIX plugin
 	else  write "FAIL filemodeconst^%POSIX mode=",stat("mode")," S_IFDIR=",%POSIX("filemode","S_IFDIR")," S_IFREG=",%POSIX("filemode","S_IFREG"),!
 
         ; Check signal & STATFILE
-        set file="GTM_JOBEXAM.ZSHOW_DMP_"_$j_"_1"
+        set file="YDB_JOBEXAM.ZSHOW_DMP_"_$j_"_1"
         if $&ydbposix.signalval("SIGUSR1",.result)!$zsigproc($j,result) write "FAIL signal",!
         else  write "PASS signal",!
         set retval=$$STATFILE^%POSIX(file,.stat) write:'retval "FAIL STATFILE",!
@@ -191,7 +188,7 @@ posixtest	; test POSIX plugin
         use "statfile" for i=1:1 read tmp quit:$zeof  set out1(i)=tmp
         use "statfileerr" for i=1:1 read tmp quit:$zeof  set out2(i)=tmp
         use io close "statfile"
-	set errmsg="%GTM-E-ZCSTATUSRET, External call returned error status"
+	set errmsg="%YDB-E-ZCSTATUSRET, External call returned error status"
 	set msg=""
 	if ($data(out1)&'$data(out2)) set msg=$get(out1(1))
 	else  if ($data(out2)&'$data(out1)) set msg=$get(out2(1))
