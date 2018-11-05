@@ -20,14 +20,13 @@ ydbposix consists of the following files:
 
 - posixtest.m - a simple test to check for correct installation and operation of ydbposix.
 
-Both the Makefile and CMake file can be used to compile, but the cmake build should be preferred.
+## Building/Installing YDB Posix Plugin
 
-## Installing YDB Posix with CMake
-
-First, setup the YottaDB environment variables.
+First step is to Build/Install YottaDB and set the `ydb_dist` environment variable to point to the directory where YottaDB is installed. See https://gitlab.com/YottaDB/DB/YDB/raw/master/README.md for details on building YottaDB. The below steps assume YottaDB r1.22 is installed at /usr/local/lib/yottadb/r122.
 
 ```
-source /usr/local/lib/yottadb/r122/ydb_env_set
+sh
+export ydb_dist=/usr/local/lib/yottadb/r122
 ```
 
 Then make and make install:
