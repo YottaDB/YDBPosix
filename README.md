@@ -1,37 +1,29 @@
-# YDB Posix Plugin
+# YDB POSIX Plugin
 
 ## Overview
 
-ydbposix is a simple plugin to allow YottaDB application code to use selected POSIX functions on POSIX editions of YottaDB. ydbposix provides a set of low-level calls wrapping and closely matching their corresponding POSIX functions, and a set of high-level entryrefs that provide a further layer of wrapping to make the functionality available in a form more familiar to M programmers.
+YDBposix is a plugin that allows M application code to use selected POSIX; it does not implement the underlying functionality. A set of low level C functions closely matching their corresponding POSIX functions acts as a software shim to connect M code to POSIX functions. A set of higher level entryrefs makes the functionality available in form more familiar to M programmers. M application code is free to call either level.
 
-ydbposix is just a wrapper for POSIX functions; it does not actually implement the underlying functionality.
+As C application code can call POSIX functions directly, the plugin has no value to C application code.
 
-ydbposix consists of the following files:
+When installed in the `$ydb_dist/plugin` directory, YDBposix consists of the following files:
 
-- COPYING - the free / open source software (FOSS) license under which ydbposix is provided to you.
+- `libydbposix.so` – a shared library with the C software shims
 
-- ydbposix.c - C code that wraps POSIX functions for use by YottaDB.
+- `ydbposix.xc` – a call-out table to allow M code to call the functions in `libydbposix.so`
 
-- ydbposix.xc\_proto - a prototype to generate the call-out table used by YottaDB to map M entryrefs to C entry points, as described in the Programmers Guide.
+- `r/_ydbposix.m` – M source code for higher level `^%ydbposix` entryrefs that M application code can call.
 
-- CMakeLists.txt - To build, test, install and uninstall the package.
+- `o/_ydbposix.so` – a shared library with M mode object code for `^%ydbposix` entryrefs
 
-- \_POSIX.m - wraps the C code with M-like functionality to provide ^%POSIX entryrefs.
+- `o/utf8/_ydbposix.so` – if YottaDB is installed with UTF-8 support, a shared library with UTF-8 mode object code for `^%ydbposix` entryrefs
 
-- posixtest.m - a simple test to check for correct installation and operation of ydbposix.
+## Installing YDB POSIX Plugin
 
-## Building/Installing YDB Posix Plugin
+YottaDB must be installed and available before installing the POSIX plugin. https://yottadb.com/product/get-started/ has instructions on installing YottaDB. Download and unpack the POSIS plugin in a temporary directory, and make that the current directory. Then:
 
-First step is to Build/Install YottaDB and set the `ydb_dist` environment variable to point to the directory where YottaDB is installed. See https://gitlab.com/YottaDB/DB/YDB/raw/master/README.md for details on building YottaDB. The below steps assume YottaDB r1.22 is installed at /usr/local/lib/yottadb/r122.
-
-```
-sh
-export ydb_dist=/usr/local/lib/yottadb/r122
-```
-
-Then make and make install:
-
-```
+```shell
+source $(pkg-config --variable=prefix yottadb)/ydb_env_set
 mkdir build && cd build
 cmake ..
 make && sudo make install
