@@ -3,7 +3,7 @@
  * Copyright (c) 2012-2015 Fidelity National Information 	*
  * Services, Inc. and/or its subsidiaries. All rights reserved.	*
  *								*
- * Copyright (c) 2018 YottaDB LLC and/or its subsidiaries.	*
+ * Copyright (c) 2018-2019 YottaDB LLC and/or its subsidiaries. *
  * All rights reserved.						*
  *								*
  *	This source code contains the intellectual property	*
@@ -31,38 +31,27 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-#include "gtmxc_types.h"
+#include "libyottadb.h"
 
 #define MAXREGEXMEM	65536	/* Maximum memory to allocate for a compiled regular expression */
-#define MINMALLOC   	64	/* Minimum space to request from gtm_malloc - MAXREGEXMEM/MINMALLOC should be a power of 4 */
+#define MINMALLOC   	64	/* Minimum space to request from ydb_malloc - MAXREGEXMEM/MINMALLOC should be a power of 4 */
 #define CP_BUF_SIZE	4096	/* Size of the buffer used for copying a file. */
 
 /* On certain platforms the st_Xtime field of the stat structure got replaced by a timespec st_Xtim field, which in turn has tv_sec
  * and tv_nsec fields. For compatibility reasons, those platforms define an st_Xtime macro which points to st_Xtim.tv_sec. Whenever
- * we detect such a situation, we define a nanosecond flavor of that macro to point to st_Xtim.tv_nsec. On HPUX Itanium and older
- * AIX boxes the stat structure simply has additional fields with the nanoseconds value, yet the names of those field are different
- * on those two architectures, so we choose our mapping accordingly.
+ * we detect such a situation, we define a nanosecond flavor of that macro to point to st_Xtim.tv_nsec.
+ *
+ * Need to confirm whether we even need these #defines – Bhaskar 20190226
+ *
  */
 #if defined st_atime
 #  define st_natime	st_atim.tv_nsec
-#elif defined(_AIX)
-#  define st_natime	st_atime_n
-#elif defined(__hpux) && defined(__ia64)
-#  define st_natime	st_natime
 #endif
 #if defined st_ctime
 #  define st_nctime	st_ctim.tv_nsec
-#elif defined(_AIX)
-#  define st_nctime	st_ctime_n
-#elif defined(__hpux) && defined(__ia64)
-#  define st_nctime	st_nctime
 #endif
 #if defined st_mtime
 #  define st_nmtime	st_mtim.tv_nsec
-#elif defined(_AIX)
-#  define st_nmtime	st_mtime_n
-#elif defined(__hpux) && defined(__ia64)
-#  define st_nmtime	st_nmtime
 #endif
 
 /* Translation tables for various include file #define names to the platform values for those names */
@@ -95,7 +84,7 @@ static const char *clocks[] =
 	,"CLOCK_THREAD_CPUTIME_ID"
 #	endif
 };
-static const gtm_int_t clock_values[] =
+static const int clock_values[] =
 {
 #	ifdef CLOCK_HIGHRES
 	CLOCK_HIGHRES,
@@ -122,7 +111,7 @@ static const char *fmodes[] =
 	"S_ISGID",  "S_ISUID", "S_ISVTX", "S_IWGRP", "S_IWOTH", "S_IWUSR", "S_IXGRP",
 	"S_IXOTH",  "S_IXUSR"
 };
-static const gtm_int_t fmode_values[] =
+static const int fmode_values[] =
 {
 	S_IFBLK,  S_IFCHR, S_IFDIR, S_IFIFO, S_IFLNK, S_IFMT,  S_IFREG,
 	S_IFSOCK, S_IRGRP, S_IROTH, S_IRUSR, S_IRWXG, S_IRWXO, S_IRWXU,
@@ -137,7 +126,7 @@ static const char *priority[] =
 	"LOG_LOCAL3", "LOG_LOCAL4", "LOG_LOCAL5", "LOG_LOCAL6",
 	"LOG_LOCAL7", "LOG_NOTICE", "LOG_USER",   "LOG_WARNING"
 };
-static const gtm_int_t priority_values[] =
+static const int priority_values[] =
 {
 	LOG_ALERT,  LOG_CRIT,   LOG_DEBUG,  LOG_EMERG,  LOG_ERR,
 	LOG_INFO,   LOG_LOCAL0, LOG_LOCAL1, LOG_LOCAL2,
@@ -153,7 +142,7 @@ static const char *regxflags[] =
 	"REG_NOTBOL",       "REG_NOTEOL",
 	"sizeof(regex_t)",  "sizeof(regmatch_t)", "sizeof(regoff_t)"
 };
-static const gtm_int_t regxflag_values[] =
+static const int regxflag_values[] =
 {
 	REG_BADBR,         REG_BADPAT,         REG_BADRPT,       REG_EBRACE,     REG_EBRACK,    REG_ECOLLATE,
 	REG_ECTYPE,        REG_EESCAPE,        REG_EPAREN,       REG_ERANGE,     REG_ESPACE,    REG_ESUBREG,
@@ -169,7 +158,7 @@ static const char *signals[] =
 	"SIGTRAP", "SIGTSTP", "SIGTTIN", "SIGTTOU", "SIGURG",  "SIGUSR1", "SIGUSR2",
 	"SIGXCPU", "SIGXFSZ"
 };
-static const gtm_int_t signal_values[] =
+static const int signal_values[] =
 {
 	SIGABRT, SIGALRM, SIGBUS,  SIGCHLD, SIGCONT, SIGFPE,  SIGHUP, SIGILL,
 	SIGINT,  SIGKILL, SIGPIPE, SIGQUIT, SIGSEGV, SIGSTOP, SIGTERM,
@@ -185,7 +174,7 @@ static const char *sysconfs[] =
 	"RE_DUP_MAX",       "STREAM_MAX",    "SYMLOOP_MAX",     "TTY_NAME_MAX",    "TZNAME_MAX",      "_POSIX2_LOCALEDEF",
 	"_POSIX_VERSION"
 };
-static const gtm_int_t sysconf_values[] =
+static const int sysconf_values[] =
 {
 	_SC_ARG_MAX,          _SC_BC_BASE_MAX,   _SC_BC_DIM_MAX,    _SC_BC_SCALE_MAX, _SC_BC_STRING_MAX,  _SC_CHILD_MAX,
 	_SC_COLL_WEIGHTS_MAX, _SC_EXPR_NEST_MAX, _SC_HOST_NAME_MAX, _SC_LINE_MAX,     _SC_LOGIN_NAME_MAX, _SC_OPEN_MAX,
@@ -196,75 +185,75 @@ static const gtm_int_t sysconf_values[] =
 
 /* Prototypes */
 
-gtm_status_t posix_chmod(int argc, gtm_char_t *file, gtm_int_t mode, gtm_int_t *err_num);
-gtm_status_t posix_clock_gettime(int argc, gtm_int_t clk_id, gtm_long_t *tv_sec, gtm_long_t *tv_nsec, gtm_int_t *err_num);
-gtm_status_t posix_chmod(int argc, gtm_char_t *file, gtm_int_t mode, gtm_int_t *err_num);
-gtm_status_t posix_clock_gettime(int argc, gtm_int_t clk_id, gtm_long_t *tv_sec, gtm_long_t *tv_nsec, gtm_int_t *err_num);
-gtm_status_t posix_cp(int argc, gtm_char_t *source, gtm_char_t *dest, gtm_int_t *err_num);
-gtm_status_t posix_gettimeofday(int argc, gtm_long_t *tv_sec, gtm_long_t *tv_usec, gtm_int_t *err_num);
-gtm_status_t posix_localtime(int argc, gtm_long_t timep, gtm_int_t *sec, gtm_int_t *min, gtm_int_t *hour,
-			     gtm_int_t *mday, gtm_int_t *mon, gtm_int_t *year, gtm_int_t *wday,
-			     gtm_int_t *yday, gtm_int_t *isdst, gtm_int_t *err_num);
-gtm_status_t posix_mkdir(int argc, gtm_char_t *dirname, gtm_int_t mode, gtm_int_t *err_num);
-gtm_status_t posix_mkdtemp(int argc, gtm_char_t *template, gtm_int_t *err_num);
-gtm_status_t posix_mktime(int argc, gtm_int_t year, gtm_int_t mon, gtm_int_t mday, gtm_int_t hour,
-			  gtm_int_t min, gtm_int_t sec, gtm_int_t *wday, gtm_int_t *yday, gtm_int_t *isdst,
-			  gtm_long_t *unixtime, gtm_int_t *err_num);
-gtm_status_t posix_realpath(int argc, gtm_char_t *file, gtm_string_t *result, gtm_int_t *err_num);
-gtm_status_t posix_regcomp(int argc, gtm_string_t *pregstr, gtm_char_t *regex, gtm_int_t cflags, gtm_int_t *err_num);
-gtm_status_t posix_regexec(int argc, gtm_string_t *pregstr, gtm_char_t *string, gtm_int_t nmatch, gtm_string_t *pmatch,
-			   gtm_int_t eflags, gtm_int_t *matchsuccess);
-gtm_status_t posix_regfree(int argc, gtm_string_t *pregstr);
-gtm_status_t posix_rmdir(int argc, gtm_char_t *pathname, gtm_int_t *err_num);
-gtm_status_t posix_setenv(int argc, gtm_char_t *name, gtm_char_t *value, gtm_int_t overwrite, gtm_int_t *err_num);
-gtm_status_t posix_stat(int argc, gtm_char_t *fname, gtm_ulong_t *dev, gtm_ulong_t *ino, gtm_ulong_t *mode,
-			gtm_ulong_t *nlink, gtm_ulong_t *uid, gtm_ulong_t *gid, gtm_ulong_t *rdev, gtm_long_t *size,
-			gtm_long_t *blksize, gtm_long_t *blocks, gtm_long_t *atime, gtm_long_t *atimen, gtm_long_t *mtime,
-			gtm_long_t *mtimen, gtm_long_t *ctime, gtm_long_t *ctimen, gtm_int_t *err_num);
-gtm_status_t posix_symlink(int argc, gtm_char_t *target, gtm_char_t *name, gtm_int_t *err_num);
-gtm_status_t posix_sysconf(int argc, gtm_int_t name, gtm_long_t *value, gtm_int_t *err_num);
-gtm_status_t posix_syslog(int argc, gtm_int_t priority, gtm_char_t *message);
-gtm_status_t posix_umask(int argc, gtm_int_t mode, gtm_int_t *prev_mode, gtm_int_t *err_num);
-gtm_status_t posix_unsetenv(int argc, gtm_char_t *name, gtm_int_t *err_num);
-gtm_status_t posix_utimes(int argc, gtm_char_t *file, gtm_int_t *err_num);
+int posix_chmod(int argc, char *file, int mode, int *err_num);
+int posix_clock_gettime(int argc, int clk_id, long *tv_sec, long *tv_nsec, int *err_num);
+int posix_chmod(int argc, char *file, int mode, int *err_num);
+int posix_clock_gettime(int argc, int clk_id, long *tv_sec, long *tv_nsec, int *err_num);
+int posix_cp(int argc, char *source, char *dest, int *err_num);
+int posix_gettimeofday(int argc, long *tv_sec, long *tv_usec, int *err_num);
+int posix_localtime(int argc, long timep, int *sec, int *min, int *hour,
+			     int *mday, int *mon, int *year, int *wday,
+			     int *yday, int *isdst, int *err_num);
+int posix_mkdir(int argc, char *dirname, int mode, int *err_num);
+int posix_mkdtemp(int argc, char *template, int *err_num);
+int posix_mktime(int argc, int year, int mon, int mday, int hour,
+			  int min, int sec, int *wday, int *yday, int *isdst,
+			  long *unixtime, int *err_num);
+int posix_realpath(int argc, char *file, ydb_string_t *result, int *err_num);
+int posix_regcomp(int argc, ydb_string_t *pregstr, char *regex, int cflags, int *err_num);
+int posix_regexec(int argc, ydb_string_t *pregstr, char *string, int nmatch, ydb_string_t *pmatch,
+			   int eflags, int *matchsuccess);
+int posix_regfree(int argc, ydb_string_t *pregstr);
+int posix_rmdir(int argc, char *pathname, int *err_num);
+int posix_setenv(int argc, char *name, char *value, int overwrite, int *err_num);
+int posix_stat(int argc, char *fname, ydb_ulong_t *dev, ydb_ulong_t *ino, ydb_ulong_t *mode,
+			ydb_ulong_t *nlink, ydb_ulong_t *uid, ydb_ulong_t *gid, ydb_ulong_t *rdev, long *size,
+			long *blksize, long *blocks, long *atime, long *atimen, long *mtime,
+			long *mtimen, long *ctime, long *ctimen, int *err_num);
+int posix_symlink(int argc, char *target, char *name, int *err_num);
+int posix_sysconf(int argc, int name, long *value, int *err_num);
+int posix_syslog(int argc, int priority, char *message);
+int posix_umask(int argc, int mode, int *prev_mode, int *err_num);
+int posix_unsetenv(int argc, char *name, int *err_num);
+int posix_utimes(int argc, char *file, int *err_num);
 
-gtm_status_t posixutil_searchstrtab(const char *tblstr[], const gtm_int_t tblval[], gtm_int_t tblsize, char *str, gtm_int_t *strval);
+int posixutil_searchstrtab(const char *tblstr[], const int tblval[], int tblsize, char *str, int *strval);
 
-gtm_status_t posixhelper_clockval(int argc, gtm_char_t *symconst, gtm_int_t *symval);
-gtm_status_t posixhelper_filemodeconst(int argc, gtm_char_t *symconst, gtm_int_t *symval);
-gtm_status_t posixhelper_regconst(int argc, gtm_char_t *symconst, gtm_int_t *symval);
-gtm_status_t posixhelper_regofft2offsets(int argc, gtm_string_t *regofftbytes, gtm_int_t *rmso, gtm_int_t *rmeo);
-gtm_status_t posixhelper_signalval(int argc, gtm_char_t *symconst, gtm_int_t *symval);
-gtm_status_t posixhelper_sysconfval(int argc, gtm_char_t *symconst, gtm_int_t *symval);
-gtm_status_t posixhelper_syslogconst(int argc, gtm_char_t *symconst, gtm_int_t *symval);
+int posixhelper_clockval(int argc, char *symconst, int *symval);
+int posixhelper_filemodeconst(int argc, char *symconst, int *symval);
+int posixhelper_regconst(int argc, char *symconst, int *symval);
+int posixhelper_regofft2offsets(int argc, ydb_string_t *regofftbytes, int *rmso, int *rmeo);
+int posixhelper_signalval(int argc, char *symconst, int *symval);
+int posixhelper_sysconfval(int argc, char *symconst, int *symval);
+int posixhelper_syslogconst(int argc, char *symconst, int *symval);
 
 /* POSIX routines */
 
-gtm_status_t posix_chmod(int argc, gtm_char_t *file, gtm_int_t mode, gtm_int_t *err_num)
+int posix_chmod(int argc, char *file, int mode, int *err_num)
 {
 	if (3 != argc)
-		return (gtm_status_t)-argc;
-	*err_num = (-1 == chmod(file, (mode_t)mode)) ? (gtm_int_t)errno : 0;
-	return (gtm_status_t)*err_num;
+		return (int)-argc;
+	*err_num = (-1 == chmod(file, (mode_t)mode)) ? (int)errno : 0;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_clock_gettime(int argc, gtm_int_t clk_id, gtm_long_t *tv_sec, gtm_long_t *tv_nsec, gtm_int_t *err_num)
+int posix_clock_gettime(int argc, int clk_id, long *tv_sec, long *tv_nsec, int *err_num)
 {
 	struct timespec tp;
 
 	if (4 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	if (0 == clock_gettime((clockid_t)clk_id, &tp))
 	{
-		*tv_sec = (gtm_long_t)tp.tv_sec;
-		*tv_nsec = (gtm_long_t)tp.tv_nsec;
+		*tv_sec = (long)tp.tv_sec;
+		*tv_nsec = (long)tp.tv_nsec;
 		*err_num = 0;
 	} else
-		*err_num = (gtm_int_t)errno;
-	return (gtm_status_t)*err_num;
+		*err_num = (int)errno;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_cp(int argc, gtm_char_t *source, gtm_char_t *dest, gtm_int_t *err_num)
+int posix_cp(int argc, char *source, char *dest, int *err_num)
 {
 	int		fd1, fd2, rc;
 	char		*buf_ptr;
@@ -273,32 +262,32 @@ gtm_status_t posix_cp(int argc, gtm_char_t *source, gtm_char_t *dest, gtm_int_t 
 	ssize_t		read_count, written_count;
 
 	if (3 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	if (-1 == stat((char *)source, &statbuf))
 	{
-		*err_num = (gtm_int_t)errno;
-		return (gtm_status_t)*err_num;
+		*err_num = (int)errno;
+		return (int)*err_num;
 	}
 	EINTR_OPER(open(source, O_RDONLY), fd1);
 	if (-1 == fd1)
 	{
-		*err_num = (gtm_int_t)errno;
-		return (gtm_status_t)*err_num;
+		*err_num = (int)errno;
+		return (int)*err_num;
 	}
 	EINTR_OPER(open(dest, O_WRONLY | O_CREAT, statbuf.st_mode), fd2);
 	if (-1 == fd2)
 	{
-		*err_num = (gtm_int_t)errno;
+		*err_num = (int)errno;
 		EINTR_OPER(close(fd1), rc);
-		return (gtm_status_t)*err_num;
+		return (int)*err_num;
 	}
 	EINTR_OPER(ftruncate(fd2, 0), rc);
 	if (-1 == rc)
 	{
-		*err_num = (gtm_int_t)errno;
+		*err_num = (int)errno;
 		EINTR_OPER(close(fd1), rc);
 		EINTR_OPER(close(fd2), rc);
-		return (gtm_status_t)*err_num;
+		return (int)*err_num;
 	}
 	*err_num = 0;
 	do
@@ -318,110 +307,99 @@ gtm_status_t posix_cp(int argc, gtm_char_t *source, gtm_char_t *dest, gtm_int_t 
 				} else
 				{
 					if (-1 == written_count)
-						*err_num = (gtm_int_t)errno;
+						*err_num = (int)errno;
 					break;
 				}
 			}
 		} else
 		{
 			if (-1 == read_count)
-				*err_num = (gtm_int_t)errno;
+				*err_num = (int)errno;
 			break;
 		}
 	} while (0 == *err_num);
 	EINTR_OPER(close(fd1), rc);
 	EINTR_OPER(close(fd2), rc);
 	if (0 == *err_num)
-		*err_num = (-1 == chmod(dest, statbuf.st_mode)) ? (gtm_int_t)errno : 0;
-	return (gtm_status_t)*err_num;
+		*err_num = (-1 == chmod(dest, statbuf.st_mode)) ? (int)errno : 0;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_gettimeofday(int argc, gtm_long_t *tv_sec, gtm_long_t *tv_usec, gtm_int_t *err_num)
+int posix_gettimeofday(int argc, long *tv_sec, long *tv_usec, int *err_num)
 {
 	struct timeval currtimeval;
 
 	if (3 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	if (-1 == gettimeofday(&currtimeval, NULL))
-		*err_num = (gtm_int_t)errno;
+		*err_num = (int)errno;
 	else
 	{
-		*tv_sec = (gtm_long_t)currtimeval.tv_sec;
-		*tv_usec = (gtm_long_t)currtimeval.tv_usec;
+		*tv_sec = (long)currtimeval.tv_sec;
+		*tv_usec = (long)currtimeval.tv_usec;
 		*err_num = 0;
 	}
-	return (gtm_status_t)*err_num;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_localtime(int argc, gtm_long_t timep, gtm_int_t *sec, gtm_int_t *min, gtm_int_t *hour,
-			     gtm_int_t *mday, gtm_int_t *mon, gtm_int_t *year, gtm_int_t *wday,
-			     gtm_int_t *yday, gtm_int_t *isdst, gtm_int_t *err_num)
+int posix_localtime(int argc, long timep, int *sec, int *min, int *hour,
+			     int *mday, int *mon, int *year, int *wday,
+			     int *yday, int *isdst, int *err_num)
 {
 	struct tm *currtimetm;
 
 	if (11 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	if (currtimetm = localtime((time_t *)&timep))	/* Warning - assignment */
 	{
-		*sec	= (gtm_int_t)currtimetm->tm_sec;
-		*min	= (gtm_int_t)currtimetm->tm_min;
-		*hour	= (gtm_int_t)currtimetm->tm_hour;
-		*mday	= (gtm_int_t)currtimetm->tm_mday;
-		*mon	= (gtm_int_t)currtimetm->tm_mon;
-		*year	= (gtm_int_t)currtimetm->tm_year;
-		*wday	= (gtm_int_t)currtimetm->tm_wday;
-		*yday	= (gtm_int_t)currtimetm->tm_yday;
-		*isdst	= (gtm_int_t)currtimetm->tm_isdst;
+		*sec	= (int)currtimetm->tm_sec;
+		*min	= (int)currtimetm->tm_min;
+		*hour	= (int)currtimetm->tm_hour;
+		*mday	= (int)currtimetm->tm_mday;
+		*mon	= (int)currtimetm->tm_mon;
+		*year	= (int)currtimetm->tm_year;
+		*wday	= (int)currtimetm->tm_wday;
+		*yday	= (int)currtimetm->tm_yday;
+		*isdst	= (int)currtimetm->tm_isdst;
 		*err_num = 0;
 	} else
 	{
-#		if defined __SunOS || defined __linux__
-		/* Linux & Solaris do not set errno as required by POSIX std as of "IEEE Std 1003.1-2001" */
-		*err_num = (gtm_int_t)-1;
-#		else
-		*err_num = (gtm_int_t)errno;
-#		endif
+		/* Linux does not set errno as required by POSIX std as of "IEEE Std 1003.1-2001" */
+		*err_num = (int)-1;
 	}
-	return (gtm_status_t)*err_num;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_mkdir(int argc, gtm_char_t *dirname, gtm_int_t mode, gtm_int_t *err_num)
+int posix_mkdir(int argc, char *dirname, int mode, int *err_num)
 {
 	if (3 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	/* Possible return codes on error are EACCESS, EDQUOT, EEXIST, EFAULT, ELOOP, EMLINK, ENAMETOOLONG,
 	 * ENOENT, ENOMEM, ENOSPC, ENOTDIR, EPERM, and EROFS.
 	 */
-	*err_num = (-1 == mkdir((char *)dirname, (mode_t)mode)) ? (gtm_int_t)errno : 0;
-	return (gtm_status_t)*err_num;
+	*err_num = (-1 == mkdir((char *)dirname, (mode_t)mode)) ? (int)errno : 0;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_mkdtemp(int argc, gtm_char_t *template, gtm_int_t *err_num)
+int posix_mkdtemp(int argc, char *template, int *err_num)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
-#	if defined __SunOS || defined __hpux || defined _AIX
-	/* Return -1 with template unchanged since neither HP-UX nor Solaris support mkdtemp() and AIX only
-	 * supports it effective version 7.x.
-	 */
-	*err_num = (gtm_int_t)-1;
-#	else
+		return (int)-argc;
 	/* Possible return codes on error are EACCESS, EDQUOT, EEXIST, EFAULT, ELOOP, EMLINK, ENAMETOOLONG,
 	 * ENOENT, ENOMEM, ENOSPC, ENOTDIR, EPERM, EROFS.
 	 */
-	*err_num = (mkdtemp((char *)template)) ? 0 : (gtm_int_t)errno;
-#	endif
-	return (gtm_status_t)*err_num;
+	*err_num = (mkdtemp((char *)template)) ? 0 : (int)errno;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_mktime(int argc, gtm_int_t year, gtm_int_t mon, gtm_int_t mday, gtm_int_t hour,
-			  gtm_int_t min, gtm_int_t sec, gtm_int_t *wday, gtm_int_t *yday, gtm_int_t *isdst,
-			  gtm_long_t *unixtime, gtm_int_t *err_num)
+int posix_mktime(int argc, int year, int mon, int mday, int hour,
+			  int min, int sec, int *wday, int *yday, int *isdst,
+			  long *unixtime, int *err_num)
 {
 	struct tm time_str;
 
 	if (11 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	time_str.tm_year	= (int)year;
 	time_str.tm_mon		= (int)mon;
 	time_str.tm_mday	= (int)mday;
@@ -429,30 +407,25 @@ gtm_status_t posix_mktime(int argc, gtm_int_t year, gtm_int_t mon, gtm_int_t mda
 	time_str.tm_min		= (int)min;
 	time_str.tm_sec		= (int)sec;
 	time_str.tm_isdst	= (int)(*isdst);
-	if (-1 == (*unixtime = (gtm_long_t)mktime(&time_str)))	/* Warning - assignment */
+	if (-1 == (*unixtime = (long)mktime(&time_str)))	/* Warning - assignment */
 	{
-#	if defined __SunOS || defined __hpux
-		/* Solaris and HPUX set errno for mktime */
-		*err_num = (gtm_int_t)errno;
-#	else
-		*err_num = (gtm_int_t)-1;
-#	endif
+		*err_num = (int)-1;
 	} else
 	{
-		*wday = (gtm_int_t)time_str.tm_wday;
-		*yday = (gtm_int_t)time_str.tm_yday;
+		*wday = (int)time_str.tm_wday;
+		*yday = (int)time_str.tm_yday;
 		/* Only set DST if passed -1 */
 		if (-1 == *isdst)
-			*isdst = (gtm_int_t)time_str.tm_isdst;
+			*isdst = (int)time_str.tm_isdst;
 		*err_num = 0;
 	}
-	return (gtm_status_t)*err_num;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_realpath(int argc, gtm_char_t *file, gtm_string_t *result, gtm_int_t *err_num)
+int posix_realpath(int argc, char *file, ydb_string_t *result, int *err_num)
 {
 	if (3 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	if (realpath((const char *)file, result->address))
 	{
 		result->length = strlen(result->address);
@@ -460,182 +433,178 @@ gtm_status_t posix_realpath(int argc, gtm_char_t *file, gtm_string_t *result, gt
 	} else
 	{
 		result->length = 0;
-		*err_num = (gtm_int_t)errno;
+		*err_num = (int)errno;
 	}
-	return (gtm_status_t)*err_num;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_regcomp(int argc, gtm_string_t *pregstr, gtm_char_t *regex, gtm_int_t cflags, gtm_int_t *err_num)
+int posix_regcomp(int argc, ydb_string_t *pregstr, char *regex, int cflags, int *err_num)
 {
 	regex_t *preg;
 
 	if (4 != argc)
-		return (gtm_status_t)-argc;
-	preg = (regex_t *)gtm_malloc(sizeof(regex_t));
-	/* While AIX _may_ set errno, the open group specifically calls this function out as NOT setting errno. Each
-	 * platform uses a set of return codes which are all defined in /usr/include/regex.h. All but Solaris list
-	 * these error codes in the man page.
-	 */
-	*err_num = (gtm_int_t)regcomp(preg, regex, (int)cflags);
+		return (int)-argc;
+	preg = (regex_t *)ydb_malloc(sizeof(regex_t));
+	*err_num = (int)regcomp(preg, regex, (int)cflags);
 	if (0 == *err_num)
 	{
-		(pregstr->length) = sizeof(gtm_char_t *);
+		(pregstr->length) = sizeof(char *);
 		memcpy(pregstr->address, &preg, pregstr->length);
 	}
-	return (gtm_status_t)*err_num;
+	return (int)*err_num;
 }
 
 /* posix_regexec() does not entirely follow the implementation of the POSIX regexec(). The latter returns 0 for a
- * successful match, REG_NOMATCH otherwise. But returning non-zero to GT.M from a C function will invoke the GT.M
+ * successful match, REG_NOMATCH otherwise. But returning non-zero to YottaDB from a C function will invoke the YottaDB
  * error trap, which is not desirable for the non-match of a pattern.  Therefore, posix_regexec() always returns
  * zero and the result of the match is in the parameter *matchsuccess with 1 meaning a successful match and 0
  * otherwise.
  */
-gtm_status_t posix_regexec(int argc, gtm_string_t *pregstr, gtm_char_t *string, gtm_int_t nmatch, gtm_string_t *pmatch,
-			   gtm_int_t eflags, gtm_int_t *matchsuccess)
+int posix_regexec(int argc, ydb_string_t *pregstr, char *string, int nmatch, ydb_string_t *pmatch,
+			   int eflags, int *matchsuccess)
 {
         regex_t         *preg;
 	regmatch_t	*result;
 	size_t		resultsize;
 
 	if (6 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	memcpy(&preg, pregstr->address, pregstr->length);
 	resultsize = nmatch * sizeof(regmatch_t);
-	result = (regmatch_t *)gtm_malloc(resultsize);
+	result = (regmatch_t *)ydb_malloc(resultsize);
 	*matchsuccess = (0 == regexec(preg, (char *)string, (size_t)nmatch, result, (int)eflags));
 	if (*matchsuccess)
 		memcpy(pmatch->address, result, resultsize);
-	gtm_free((void*)result);
+	ydb_free((void*)result);
 	return 0;
 }
 
-gtm_status_t posix_regfree(int argc, gtm_string_t *pregstr)
+int posix_regfree(int argc, ydb_string_t *pregstr)
 {
 	regex_t	*preg;
 
 	if (1 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	memcpy(&preg, pregstr->address, pregstr->length);
 	/* regfree is a void function */
 	regfree(preg);
-	gtm_free((void *)preg);
+	ydb_free((void *)preg);
 	return 0;
 }
 
-gtm_status_t posix_rmdir(int argc, gtm_char_t *pathname, gtm_int_t *err_num)
+int posix_rmdir(int argc, char *pathname, int *err_num)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
-	*err_num = (-1 == rmdir((const char *)pathname)) ? (gtm_int_t)errno : 0;
-	return (gtm_status_t)*err_num;
+		return (int)-argc;
+	*err_num = (-1 == rmdir((const char *)pathname)) ? (int)errno : 0;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_setenv(int argc, gtm_char_t *name, gtm_char_t *value, gtm_int_t overwrite, gtm_int_t *err_num)
+int posix_setenv(int argc, char *name, char *value, int overwrite, int *err_num)
 {
 	if (4 != argc)
-		return (gtm_status_t)-argc;
-	*err_num = (-1 == setenv((char *)name, (char *)value, (int)overwrite)) ? (gtm_int_t)errno : 0;
-	return (gtm_status_t)*err_num;
+		return (int)-argc;
+	*err_num = (-1 == setenv((char *)name, (char *)value, (int)overwrite)) ? (int)errno : 0;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_stat(int argc, gtm_char_t *fname, gtm_ulong_t *dev, gtm_ulong_t *ino, gtm_ulong_t *mode,
-			gtm_ulong_t *nlink, gtm_ulong_t *uid, gtm_ulong_t *gid, gtm_ulong_t *rdev, gtm_long_t *size,
-			gtm_long_t *blksize, gtm_long_t *blocks, gtm_long_t *atime, gtm_long_t *atimen, gtm_long_t *mtime,
-			gtm_long_t *mtimen, gtm_long_t *ctime, gtm_long_t *ctimen, gtm_int_t *err_num)
+int posix_stat(int argc, char *fname, ydb_ulong_t *dev, ydb_ulong_t *ino, ydb_ulong_t *mode,
+			ydb_ulong_t *nlink, ydb_ulong_t *uid, ydb_ulong_t *gid, ydb_ulong_t *rdev, long *size,
+			long *blksize, long *blocks, long *atime, long *atimen, long *mtime,
+			long *mtimen, long *ctime, long *ctimen, int *err_num)
 {
 	struct stat	thisfile;
-	gtm_status_t	retval;
+	int	retval;
 
 	if (18 != argc)
-		return (gtm_status_t)-argc;
-	*err_num = (-1 == stat((char *)fname, &thisfile)) ? (gtm_int_t)errno : 0;
+		return (int)-argc;
+	*err_num = (-1 == stat((char *)fname, &thisfile)) ? (int)errno : 0;
 	if (0 == *err_num)
 	{
-		*dev     = (gtm_ulong_t)thisfile.st_dev;	/* ID of device containing file */
-		*ino     = (gtm_ulong_t)thisfile.st_ino;	/* inode number */
-		*mode    = (gtm_ulong_t)thisfile.st_mode;	/* protection */
-		*nlink   = (gtm_ulong_t)thisfile.st_nlink;	/* number of hard links */
-		*uid     = (gtm_ulong_t)thisfile.st_uid;	/* user ID of owner */
-		*gid     = (gtm_ulong_t)thisfile.st_gid;	/* group ID of owner */
-		*rdev    = (gtm_ulong_t)thisfile.st_rdev;	/* device ID (if special file) */
-		*size    = (gtm_long_t)thisfile.st_size;	/* total size, in bytes */
-		*blksize = (gtm_long_t)thisfile.st_blksize;	/* blocksize for file system I/O */
-		*blocks  = (gtm_long_t)thisfile.st_blocks;	/* number of 512B blocks allocated */
-		*atime   = (gtm_long_t)thisfile.st_atime;	/* time (secs) of last access */
-		*atimen  = (gtm_long_t)thisfile.st_natime;	/* time (nsecs) of last access */
-		*mtime   = (gtm_long_t)thisfile.st_mtime;	/* time (secs) of last modification */
-		*mtimen  = (gtm_long_t)thisfile.st_nmtime;	/* time (nsecs) of last modification */
-		*ctime   = (gtm_long_t)thisfile.st_ctime;	/* time (secs) of last status change */
-		*ctimen  = (gtm_long_t)thisfile.st_nctime;	/* time (nsecs) of last status change */
+		*dev     = (ydb_ulong_t)thisfile.st_dev;	/* ID of device containing file */
+		*ino     = (ydb_ulong_t)thisfile.st_ino;	/* inode number */
+		*mode    = (ydb_ulong_t)thisfile.st_mode;	/* protection */
+		*nlink   = (ydb_ulong_t)thisfile.st_nlink;	/* number of hard links */
+		*uid     = (ydb_ulong_t)thisfile.st_uid;	/* user ID of owner */
+		*gid     = (ydb_ulong_t)thisfile.st_gid;	/* group ID of owner */
+		*rdev    = (ydb_ulong_t)thisfile.st_rdev;	/* device ID (if special file) */
+		*size    = (long)thisfile.st_size;	/* total size, in bytes */
+		*blksize = (long)thisfile.st_blksize;	/* blocksize for file system I/O */
+		*blocks  = (long)thisfile.st_blocks;	/* number of 512B blocks allocated */
+		*atime   = (long)thisfile.st_atime;	/* time (secs) of last access */
+		*atimen  = (long)thisfile.st_natime;	/* time (nsecs) of last access */
+		*mtime   = (long)thisfile.st_mtime;	/* time (secs) of last modification */
+		*mtimen  = (long)thisfile.st_nmtime;	/* time (nsecs) of last modification */
+		*ctime   = (long)thisfile.st_ctime;	/* time (secs) of last status change */
+		*ctimen  = (long)thisfile.st_nctime;	/* time (nsecs) of last status change */
 	}
-	return (gtm_status_t)*err_num;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_symlink(int argc, gtm_char_t *target, gtm_char_t *name, gtm_int_t *err_num)
+int posix_symlink(int argc, char *target, char *name, int *err_num)
 {
 	if (3 != argc)
-		return (gtm_status_t)-argc;
-	*err_num = (-1 == symlink(target, name)) ? (gtm_int_t)errno : 0;
-	return (gtm_status_t)*err_num;
+		return (int)-argc;
+	*err_num = (-1 == symlink(target, name)) ? (int)errno : 0;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_sysconf(int argc, gtm_int_t name, gtm_long_t *value, gtm_int_t *err_num)
+int posix_sysconf(int argc, int name, long *value, int *err_num)
 {
 	if (3 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	errno = 0;
-	if (0 <= (*value = (gtm_long_t)sysconf(name)))	/* Warning - assignment */
+	if (0 <= (*value = (long)sysconf(name)))	/* Warning - assignment */
 		*err_num = 0;
 	else
-		*err_num = (0 == errno) ? 0 : (gtm_int_t)errno;
-	return (gtm_status_t)*err_num;
+		*err_num = (0 == errno) ? 0 : (int)errno;
+	return (int)*err_num;
 }
 
 /* posix_syslog() does not entirely follow the format of POSIX syslog(). For one thing, syslog() provides for a
  * variable number of arguments, whereas posix_syslog() can only accommodate a fixed number. Additionally, per
  * http://lab.gsi.dit.upm.es/semanticwiki/index.php/Category:String_Format_Overflow_in_syslog(), the safe way to
  * use syslog() is to force the format to "%s". Note that while POSIX syslog() returns no value, posix_syslog()
- * returns 0; otherwise, GT.M will raise a runtime error.
+ * returns 0; otherwise, YottaDB will raise a runtime error.
  */
-gtm_status_t posix_syslog(int argc, gtm_int_t priority, gtm_char_t *message)
+int posix_syslog(int argc, int priority, char *message)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	/* syslog() is a void function */
 	syslog((int)priority, "%s", (char *)message);
-	return (gtm_status_t)0;
+	return (int)0;
 }
 
-gtm_status_t posix_umask(int argc, gtm_int_t mode, gtm_int_t *prev_mode, gtm_int_t *err_num)
+int posix_umask(int argc, int mode, int *prev_mode, int *err_num)
 {
 	if (3 != argc)
-		return (gtm_status_t)-argc;
-	*prev_mode = (gtm_int_t)umask(mode);
+		return (int)-argc;
+	*prev_mode = (int)umask(mode);
 	return 0;
 }
 
-gtm_status_t posix_unsetenv(int argc, gtm_char_t *name, gtm_int_t *err_num)
+int posix_unsetenv(int argc, char *name, int *err_num)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
-	*err_num = (-1 == unsetenv(name)) ? (gtm_int_t)errno : 0;
-	return (gtm_status_t)*err_num;
+		return (int)-argc;
+	*err_num = (-1 == unsetenv(name)) ? (int)errno : 0;
+	return (int)*err_num;
 }
 
-gtm_status_t posix_utimes(int argc, gtm_char_t *file, gtm_int_t *err_num)
+int posix_utimes(int argc, char *file, int *err_num)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
-	*err_num = (-1 == utimes(file, NULL)) ? (gtm_int_t)errno : 0;
-	return (gtm_status_t)*err_num;
+		return (int)-argc;
+	*err_num = (-1 == utimes(file, NULL)) ? (int)errno : 0;
+	return (int)*err_num;
 }
 
 /* Utility routines used by Helper routines below */
 
-gtm_status_t posixutil_searchstrtab(const char *tblstr[], const gtm_int_t tblval[], gtm_int_t tblsize, char *str, gtm_int_t *strval)
+int posixutil_searchstrtab(const char *tblstr[], const int tblval[], int tblsize, char *str, int *strval)
 {
-	gtm_int_t compflag, current, first, last;
+	int compflag, current, first, last;
 
 	first = 0;
 	last = tblsize - 1;
@@ -646,10 +615,10 @@ gtm_status_t posixutil_searchstrtab(const char *tblstr[], const gtm_int_t tblval
 		if (0 == compflag)
 		{
 			*strval = tblval[current];
-			return (gtm_status_t)0;
+			return (int)0;
 		}
 		if (first == last)
-			return (gtm_status_t)1;
+			return (int)1;
 		if (0 > compflag)
 			first = (first == current) ? (current + 1) : current;
 		else
@@ -659,63 +628,63 @@ gtm_status_t posixutil_searchstrtab(const char *tblstr[], const gtm_int_t tblval
 /* Helper routines */
 
 /* Given a clock name, provide the numeric value */
-gtm_status_t posixhelper_clockval(int argc, gtm_char_t *symconst, gtm_int_t *symval)
+int posixhelper_clockval(int argc, char *symconst, int *symval)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	return posixutil_searchstrtab(clocks, clock_values, sizeof(clocks) / sizeof(clocks[0]), symconst, symval);
 }
 
 /* Given a symbolic constant for file mode, provide the numeric value */
-gtm_status_t posixhelper_filemodeconst(int argc, gtm_char_t *symconst, gtm_int_t *symval)
+int posixhelper_filemodeconst(int argc, char *symconst, int *symval)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	return posixutil_searchstrtab(fmodes, fmode_values, sizeof(fmodes) / sizeof(fmodes[0]), symconst, symval);
 }
 
 /* Given a symbolic constant for regex facility or level, provide the numeric value */
-gtm_status_t posixhelper_regconst(int argc, gtm_char_t *symconst, gtm_int_t *symval)
+int posixhelper_regconst(int argc, char *symconst, int *symval)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	return posixutil_searchstrtab(regxflags, regxflag_values, sizeof(regxflags) / sizeof(regxflags[0]), symconst, symval);
 }
 
 /* Endian independent conversion from regmatch_t bytestring to offsets */
-gtm_status_t posixhelper_regofft2offsets(int argc, gtm_string_t *regofftbytes, gtm_int_t *rmso, gtm_int_t *rmeo)
+int posixhelper_regofft2offsets(int argc, ydb_string_t *regofftbytes, int *rmso, int *rmeo)
 {
 	regmatch_t buf;
 
 	if (3 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	memcpy(&buf, regofftbytes->address, sizeof(regmatch_t));
-	*rmso = (gtm_int_t)((regoff_t)(buf.rm_so));
-	*rmeo = (gtm_int_t)((regoff_t)(buf.rm_eo));
+	*rmso = (int)((regoff_t)(buf.rm_so));
+	*rmeo = (int)((regoff_t)(buf.rm_eo));
 	return 0;
 }
 
 /* Given a signal name, provide the numeric value */
-gtm_status_t posixhelper_signalval(int argc, gtm_char_t *symconst, gtm_int_t *symval)
+int posixhelper_signalval(int argc, char *symconst, int *symval)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	return posixutil_searchstrtab(signals, signal_values, sizeof(signals) / sizeof(signals[0]), symconst, symval);
 }
 
 /* Given a configuration name, provide the numeric value */
-gtm_status_t posixhelper_sysconfval(int argc, gtm_char_t *symconst, gtm_int_t *symval)
+int posixhelper_sysconfval(int argc, char *symconst, int *symval)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	return posixutil_searchstrtab(sysconfs, sysconf_values, sizeof(sysconfs) / sizeof(sysconfs[0]), symconst, symval);
 }
 
 /* Given a symbolic constant for syslog facility or level, provide the numeric value */
-gtm_status_t posixhelper_syslogconst(int argc, gtm_char_t *symconst, gtm_int_t *symval)
+int posixhelper_syslogconst(int argc, char *symconst, int *symval)
 {
 	if (2 != argc)
-		return (gtm_status_t)-argc;
+		return (int)-argc;
 	return posixutil_searchstrtab(priority, priority_values, sizeof(priority) / sizeof(priority[0]), symconst, symval);
 }
 

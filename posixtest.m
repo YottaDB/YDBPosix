@@ -3,7 +3,7 @@
 ; Copyright (c) 2012-2015 Fidelity National Information		;
 ; Services, Inc. and/or its subsidiaries. All rights reserved.	;
 ;								;
-; Copyright (c) 2018 YottaDB LLC and/or its subsidiaries.	;
+; Copyright (c) 2018-2019 YottaDB LLC and/or its subsidiaries.	;
 ; All rights reserved.						;
 ;								;
 ;	This source code contains the intellectual property	;
@@ -33,7 +33,7 @@ posixtest	; test POSIX plugin
         set ver2=$$VERSION^%POSIX
 
         ; Verify that command line invocation fails with error message
-        open "POSIX":(shell="/bin/sh":command="$gtm_dist/mumps -run %POSIX":readonly:stderr="POSIXerr")::"pipe"
+        open "POSIX":(shell="/bin/sh":command="$ydb_dist/mumps -run %POSIX":readonly:stderr="POSIXerr")::"pipe"
         use "POSIX" for i=1:1 read tmp quit:$zeof  set out1(i)=tmp
         use "POSIXerr" for i=1:1 read tmp quit:$zeof  set out2(i)=tmp
         use io close "POSIX"
@@ -120,7 +120,7 @@ posixtest	; test POSIX plugin
         set diffca=(stat("ctime")-stat("atime"))*1E9+(stat("nctime")-stat("natime"))
         set:diffca<0 diffca=-diffca
 	; Normally tvsec is no greater than each of mtime, ctime and atime. However, we have seen one failure that made us change
-	; tvsec<=stat("ctime") to tvsec-1<=stat("ctime") <time_shift_gtmposix>
+	; tvsec<=stat("ctime") to tvsec-1<=stat("ctime") <time_shift_ydbposix>
         if ((diffma'>1E9)&(diffca'>1E9)&(tvsec-1'>stat("ctime"))) write "PASS statfile.times",!
         else  write "FAIL statfile.times dir=",dir," atime=",stat("atime")," natime=",stat("natime")," ctime=",stat("ctime")," nctime=",stat("nctime")," mtime=",stat("mtime")," nmtime=",stat("nmtime")," tv_sec=",tvsec,!
         open "uid":(shell="/bin/sh":command="id -u":readonly)::"pipe"
@@ -184,7 +184,7 @@ posixtest	; test POSIX plugin
         ; Check rmdir
         kill out1,out2
         set retval=$&ydbposix.rmdir(dir,.errno)
-        open "statfile":(shell="/bin/sh":command="$gtm_dist/mumps -run %XCMD 'd statfile^%POSIX("""_dir_""",.stat)'":stderr="statfileerr":readonly)::"pipe"
+        open "statfile":(shell="/bin/sh":command="$ydb_dist/mumps -run %XCMD 'd statfile^%POSIX("""_dir_""",.stat)'":stderr="statfileerr":readonly)::"pipe"
         use "statfile" for i=1:1 read tmp quit:$zeof  set out1(i)=tmp
         use "statfileerr" for i=1:1 read tmp quit:$zeof  set out2(i)=tmp
         use io close "statfile"
