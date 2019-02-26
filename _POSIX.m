@@ -41,10 +41,10 @@ clockgettime(clock,sec,nsec)
 	if $&ydbposix.clockgettime($select(clock'=+clock:$$clockval(clock),1:clock),.sec,.nsec,.errno)
 	quit:$quit 1 quit
 clockval(clock)	; get numeric value for the specified clock
-	quit:$data(%POSIX("clock",clock)) %POSIX("clock",clock)
+	quit:$data(%ydbposix("clock",clock)) %ydbposix("clock",clock)
 	new clockval
 	if $&ydbposix.clockval(clock,.clockval)
-	set %POSIX("clock",clock)=clockval
+	set %ydbposix("clock",clock)=clockval
 	quit clockval
 
 ; Copy a file
@@ -59,10 +59,10 @@ cp(source,dest)
 
 ; Get value for symbolic file modes - only lower case because this is an internal utility routine
 filemodeconst(sym)	; get numeric value for file mode symbolic constant
-	quit:$data(%POSIX("filemode",sym)) %POSIX("filemode",sym)
+	quit:$data(%ydbposix("filemode",sym)) %ydbposix("filemode",sym)
 	new symval
 	if $&ydbposix.filemodeconst(sym,.symval)
-	set %POSIX("filemode",sym)=symval
+	set %ydbposix("filemode",sym)=symval
 	quit symval
 
 ; Create a directory
@@ -132,18 +132,18 @@ regmatch(str,patt,pattflags,matchflags,matchresults,maxresults)
 	. set nextpf=$piece(pattflags,"+",i)
 	. if $increment(pfval,$select(nextpf'=+nextpf:$$regsymval(nextpf),1:nextpf))
 	else  set pfval=0
-	do:'$data(%POSIX("regmatch",patt,pfval))
+	do:'$data(%ydbposix("regmatch",patt,pfval))
 	. if $&ydbposix.regcomp(.pregstr,patt,pfval,.errno)
-	. zkill %POSIX("regcomp","errno")
-	. set %POSIX("regmatch",patt,pfval)=pregstr
+	. zkill %ydbposix("regcomp","errno")
+	. set %ydbposix("regmatch",patt,pfval)=pregstr
 	set:'$data(maxresults) maxresults=1
 	set $zpiece(resultbuf,$zchar(0),maxresults*$$regsymval("sizeof(regmatch_t)")+1)=""
 	if $length($get(matchflags)) for i=1:1:$length(matchflags,"+") do
 	. set nextmf=$piece(matchflags,"+",i)
 	. if $increment(mfval,$select(nextmf'=+nextmf:$$regsymval(nextmf),1:nextmf))
 	else  set mfval=0
-	if $&ydbposix.regexec(%POSIX("regmatch",patt,pfval),str,maxresults,.resultbuf,mfval,.matchsuccess)
-	zkill %POSIX("regexec","errno")
+	if $&ydbposix.regexec(%ydbposix("regmatch",patt,pfval),str,maxresults,.resultbuf,mfval,.matchsuccess)
+	zkill %ydbposix("regexec","errno")
 	do:matchsuccess
 	. kill matchresults
 	. set regmatchtsize=$$regsymval("sizeof(regmatch_t)"),j=1 for i=1:1:maxresults do  if 'matchresults(i,"start") kill matchresults(i) quit
@@ -154,10 +154,10 @@ regmatch(str,patt,pattflags,matchflags,matchresults,maxresults)
 
 ; Get numeric value for regular expression symbolic constant - only lower case because this is an internal utility routine
 regsymval(sym)
-	quit:$data(%POSIX("regmatch",sym)) %POSIX("regmatch",sym)
+	quit:$data(%ydbposix("regmatch",sym)) %ydbposix("regmatch",sym)
 	new symval
 	if $&ydbposix.regconst(sym,.symval)
-	set %POSIX("regmatch",sym)=symval
+	set %ydbposix("regmatch",sym)=symval
 	quit symval
 
 ; Remove a directory
@@ -227,10 +227,10 @@ sysconf(name,value)
 	if $&ydbposix.sysconf($select(name'=+name:$$sysconfval(name),1:name),.value,.errno)
 	quit:$quit 1 quit
 sysconfval(option)	; get numeric value for the specified configuration option
-	quit:$data(%POSIX("sysconf",option)) %POSIX("sysconf",option)
+	quit:$data(%ydbposix("sysconf",option)) %ydbposix("sysconf",option)
 	new sysconfval
 	if $&ydbposix.sysconfval(option,.sysconfval)
-	set %POSIX("sysconf",option)=sysconfval
+	set %ydbposix("sysconf",option)=sysconfval
 	quit sysconfval
 
 ; Log a message to the system log
@@ -246,10 +246,10 @@ syslog(message,facility,level)
 	if $&ydbposix.syslog(+facility+level,message)
 	quit:$quit 1 quit
 syslogval(msg)	; get numeric value for syslog symbolic constant
-	quit:$data(%POSIX("syslog",msg))#10 %POSIX("syslog",msg)
+	quit:$data(%ydbposix("syslog",msg))#10 %ydbposix("syslog",msg)
 	new msgval
 	if $&ydbposix.syslogconst(msg,.msgval)
-	set %POSIX("syslog",msg)=msgval
+	set %ydbposix("syslog",msg)=msgval
 	quit msgval
 
 ; Unset an environment variable
