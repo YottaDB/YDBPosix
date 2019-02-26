@@ -32,22 +32,22 @@ install(TARGETS ydbposix
 
 # Add commands to compile .m files
 
-add_library(_POSIX SHARED
-  _POSIX.m
+add_library(_ydbposix SHARED
+  _ydbposix.m
 )
 
-SET_TARGET_PROPERTIES(_POSIX PROPERTIES PREFIX "")
+SET_TARGET_PROPERTIES(_ydbposix PROPERTIES PREFIX "")
 
-install(FILES _POSIX.m
+install(FILES _ydbposix.m
   DESTINATION ${ydb_install_dir}/r/
 )
 
 if(MUMPS_UTF8_MODE)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_POSIX.so
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so
     DESTINATION ${ydb_install_dir}/o/utf8
   )
 else()
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_POSIX.so
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so
     DESTINATION ${ydb_install_dir}/o/
   )
 endif()
