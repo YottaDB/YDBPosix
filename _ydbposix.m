@@ -16,8 +16,9 @@
 ; Current ydbposix version.
 YDBPOSIXVERSION	;r4
 
-%POSIX	; High level wrappers to low level POSIX functions
-	set:'$length($etrap)&(("B"=$ztrap)!'$length($ztrap)) $etrap="set $etrap=""use $principal write $zstatus,! zhalt 1"" set tmp1=$piece($ecode,"","",2),tmp2=$text(@tmp1) if $length(tmp2) write $text(+0),@$piece(tmp2,"";"",2),! zhalt +$extract(tmp1,2,$length(tmp1))"
+%ydbposix
+	; High level wrappers to low level POSIX functions
+	set $etrap="set $etrap=""use $principal write $zstatus,! zhalt 1"" set tmp1=$piece($ecode,"","",2),tmp2=$text(@tmp1) if $length(tmp2) write $text(+0),@$piece(tmp2,"";"",2),! zhalt +$extract(tmp1,2,$length(tmp1))"
 	set $ecode=",U255,"	      ; must call an entryref
 	quit
 

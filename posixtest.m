@@ -24,29 +24,29 @@ posixtest	; test POSIX plugin
         set syslog1=$ztrnlnm("syslog_warning")
         set:'$length(syslog1) syslog1=$zsearch("/var/log/syslog","")
         set:'$length(syslog1) syslog1=$zsearch("/var/log/messages","")
-        if '$length(syslog1) write "FAIL syslog1 is null string",! quit
+;        if '$length(syslog1) write "FAIL syslog1 is null string",! quit
         set syslog2=$ztrnlnm("syslog_info")
 	set:'$length(syslog2) syslog2=syslog1
 
         ; Get version - check it later
-        set ver1=$$version^%POSIX
-        set ver2=$$VERSION^%POSIX
+        set ver1=$$version^%ydbposix
+        set ver2=$$VERSION^%ydbposix
 
         ; Verify that command line invocation fails with error message
-        open "POSIX":(shell="/bin/sh":command="$ydb_dist/mumps -run %POSIX":readonly:stderr="POSIXerr")::"pipe"
+        open "POSIX":(shell="/bin/sh":command="$ydb_dist/mumps -run %ydbposix":readonly:stderr="POSIXerr")::"pipe"
         use "POSIX" for i=1:1 read tmp quit:$zeof  set out1(i)=tmp
         use "POSIXerr" for i=1:1 read tmp quit:$zeof  set out2(i)=tmp
         use io close "POSIX"
-        if "%POSIX-F-BADINVOCATION Must call an entryref in %POSIX"=$get(out1(1))&'$data(out2) write "PASS Invocation",!
+        if "%ydbposix-F-BADINVOCATION Must call an entryref in %ydbposix"=$get(out1(1))&'$data(out2) write "PASS Invocation",!
         else  write "FAIL Invocation",! zwrite:$data(out1) out1  zwrite:$data(out2) out2
 
         ; Check $zhorolog/$ZHOROLOG
         ; retry until microsec returned by $zhorolog
-        for  set dh1=$horolog,ddzh=$$zhorolog^%POSIX,dh2=$horolog quit:(dh1=dh2)&$piece(ddzh,".",2)
+        for  set dh1=$horolog,ddzh=$$zhorolog^%ydbposix,dh2=$horolog quit:(dh1=dh2)&$piece(ddzh,".",2)
         if dh1'=$piece(ddzh,".",2) write "PASS $zhorolog",!
-        else  write "FAIL $zhorolog $horolog=",dh1," $$zhorolog^%POSIX=",ddzh,!
-        for  set dh1=$horolog,ddzh=$$ZHOROLOG^%POSIX,dh2=$horolog quit:(dh1=dh2)&$piece(ddzh,".",2)
-        if dh1=$piece(ddzh,".",2) write "FAIL $ZHOROLOG $horolog=",dh1," $$ZHOROLOG^%POSIX=",ddzh,!
+        else  write "FAIL $zhorolog $horolog=",dh1," $$zhorolog^%ydbposix=",ddzh,!
+        for  set dh1=$horolog,ddzh=$$ZHOROLOG^%ydbposix,dh2=$horolog quit:(dh1=dh2)&$piece(ddzh,".",2)
+        if dh1=$piece(ddzh,".",2) write "FAIL $ZHOROLOG $horolog=",dh1," $$ZHOROLOG^%ydbposix=",ddzh,!
         else  write "PASS $ZHOROLOG",!
 
 	; Check mktime()
@@ -66,52 +66,52 @@ posixtest	; test POSIX plugin
 
         ; Check regular expression pattern matching
         set oslist="AIXHP-UXLinuxSolaris"
-        if $$regmatch^%POSIX(oslist,"ux",,,.result,3)&("ux"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS regmatch^%POSIX 1",!
-        else  write "FAIL regmatch^%POSIX 1",!
-        set tmp=$order(%POSIX("regmatch","ux","")) do regfree^%POSIX("%POSIX(""regmatch"",""ux"","_tmp_")")
-        if $data(%POSIX("regmatch","ux",tmp))#10 write "FAIL regfree^%POSIX",!
-        else  write "PASS regfree^%POSIX",!
-        if $$REGMATCH^%POSIX(oslist,"ux",,,.result,3)&("ux"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS REGMATCH^%POSIX 1",!
-        else  write "FAIL REGMATCH^%POSIX 1",!
-        set tmp=$order(%POSIX("regmatch","ux","")) do REGFREE^%POSIX("%POSIX(""regmatch"",""ux"","_tmp_")")
-        if $data(%POSIX("regmatch","ux",tmp))#10 write "FAIL REGFREE^%POSIX",!
-        else  write "PASS REGFREE^%POSIX",!
-        if $$regmatch^%POSIX(oslist,"ux","REG_ICASE",,.result,3)&("UX"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS regmatch^%POSIX 2",!
-        else  write "FAIL regmatch^%POSIX 2",!
-        do regfree^%POSIX("%POSIX(""regmatch"",""ux"","_$order(%POSIX("regmatch","ux",""))_")")
-        if $$REGMATCH^%POSIX(oslist,"ux","REG_ICASE",,.result,3)&("UX"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS REGMATCH^%POSIX 2",!
-        else  write "FAIL REGMATCH^%POSIX 2",!
-        do REGFREE^%POSIX("%POSIX(""regmatch"",""ux"","_$order(%POSIX("regmatch","ux",""))_")")
-        if $$regmatch^%POSIX(oslist,"S$","REG_ICASE",,.result,3)&("s"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS regmatch^%POSIX 3",!
-        else  write "FAIL regmatch^%POSIX 3",!
-        do regfree^%POSIX("%POSIX(""regmatch"",""S$"","_$order(%POSIX("regmatch","S$",""))_")")
-        if $$REGMATCH^%POSIX(oslist,"S$","REG_ICASE",,.result,3)&("s"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS REGMATCH^%POSIX 3",!
-        else  write "FAIL REGMATCH^%POSIX 3",!
-        do REGFREE^%POSIX("%POSIX(""regmatch"",""S$"","_$order(%POSIX("regmatch","S$",""))_")")
-        if $$regmatch^%POSIX(oslist,"S$","REG_ICASE",,.result,3)&("s"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS regmatch^%POSIX 3",!
-        else  write "FAIL regmatch^%POSIX 3",!
-        do regfree^%POSIX("%POSIX(""regmatch"",""S$"","_$order(%POSIX("regmatch","S$",""))_")")
-        if $$REGMATCH^%POSIX(oslist,"S$","REG_ICASE",,.result,3)&("s"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS REGMATCH^%POSIX 3",!
-        else  write "FAIL REGMATCH^%POSIX 3",!
-        do REGFREE^%POSIX("%POSIX(""regmatch"",""S$"","_$order(%POSIX("regmatch","S$",""))_")")
-        if $$regmatch^%POSIX(oslist,"\([[:alnum:]]*\)-\([[:alnum:]]*\)",,,.result,5)&(oslist=$extract(oslist,result(1,"start"),result(1,"end")-1))&("AIXHP"=$extract(oslist,result(2,"start"),result(2,"end")-1))&("UXLinuxSolaris"=$extract(oslist,result(3,"start"),result(3,"end")-1))&(3=$order(result(""),-1)) write "PASS regmatch^%POSIX 4",!
-        else  write "FAIL regmatch^%POSIX 4",!
-        do regfree^%POSIX("%POSIX(""regmatch"",""\([[:alnum:]]*\)-\([[:alnum:]]*\)"","_$order(%POSIX("regmatch","\([[:alnum:]]*\)-\([[:alnum:]]*\)",""))_")")
-        if $$REGMATCH^%POSIX(oslist,"\([[:alnum:]]*\)-\([[:alnum:]]*\)",,,.result,5)&(oslist=$extract(oslist,result(1,"start"),result(1,"end")-1))&("AIXHP"=$extract(oslist,result(2,"start"),result(2,"end")-1))&("UXLinuxSolaris"=$extract(oslist,result(3,"start"),result(3,"end")-1))&(3=$order(result(""),-1)) write "PASS REGMATCH^%POSIX 4",!
-        else  write "FAIL REGMATCH^%POSIX 4",!
-        do REGFREE^%POSIX("%POSIX(""regmatch"",""\([[:alnum:]]*\)-\([[:alnum:]]*\)"","_$order(%POSIX("regmatch","\([[:alnum:]]*\)-\([[:alnum:]]*\)",""))_")")
-        if $$regmatch^%POSIX(oslist,"^AIX",,"REG_NOTBOL",.result,3) write "FAIL regmatch^%POSIX 5",!
-        else  write "PASS regmatch^%POSIX 5",!
-        do regfree^%POSIX("%POSIX(""regmatch"",""^AIX"","_$order(%POSIX("regmatch","^AIX",""))_")")
-        if $$REGMATCH^%POSIX(oslist,"^AIX",,"REG_NOTBOL",.result,3) write "FAIL REGMATCH^%POSIX 5",!
-        else  write "PASS REGMATCH^%POSIX 5",!
-        do REGFREE^%POSIX("%POSIX(""regmatch"",""^AIX"","_$order(%POSIX("regmatch","^AIX",""))_")")
+        if $$regmatch^%ydbposix(oslist,"ux",,,.result,3)&("ux"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS regmatch^%ydbposix 1",!
+        else  write "FAIL regmatch^%ydbposix 1",!
+        set tmp=$order(%ydbposix("regmatch","ux","")) do regfree^%ydbposix("%ydbposix(""regmatch"",""ux"","_tmp_")")
+        if $data(%ydbposix("regmatch","ux",tmp))#10 write "FAIL regfree^%ydbposix",!
+        else  write "PASS regfree^%ydbposix",!
+        if $$REGMATCH^%ydbposix(oslist,"ux",,,.result,3)&("ux"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS REGMATCH^%ydbposix 1",!
+        else  write "FAIL REGMATCH^%ydbposix 1",!
+        set tmp=$order(%ydbposix("regmatch","ux","")) do REGFREE^%ydbposix("%ydbposix(""regmatch"",""ux"","_tmp_")")
+        if $data(%ydbposix("regmatch","ux",tmp))#10 write "FAIL REGFREE^%ydbposix",!
+        else  write "PASS REGFREE^%ydbposix",!
+        if $$regmatch^%ydbposix(oslist,"ux","REG_ICASE",,.result,3)&("UX"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS regmatch^%ydbposix 2",!
+        else  write "FAIL regmatch^%ydbposix 2",!
+        do regfree^%ydbposix("%ydbposix(""regmatch"",""ux"","_$order(%ydbposix("regmatch","ux",""))_")")
+        if $$REGMATCH^%ydbposix(oslist,"ux","REG_ICASE",,.result,3)&("UX"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS REGMATCH^%ydbposix 2",!
+        else  write "FAIL REGMATCH^%ydbposix 2",!
+        do REGFREE^%ydbposix("%ydbposix(""regmatch"",""ux"","_$order(%ydbposix("regmatch","ux",""))_")")
+        if $$regmatch^%ydbposix(oslist,"S$","REG_ICASE",,.result,3)&("s"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS regmatch^%ydbposix 3",!
+        else  write "FAIL regmatch^%ydbposix 3",!
+        do regfree^%ydbposix("%ydbposix(""regmatch"",""S$"","_$order(%ydbposix("regmatch","S$",""))_")")
+        if $$REGMATCH^%ydbposix(oslist,"S$","REG_ICASE",,.result,3)&("s"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS REGMATCH^%ydbposix 3",!
+        else  write "FAIL REGMATCH^%ydbposix 3",!
+        do REGFREE^%ydbposix("%ydbposix(""regmatch"",""S$"","_$order(%ydbposix("regmatch","S$",""))_")")
+        if $$regmatch^%ydbposix(oslist,"S$","REG_ICASE",,.result,3)&("s"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS regmatch^%ydbposix 3",!
+        else  write "FAIL regmatch^%ydbposix 3",!
+        do regfree^%ydbposix("%ydbposix(""regmatch"",""S$"","_$order(%ydbposix("regmatch","S$",""))_")")
+        if $$REGMATCH^%ydbposix(oslist,"S$","REG_ICASE",,.result,3)&("s"=$extract(oslist,result(1,"start"),result(1,"end")-1)) write "PASS REGMATCH^%ydbposix 3",!
+        else  write "FAIL REGMATCH^%ydbposix 3",!
+        do REGFREE^%ydbposix("%ydbposix(""regmatch"",""S$"","_$order(%ydbposix("regmatch","S$",""))_")")
+        if $$regmatch^%ydbposix(oslist,"\([[:alnum:]]*\)-\([[:alnum:]]*\)",,,.result,5)&(oslist=$extract(oslist,result(1,"start"),result(1,"end")-1))&("AIXHP"=$extract(oslist,result(2,"start"),result(2,"end")-1))&("UXLinuxSolaris"=$extract(oslist,result(3,"start"),result(3,"end")-1))&(3=$order(result(""),-1)) write "PASS regmatch^%ydbposix 4",!
+        else  write "FAIL regmatch^%ydbposix 4",!
+        do regfree^%ydbposix("%ydbposix(""regmatch"",""\([[:alnum:]]*\)-\([[:alnum:]]*\)"","_$order(%ydbposix("regmatch","\([[:alnum:]]*\)-\([[:alnum:]]*\)",""))_")")
+        if $$REGMATCH^%ydbposix(oslist,"\([[:alnum:]]*\)-\([[:alnum:]]*\)",,,.result,5)&(oslist=$extract(oslist,result(1,"start"),result(1,"end")-1))&("AIXHP"=$extract(oslist,result(2,"start"),result(2,"end")-1))&("UXLinuxSolaris"=$extract(oslist,result(3,"start"),result(3,"end")-1))&(3=$order(result(""),-1)) write "PASS REGMATCH^%ydbposix 4",!
+        else  write "FAIL REGMATCH^%ydbposix 4",!
+        do REGFREE^%ydbposix("%ydbposix(""regmatch"",""\([[:alnum:]]*\)-\([[:alnum:]]*\)"","_$order(%ydbposix("regmatch","\([[:alnum:]]*\)-\([[:alnum:]]*\)",""))_")")
+        if $$regmatch^%ydbposix(oslist,"^AIX",,"REG_NOTBOL",.result,3) write "FAIL regmatch^%ydbposix 5",!
+        else  write "PASS regmatch^%ydbposix 5",!
+        do regfree^%ydbposix("%ydbposix(""regmatch"",""^AIX"","_$order(%ydbposix("regmatch","^AIX",""))_")")
+        if $$REGMATCH^%ydbposix(oslist,"^AIX",,"REG_NOTBOL",.result,3) write "FAIL REGMATCH^%ydbposix 5",!
+        else  write "PASS REGMATCH^%ydbposix 5",!
+        do REGFREE^%ydbposix("%ydbposix(""regmatch"",""^AIX"","_$order(%ydbposix("regmatch","^AIX",""))_")")
 
         ; Check statfile - indirectly tests mkdtemp also. Note that not all stat parameters can be reliably tested
         if ("OSF1"=os) set dir="posixtest"_$j_"_XXXXXX"
         else  set dir="/tmp/posixtest"_$j_"_XXXXXX"
-        set retval=$$mktmpdir^%POSIX(.dir) write:'retval "FAIL mktmpdir retval=",retval,!
-        set retval=$$statfile^%POSIX(.dir,.stat) write:'retval "FAIL statfile retval=",retval,!
+        set retval=$$mktmpdir^%ydbposix(.dir) write:'retval "FAIL mktmpdir retval=",retval,!
+        set retval=$$statfile^%ydbposix(.dir,.stat) write:'retval "FAIL statfile retval=",retval,!
         if stat("ino") write "PASS mktmpdir",!
         else  write "FAIL mktmpdir stat(ino)=",stat("ino"),!
         ; Check that mtime atime and ctime atime are no more than 1 sec apart and tvsec is not greater that ctime
@@ -130,15 +130,15 @@ posixtest	; test POSIX plugin
         if stat("gid")=gid&(stat("uid")=uid) write "PASS statfile.ids",!
         else  write "FAIL statfile.ids gid=",gid," stat(""gid"")=",stat("gid")," uid=",uid," stat(""uid"")=",stat("uid"),!
 	; Check that mode from stat has directory bit set, but not regular file bit
-	set tmp=$$filemodeconst^%POSIX("S_IFREG"),tmp=$$filemodeconst^%POSIX("S_IFDIR")
-	if stat("mode")\%POSIX("filemode","S_IFDIR")#2&'(stat("mode")\%POSIX("filemode","S_IFREG")#2) write "PASS filemodeconst^%POSIX",!
-	else  write "FAIL filemodeconst^%POSIX mode=",stat("mode")," S_IFDIR=",%POSIX("filemode","S_IFDIR")," S_IFREG=",%POSIX("filemode","S_IFREG"),!
+	set tmp=$$filemodeconst^%ydbposix("S_IFREG"),tmp=$$filemodeconst^%ydbposix("S_IFDIR")
+	if stat("mode")\%ydbposix("filemode","S_IFDIR")#2&'(stat("mode")\%ydbposix("filemode","S_IFREG")#2) write "PASS filemodeconst^%ydbposix",!
+	else  write "FAIL filemodeconst^%ydbposix mode=",stat("mode")," S_IFDIR=",%ydbposix("filemode","S_IFDIR")," S_IFREG=",%ydbposix("filemode","S_IFREG"),!
 
         ; Check signal & STATFILE
         set file="YDB_JOBEXAM.ZSHOW_DMP_"_$j_"_1"
         if $&ydbposix.signalval("SIGUSR1",.result)!$zsigproc($j,result) write "FAIL signal",!
         else  write "PASS signal",!
-        set retval=$$STATFILE^%POSIX(file,.stat) write:'retval "FAIL STATFILE",!
+        set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE",!
         if ((stat("mtime")-(stat("atime")+stat("ctime")/2)'>1)&(tvsec-1'>stat("ctime"))) write "PASS STATFILE.times",!
         else  write "FAIL STATFILE.times file=",file," atime=",stat("atime")," ctime=",stat("ctime")," mtime=",stat("mtime")," tv_sec=",tvsec,!
         open "uid":(shell="/bin/sh":command="id -u":readonly)::"pipe"
@@ -154,7 +154,7 @@ posixtest	; test POSIX plugin
         ; Also,location of messages depends on syslog configuration
         if ("M"=$zchset) do
         . set msg="Warning from process "_$j_" at "_ddzh,out="FAIL syslog - msg """_msg_""" not found in "_syslog1
-        . if $$syslog^%POSIX(msg,"LOG_USER","LOG_WARNING")
+        . if $$syslog^%ydbposix(msg,"LOG_USER","LOG_WARNING")
         . open syslog1:(readonly:exception="set tname=syslog1 g BADOPEN")
         . ; wait 1 sec before trying read.  If the read still fails you may have to increase the time.
         . hang 1
@@ -164,7 +164,7 @@ posixtest	; test POSIX plugin
         . if ("OSF1"=os) set logtype="LOG_USER"
         . else  set logtype="LOG_ERR"
         . set msg="Notice from process "_$j_" at "_ddzh,out="FAIL SYSLOG - msg """_msg_""" not found in "_syslog1
-        . if $$SYSLOG^%POSIX(msg,logtype,"LOG_INFO")
+        . if $$SYSLOG^%ydbposix(msg,logtype,"LOG_INFO")
         . open syslog2:(readonly:exception="s tname=syslog2 g BADOPEN")
         . ; wait 1 sec before trying read.  If the read still fails you may have to increase the time.
         . hang 1
@@ -184,7 +184,7 @@ posixtest	; test POSIX plugin
         ; Check rmdir
         kill out1,out2
         set retval=$&ydbposix.rmdir(dir,.errno)
-        open "statfile":(shell="/bin/sh":command="$ydb_dist/mumps -run %XCMD 'd statfile^%POSIX("""_dir_""",.stat)'":stderr="statfileerr":readonly)::"pipe"
+        open "statfile":(shell="/bin/sh":command="$ydb_dist/mumps -run %XCMD 'd statfile^%ydbposix("""_dir_""",.stat)'":stderr="statfileerr":readonly)::"pipe"
         use "statfile" for i=1:1 read tmp quit:$zeof  set out1(i)=tmp
         use "statfileerr" for i=1:1 read tmp quit:$zeof  set out2(i)=tmp
         use io close "statfile"
@@ -197,39 +197,39 @@ posixtest	; test POSIX plugin
 
         ; Check MKTMPDIR
         set dir="/tmp/posixtest"_$j_"_XXXXXX"
-        set retval=$$MKTMPDIR^%POSIX(.dir) write:'retval "FAIL MKTMPDIR retval=",retval,!
-        set retval=$$STATFILE^%POSIX(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+        set retval=$$MKTMPDIR^%ydbposix(.dir) write:'retval "FAIL MKTMPDIR retval=",retval,!
+        set retval=$$STATFILE^%ydbposix(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
         if stat("ino") write "PASS MKTMPDIR",!
         else  write "FAIL MKTMPDIR stat(ino)=",stat("ino"),!
         set retval=$&ydbposix.rmdir(dir,.errno)
 
         ; Check mkdir
         set dir="/tmp/posixtest"_$j_$$^%RANDSTR(6)
-        set retval=$$mkdir^%POSIX(dir,"S_IRWXU") write:'retval "FAIL MKTMPDIR retval=",retval,!
-        set retval=$$STATFILE^%POSIX(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+        set retval=$$mkdir^%ydbposix(dir,"S_IRWXU") write:'retval "FAIL MKTMPDIR retval=",retval,!
+        set retval=$$STATFILE^%ydbposix(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
         if stat("ino") write "PASS mkdir",!
         else  write "FAIL mkdir stat(ino)=",stat("ino"),!
         set retval=$&ydbposix.rmdir(dir,.errno)
 
         ; Check MKDIR
         set dir="/tmp/posixtest"_$j_$$^%RANDSTR(6)
-        set retval=$$MKDIR^%POSIX(dir,"S_IRWXU") write:'retval "FAIL MKTMPDIR retval=",retval,!
-        set retval=$$STATFILE^%POSIX(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+        set retval=$$MKDIR^%ydbposix(dir,"S_IRWXU") write:'retval "FAIL MKTMPDIR retval=",retval,!
+        set retval=$$STATFILE^%ydbposix(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
         if stat("ino") write "PASS MKDIR",!
         else  write "FAIL MKDIR stat(ino)=",stat("ino"),!
         set retval=$&ydbposix.rmdir(dir,.errno)
 
 	; Check UMASK and UTIMES
-	set mode1=$$filemodeconst^%POSIX("S_IWUSR")
-	set retval=$$UMASK^%POSIX(mode1,.tmp) write:'retval "FAIL UMASK retval=",retval,!
+	set mode1=$$filemodeconst^%ydbposix("S_IWUSR")
+	set retval=$$UMASK^%ydbposix(mode1,.tmp) write:'retval "FAIL UMASK retval=",retval,!
 	set file="/tmp/posixtest"_$j_$$^%RANDSTR(6)
 	open file:newversion
 	close file
-	set retval=$$STATFILE^%POSIX(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
 	set tvsec=stat("mtime"),tvnsec=stat("nmtime")
 	hang 0.1	; OSs cluster timestamps that are close to each other
-	set retval=$$UTIMES^%POSIX(file) write:'retval "FAIL UTIMES retval=",retval,!
-	set retval=$$STATFILE^%POSIX(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$UTIMES^%ydbposix(file) write:'retval "FAIL UTIMES retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
 	if ((0'=tmp)&(tvsec'=stat("mtime"))!(tvnsec'=stat("nmtime")!((0=tvnsec)&(0=stat("nmtime"))))) write "PASS UTIMES",!
 	else  write "FAIL UTIMES stat(mtime)=",stat("mtime")," stat(nmtime)=",stat("nmtime"),!
 	set mode2=$$FUNC^%DO(stat("mode"))#1000 ; Get the last three digits
@@ -239,9 +239,9 @@ posixtest	; test POSIX plugin
 	else  write "FAIL UMASK stat(mode)=",stat("mode"),!
 
 	; Check CHMOD
-	set mode1=$$filemodeconst^%POSIX("S_IXGRP")
-	set retval=$$CHMOD^%POSIX(file,mode1) write:'retval "FAIL CHMOD retval=",retval,!
-	set retval=$$STATFILE^%POSIX(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set mode1=$$filemodeconst^%ydbposix("S_IXGRP")
+	set retval=$$CHMOD^%ydbposix(file,mode1) write:'retval "FAIL CHMOD retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
 	set mode2=$$FUNC^%DO(stat("mode"))#1000 ; Get the last three digits
 	set mode1=$$FUNC^%DO(mode1)
 	if (+mode1=+mode2) write "PASS CHMOD",!
@@ -249,14 +249,14 @@ posixtest	; test POSIX plugin
 
 	; Check SYMLINK and REALPATH
 	set link="/tmp/posixtest"_$j_$$^%RANDSTR(6)
-	set retval=$$SYMLINK^%POSIX(file,link) write:'retval "FAIL SYMLINK retval=",retval,!
-	set retval=$$STATFILE^%POSIX(link,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$SYMLINK^%ydbposix(file,link) write:'retval "FAIL SYMLINK retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(link,.stat) write:'retval "FAIL STATFILE retval=",retval,!
 	if stat("ino") write "PASS SYMLINK",!
 	else  write "FAIL SYMLINK stat(ino)=",stat("ino"),!
-	set retval=$$REALPATH^%POSIX(file,.path) write:'retval "FAIL REALPATH retval=",retval,!
+	set retval=$$REALPATH^%ydbposix(file,.path) write:'retval "FAIL REALPATH retval=",retval,!
 	if (file=path) write "PASS REALPATH",!
 	else  write "FAIL REALPATH path=",path,!
-	set retval=$$CHMOD^%POSIX(file,"S_IRWXU") write:'retval "FAIL CHMOD retval=",retval,!
+	set retval=$$CHMOD^%ydbposix(file,"S_IRWXU") write:'retval "FAIL CHMOD retval=",retval,!
 	open link
 	close link:delete
 
@@ -267,11 +267,11 @@ posixtest	; test POSIX plugin
 	set value=""
 	for i=1:1:10 set tmp=$$^%RANDSTR(1000) set value=value_tmp_$char(10) write tmp,!
 	close file
-	set retval=$$STATFILE^%POSIX(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
 	set size=stat("size")
 	; Copy to a non-existent destination.
-	set retval=$$CP^%POSIX(file,link) write:'retval "FAIL CP retval=",retval,!
-	set retval=$$STATFILE^%POSIX(link,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$CP^%ydbposix(file,link) write:'retval "FAIL CP retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(link,.stat) write:'retval "FAIL STATFILE retval=",retval,!
 	; Verify the contents and size file of the copy.
 	open link
 	use link
@@ -288,11 +288,11 @@ posixtest	; test POSIX plugin
 	write value
 	close link
 	set value=value_$char(10)
-	set retval=$$STATFILE^%POSIX(link,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(link,.stat) write:'retval "FAIL STATFILE retval=",retval,!
 	set size=stat("size")
 	; Copy the new small file onto the existent destination.
-	set retval=$$CP^%POSIX(link,file) write:'retval "FAIL CP retval=",retval,!
-	set retval=$$STATFILE^%POSIX(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$CP^%ydbposix(link,file) write:'retval "FAIL CP retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
 	; Verify the contents and size file of the copy.
 	open file:readonly
 	use file
@@ -309,11 +309,11 @@ posixtest	; test POSIX plugin
 
 	; Check that we get at least fractional second times - this test has 1 in 10**18 chance of failing incorrectly
 	set tmp="PASS Nanosecond resolution"
-	for i=0:1  set retval=$$CLOCKGETTIME^%POSIX("CLOCK_REALTIME",.tvsec,.tvnsec) quit:tvnsec  set:i $extract(tmp,1,4)="FAIL"
+	for i=0:1  set retval=$$CLOCKGETTIME^%ydbposix("CLOCK_REALTIME",.tvsec,.tvnsec) quit:tvnsec  set:i $extract(tmp,1,4)="FAIL"
 	write tmp,!
 
 	; Check SYSCONF
-	set retval=$$SYSCONF^%POSIX("ARG_MAX",.value) write:'retval "FAIL SYSCONF retval=",retval,!
+	set retval=$$SYSCONF^%ydbposix("ARG_MAX",.value) write:'retval "FAIL SYSCONF retval=",retval,!
 	if (0<value) write "PASS SYSCONF",!
 	else  write "FAIL SYSCONF ARG_MAX=",value,!
 
