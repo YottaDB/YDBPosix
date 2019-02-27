@@ -14,7 +14,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Current ydbposix version.
-YDBPOSIXVERSION	;r4
+YDBPOSIXVERSION	;v4.0.0
 
 %ydbposix
 	; High level wrappers to low level POSIX functions
@@ -172,6 +172,8 @@ rmdir(dirname)
 	quit:$quit 1 quit
 
 ; Set an environment variable
+; This function is deprecated and retained for backward compatibility.
+; Use VIEW SETENV instead.
 SETENV(name,value,overwrite)
 	new retval
 	set retval=$$setenv(name,value,$get(overwrite))
@@ -235,6 +237,8 @@ sysconfval(option)	; get numeric value for the specified configuration option
 	quit sysconfval
 
 ; Log a message to the system log
+; Unless you really need the fine-grained control this offers, the built-in function
+; $ZSYSLOG() should suffice for most needs.
 SYSLOG(message,facility,level)
 	new retval
 	set retval=$$syslog($get(message),$get(facility),$get(level))
@@ -254,6 +258,8 @@ syslogval(msg)	; get numeric value for syslog symbolic constant
 	quit msgval
 
 ; Unset an environment variable
+; This function is deprecated and retained for backward compatibility.
+; Use VIEW UNSETENV instead.
 UNSETENV(name)
 	new retval
 	set retval=$$unsetenv(name)
@@ -291,6 +297,8 @@ version()
 	quit:$quit ver quit
 
 ; Extrinsic special variable that extends $HOROLOG and reports in microseconds
+; This function is deprecated and retained for backward compatibility.
+; Consider using $ZHOROLOG instead.
 ZHOROLOG()   quit $$zhorolog()
 zhorolog()
 	new day,errno,hour,isdst,mday,min,mon,retval,sec,tvsec,tvusec,wday,yday,year

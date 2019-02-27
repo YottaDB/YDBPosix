@@ -10,40 +10,33 @@ YDB Posix
 Overview
 -------------------------------------------------------------
 
-ydbposix is a simple plugin to allow YottaDB (https://yottadb.com/) application code to use selected POSIX functions on POSIX (UNIX/Linux) editions of YottaDB. ydbposix provides a set of low-level calls wrapping and closely matching their corresponding POSIX functions, and a set of high-level entryrefs that provide a further layer of wrapping to make the functionality available in a form more familiar to M programmers.
+YDBposix is a plugin that allows M application code to use selected POSIX; it does not implement the underlying functionality. A set of low level C functions closely matching their corresponding POSIX functions acts as a software shim to connect M code to POSIX functions. A set of higher level entryrefs makes the functionality available in form more familiar to M programmers. M application code is free to call either level.
 
-ydbposix is just a wrapper for POSIX functions; it does not actually implement the underlying functionality.
+As C application code can call POSIX functions directly, the plugin has no value to C application code.
 
-ydbposix consists of the following files:
+When installed in the `$ydb_dist/plugin` directory, YDBposix consists of the following files:
 
-  - COPYING - the free / open source software (FOSS) license under which ydbposix is provided to you. 
+- `libydbposix.so` – a shared library with the C software shims
 
-  - ydbposix.c - C code that wraps POSIX functions for use by YottaDB.
+- `ydbposix.xc` – a call-out table to allow M code to call the functions in `libydbposix.so`
 
-  - ydbposix.xc_proto - a prototype to generate the call-out table used by YottaDB to map M entryrefs to C entry points.
+- `r/_ydbposix.m` – M source code for higher level `^%ydbposix` entryrefs that M application code can call.
 
-  - CMakeLists.txt - To build, test, install and uninstall the package.
+- `o/_ydbposix.so` – a shared library with M mode object code for `^%ydbposix` entryrefs
 
-  - _POSIX.m - wraps the C code with M-like functionality to provide ^%POSIX entryrefs.
-
-  - posixtest.m - a simple test to check for correct installation and operation of ydbposix.
+- `o/utf8/_ydbposix.so` – if YottaDB is installed with UTF-8 support, a shared library with UTF-8 mode object code for `^%ydbposix` entryrefs
 
 -------------------------------------------------------------
 Installation
 -------------------------------------------------------------
 
-First, set up the YottaDB environment variables.
+YottaDB must be installed and available before installing the POSIX plugin. https://yottadb.com/product/get-started/ has instructions on installing YottaDB. Download and unpack the POSIX plugin in a temporary directory, and make that the current directory. Then:
 
-.. parsed-literal::
-   source /usr/local/lib/yottadb/r122/ydb_env_set
-
-Then make and make install:
-
-.. parsed-literal::
-   mkdir build && cd build
-   cmake ..
-   make && sudo make install
-
+.. parsed literal::
+    source $(pkg-config --variable=prefix yottadb)/ydb_env_set
+    mkdir build && cd build
+    cmake ..
+    make && sudo make install
 
 -------------------------------------------------------------
 Testing
@@ -58,24 +51,24 @@ The expected output of make test is as below; manually verify whether the statem
     Daylight Savings Time is in effect
     PASS mktime()
     PASS Microsecond resolution
-    PASS regmatch^%POSIX 1
-    PASS regfree^%POSIX
-    PASS REGMATCH^%POSIX 1
-    PASS REGFREE^%POSIX
-    PASS regmatch^%POSIX 2
-    PASS REGMATCH^%POSIX 2
-    PASS regmatch^%POSIX 3
-    PASS REGMATCH^%POSIX 3
-    PASS regmatch^%POSIX 3
-    PASS REGMATCH^%POSIX 3
-    PASS regmatch^%POSIX 4
-    PASS REGMATCH^%POSIX 4
-    PASS regmatch^%POSIX 5
-    PASS REGMATCH^%POSIX 5
+    PASS regmatch^%ydbposix 1
+    PASS regfree^%ydbposix
+    PASS REGMATCH^%ydbposix 1
+    PASS REGFREE^%ydbposix
+    PASS regmatch^%ydbposix 2
+    PASS REGMATCH^%ydbposix 2
+    PASS regmatch^%ydbposix 3
+    PASS REGMATCH^%ydbposix 3
+    PASS regmatch^%ydbposix 3
+    PASS REGMATCH^%ydbposix 3
+    PASS regmatch^%ydbposix 4
+    PASS REGMATCH^%ydbposix 4
+    PASS regmatch^%ydbposix 5
+    PASS REGMATCH^%ydbposix 5
     PASS mktmpdir
     PASS statfile.times
     PASS statfile.ids
-    PASS filemodeconst^%POSIX
+    PASS filemodeconst^%ydbposix
     PASS signal
     PASS STATFILE.times
     PASS STATFILE.ids
@@ -101,84 +94,82 @@ The expected output of make test is as below; manually verify whether the statem
 Use
 -------------------------------------------------------------
 
-For use by YottaDB, the environment variable ydb_xc_ydbposix must point to ydbposix.xc ($ydb_dist/plugin/ydbposix.xc after make install), the location of the ydbposix.xc file; and the environment variable ydb_routines must allow YottaDB processes to find the %POSIX entryrefs. Depending on your platform, this includes a $ydb_routines term of the form $ydb_dist/plugin/o/_POSIX.so or $ydb_dist/plugin/o($ydb_dist/plugin/r) for M mode processes and $ydb_dist/plugin/o/utf8/_POSIX.so or $ydb_dist/plugin/o/utf8($ydb_dist/plugin/r) for UTF-8 mode processes.
+For use by YottaDB, the environment variable `ydb_xc_ydbposix` must point to `ydbposix.xc` (which is installed at `$ydb_dist/plugin/ydbposix.xc` by `make install`); and the environment variable `ydb_routines` must allow YottaDB processes to find the %ydbposix entryrefs. This includes a `$ydb_routines` term of the form `$ydb_dist/plugin/o/_ydbposix.so` for M mode processes and `$ydb_dist/plugin/o/utf8/_ydbposix.so` for UTF-8 mode processes.
 
-The $ydb_dist/ydb_env_set file that you can source to set environment variables and the $ydb_dist/ydb script to run YottaDB automatically define appropriate values for $ydb_xc_ydbposix and $ydb_routines to allow processes to execute ydbposix.
-
-Note: you may need additional environment variables to install and use ydbposix, for example, to preload the correct libraries if they are not automatically loaded. Contact your YottaDB support channel for assistance with these environment variables.
+The `$ydb_dist/ydb_env_set` file that you can source to set environment variables and the `$ydb_dist/ydb` script to run YottaDB automatically define appropriate values for `$ydb_xc_ydbposix` and `$ydb_routines` to allow processes to execute ydbposix.
 
 -------------------------------------------------------------
-(High level) ^%POSIX entryrefs
+(High level) ^%ydbposix entryrefs
 -------------------------------------------------------------
 
-Except for any entryrefs starting with $$, which must be called as functions, ^%POSIX entryrefs as described below can be called either as functions or with a DO. Except where noted, each entryref can be invoked in either all upper-case or all lower-case, but not with mixed case. These entryrefs have no abbreviations.
+Except for any entryrefs starting with $$, which must be called as functions, ^%ydbposix entryrefs as described below can be called either as functions or with a DO. Except where noted, each entryref can be invoked in either all upper-case or all lower-case, but not with mixed case. These entryrefs have no abbreviations.
 
-**chmod^%POSIX(name,mode)**: Changes the permissions of a file to those specified, whether in symbolic or numeric representation.
+**chmod^%ydbposix(name,mode)**: Changes the permissions of a file to those specified, whether in symbolic or numeric representation.
 
-**clockgettime^%POSIX(clock,.sec,.nsec)**: Retrieves the time of the specified clock, in symbolic or numeric representation, with nanoosecond resolution. Note that nanosecond resolution does not mean nanosecond accuracy.
+**clockgettime^%ydbposix(clock,.sec,.nsec)**: Retrieves the time of the specified clock, in symbolic or numeric representation, with nanosecond resolution. Note that nanosecond resolution does not mean nanosecond accuracy.
 
-**$$clockval^%POSIX(clockval)**: Given a symbolic clock ID as a string,, e.g., "CLOCK_REALTIME", returns the numeric value of that clock. See also the description of ``$&ydbposix.clockval()``.
+**$$clockval^%ydbposix(clockval)**: Given a symbolic clock ID as a string,, e.g., "CLOCK_REALTIME", returns the numeric value of that clock. See also the description of ``$&ydbposix.clockval()``.
 
-**cp^%POSIX(source,dest)**: Copy a file, preserving its permissions.
+**cp^%ydbposix(source,dest)**: Copy a file, preserving its permissions.
 
-**$$filemodeconst^%POSIX(sym)**: Given a symbolic file mode as a string,, e.g., "S_IRWXU", returns the numeric value of that mode. See also the description of ``$&ydbposix.filemodeconst()``.
+**$$filemodeconst^%ydbposix(sym)**: Given a symbolic file mode as a string,, e.g., "S_IRWXU", returns the numeric value of that mode. See also the description of ``$&ydbposix.filemodeconst()``.
 
-**mkdir^%POSIX(dirname,mode)**: Given a directory name as a string, and a mode, as either a symbolic or numeric value, creates the directory.
+**mkdir^%ydbposix(dirname,mode)**: Given a directory name as a string, and a mode, as either a symbolic or numeric value, creates the directory.
 
-**mktime^%POSIX(year,mon,mday,hour,min,sec,.wday,.yday,.isdst,.unixtime)**: Converts a broken-down time structure to calendar time representation, populating variables to contain the day of the week, day of the year, daylight saving status, and UNIX time.
+**mktime^%ydbposix(year,mon,mday,hour,min,sec,.wday,.yday,.isdst,.unixtime)**: Converts a broken-down time structure to calendar time representation, populating variables to contain the day of the week, day of the year, daylight saving status, and UNIX time.
 
-**mktmpdir^%POSIX(.template)**: With a directory name template ending in "XXXXXX" creates a directory with a unique name, replacing the "XXXXXX" to return the name of the directory created in template. On platforms where mkdtemp() is not available (AIX, HP-UX, and Solaris), YottaDB uses mkdir to create a temporary directory with a random name created by YottaDB.
+**mktmpdir^%ydbposix(.template)**: With a directory name template ending in "XXXXXX" creates a directory with a unique name, replacing the "XXXXXX" to return the name of the directory created in template.
 
-**realpath^%POSIX(name,.realpath)**: Retrieves the canonicalized absolute pathname to the file specified by name and stores it in realpath.
+**realpath^%ydbposix(name,.realpath)**: Retrieves the canonicalized absolute pathname to the file specified by name and stores it in realpath.
 
-**regfree^%POSIX(pregstrname)**: Given the name of a variable with a compiled regular expression as a string, frees the memory and ZKILLs the variable. Note that regfree() requires a variable name to be passed in as a string. For example, after ``regmatch^%POSIX("AIXHP-UXLinuxSolaris","ux","REG_ICASE",,.matches,1)``, the call to regfree to release the memory would be ``regfree^%POSIX("%POSIX(""regmatch"",""ux"",%POSIX(""regmatch"",""REG_ICASE""))")``.
+**regfree^%ydbposix(pregstrname)**: Given the name of a variable with a compiled regular expression as a string, frees the memory and ZKILLs the variable. Note that regfree() requires a variable name to be passed in as a string. For example, after ``regmatch^%ydbposix("AIXHP-UXLinuxSolaris","ux","REG_ICASE",,.matches,1)``, the call to regfree to release the memory would be ``regfree^%ydbposix("%ydbposix(""regmatch"",""ux"",%ydbposix(""regmatch"",""REG_ICASE""))")``.
 
-**regmatch^%POSIX(str,patt,pattflags,matchflags,.matchresults,maxresults)**: Regular expression matching in string str for pattern patt compiling the pattern if needed using ``regcomp()`` and matching using ``regmatch()``. pattflags condition the pattern compilation with ``regcomp()``. matchflags condition the matching performed by ``regexec()``. To pass multiple flags, simply add the numeric values of the individual flags as provided by ``$$regsymval^%POSIX()``. maxresults specifies the maximum number of matches. The function returns results as an array, where the value of ``matchresults(n,"start")`` provides the starting character position for the nth match, and the value of ``matchresults(n,"end")`` provides the character position for the first character after a match; e.g. ``$extract(str,matchresults(2,"start"),matchresults(2,"end")-1)`` returns the second matching substring. When called as a function, ``regmatch^%POSIX`` returns 1 on successful match and 0 if there was no match. On a successful match, the function KILLs all prior data in matchresults and otherwise leaves it unchanged. After a failed compilation, ``%POSIX("regcomp","errno")`` contains the error code from errlog(). When the match encounters an error (as opposed to a failure to match), ``%POSIX("regexec","errno")`` contains the value of errno. Local variable nodes ``%POSIX("regmatch",patt,pattflags)`` contain descriptors of compiled patterns and *must not be modified by your application code*. Be sure to read Memory Usage Considerations, below. Refer to ``man regex`` for more information about regular expressions and pattern matching.
+**regmatch^%ydbposix(str,patt,pattflags,matchflags,.matchresults,maxresults)**: Regular expression matching in string `str` for pattern patt compiling the pattern if needed using ``regcomp()`` and matching using ``regmatch()``. `pattflags` condition the pattern compilation with ``regcomp()``. `matchflags` condition the matching performed by ``regexec()``. To pass multiple flags, simply add the numeric values of the individual flags as provided by ``$$regsymval^%ydbposix()``. `maxresults` specifies the maximum number of matches. The function returns results as an array, where the value of ``matchresults(n,"start")`` provides the starting character position for the nth match, and the value of ``matchresults(n,"end")`` provides the character position for the first character after a match; e.g. ``$extract(str,matchresults(2,"start"),matchresults(2,"end")-1)`` returns the second matching substring. When called as a function, ``regmatch^%ydbposix`` returns 1 on successful match and 0 if there was no match. On a successful match, the function KILLs all prior data in matchresults and otherwise leaves it unchanged. After a failed compilation, ``%ydbposix("regcomp","errno")`` contains the error code from errlog(). When the match encounters an error (as opposed to a failure to match), ``%ydbposix("regexec","errno")`` contains the value of errno. Local variable nodes ``%ydbposix("regmatch",patt,pattflags)`` contain descriptors of compiled patterns and *must not be modified by your application code*. Be sure to read Memory Usage Considerations, below. Refer to ``man regex`` for more information about regular expressions and pattern matching.
 
-**$$regsymval^%POSIX(sym)**: Returns the numeric value of a symbolic constant used in regular expression pattern matching, such as "REG_ICASE". Also, it provides the sizes of certain structures that M code needs to have access to, when provided as strings, such as ``sizeof(regex_t)``, ``sizeof(regmatch_t)``, and ``sizeof(regoff_t)``.
+**$$regsymval^%ydbposix(sym)**: Returns the numeric value of a symbolic constant used in regular expression pattern matching, such as "REG_ICASE". Also, it provides the sizes of certain structures that M code needs to have access to, when provided as strings, such as ``sizeof(regex_t)``, ``sizeof(regmatch_t)``, and ``sizeof(regoff_t)``.
 
-**rmdir^%POSIX(dirname)**: Removes a directory. For the call to succeed, the directory must be empty.
+**rmdir^%ydbposix(dirname)**: Removes a directory. For the call to succeed, the directory must be empty.
 
-**setenv^%POSIX(name,value,overwrite)**: Sets an environment variable to the specified value, overwriting or preserving the existing value as indicated.
+**setenv^%ydbposix(name,value,overwrite)**: Sets an environment variable to the specified value, overwriting or preserving the existing value as indicated. Note that this function is deprecated and retained for backward compatibility. Use `VIEW SETENV <https://docs.yottadb.com/ProgrammersGuide/commands.html#key-words-in-view-command>`_ instead.
 
-**statfile^%POSIX(f,.s)**: Provides information about file f in nodes of local variable s. All prior nodes of s are deleted. When called as a function, statfile returns 1 unless the underlying call to stat() failed. Refer to ``man 2 stat`` for more information.
+**statfile^%ydbposix(f,.s)**: Provides information about file `f` in nodes of local variable `s`. All prior nodes of `s` are deleted. When called as a function, `statfile` returns 1 unless the underlying call to `stat()` failed. Refer to ``man 2 stat`` for more information.
 
-**symlink^%POSIX(target,name)**: Creates a symbolic link to a file with the specified name.
+**symlink^%ydbposix(target,name)**: Creates a symbolic link to a file with the specified name.
 
-**sysconf^%POSIX(name,.value)**: Obtains the value of the specified configuration option and saves it into the provided container.
+**sysconf^%ydbposix(name,.value)**: Obtains the value of the specified configuration option and saves it into the provided container.
 
-**$$sysconfval^%POSIX(option)**: Given a symbolic configuration option as a string,, e.g., "ARG_MAX", returns the numeric value of that option. See also the description of ``$&ydbposix.sysconfval()``.
+**$$sysconfval^%ydbposix(option)**: Given a symbolic configuration option as a string,, e.g., "ARG_MAX", returns the numeric value of that option. See also the description of ``$&ydbposix.sysconfval()``.
 
-**syslog^%POSIX(message,format,facility,level)**: Provides a mechanism to log messages to the system log. format defaults to "%s", facility to "LOG_USER" and level to "LOG_INFO". When called as a function, syslog returns 1. Refer to ``man syslog`` for more information.
+**syslog^%ydbposix(message,format,facility,level)**: Provides a mechanism to log messages to the system log. format defaults to "%s", facility to "LOG_USER" and level to "LOG_INFO". When called as a function, syslog returns 1. Refer to ``man syslog`` for more information. Unless you really need the fine-grained control this offers, `$ZSYSLOG() <https://docs.yottadb.com/ProgrammersGuide/functions.html#zsyslog>`_ should suffice for most needs.
 
-**syslogval^%POSIX(msg)**: Given a symbolic syslog priority as a string,, e.g., "LOG_ALERT", returns the numeric value of that priority. See also the description of ``$&ydbposix.syslogval()``.
+**syslogval^%ydbposix(msg)**: Given a symbolic syslog priority as a string,, e.g., "LOG_ALERT", returns the numeric value of that priority. See also the description of ``$&ydbposix.syslogval()``.
 
-**unsetenv^%POSIX(name)**: Unsets an environment variable.
+**unsetenv^%ydbposix(name)**: Unsets an environment variable. Note that this function is deprecated and retained for backward compatibility. Use `VIEW UNSETENV <https://docs.yottadb.com/ProgrammersGuide/commands.html#key-words-in-view-command>`_ instead.
 
-**umask^%POSIX(mode,.oldMode)**: Sets the current user's file mode creation mask, passed in as a symbolic or numeric value, and returns the previous mask's numeric value in the second argument.
+**umask^%ydbposix(mode,.oldMode)**: Sets the current user's file mode creation mask, passed in as a symbolic or numeric value, and returns the previous mask's numeric value in the second argument.
 
-**utimes^%POSIX(name)**: Updates the access and modification timestamps of a file. The implemented functionality is equivalent to a "touch" command.
+**utimes^%ydbposix(name)**: Updates the access and modification timestamps of a file. The implemented functionality is equivalent to a "touch" command.
 
-**$$version^%POSIX**: Returns the version of the ydbposix plugin.
+**$$version^%ydbposix**: Returns the version of the ydbposix plugin.
 
-**$$zhorolog^%POSIX**: Provides the time in $horolog format, but with microsecond resolution of the number of seconds since midnight. Note that microsecond resolution does not mean microsecond accuracy.
+**$$zhorolog^%ydbposix**: Provides the time in $horolog format, but with microsecond resolution of the number of seconds since midnight. Note that microsecond resolution does not mean microsecond accuracy. This function is deprecated and retained for backward compatibility. Consider using `$ZHOROLOG <https://docs.yottadb.com/ProgrammersGuide/isv.html#zhorolog>`_ instead.
 
 -------------------------------------------------------------
-Examples of ^%POSIX usage
+Examples of ^%ydbposix usage
 -------------------------------------------------------------
 
-Below are examples of usage of high level entryrefs in ^%POSIX. The file posixtest.m contains examples of use of the functions in ydbposix.
+Below are examples of usage of high level entryrefs in ^%ydbposix. The file _ydbposixtest.m contains examples of use of the functions in ydbposix.
 
 .. parsed-literal::
     YDB>set str="THE QUICK BROWN FOX JUMPS OVER the lazy dog"
 
-    YDB>write:$$regmatch^%POSIX(str,"the",,,.result) $extract(str,result(1,"start"),result(1,"end")-1)
+    YDB>write:$$regmatch^%ydbposix(str,"the",,,.result) $extract(str,result(1,"start"),result(1,"end")-1)
     the
-    YDB>write:$$regmatch^%POSIX(str,"the","REG_ICASE",,.result) $extract(str,result(1,"start"),result(1,"end")-1)
+    YDB>write:$$regmatch^%ydbposix(str,"the","REG_ICASE",,.result) $extract(str,result(1,"start"),result(1,"end")-1)
     THE
     YDB>
 
-    YDB>set retval=$$statfile^%POSIX($ztrnlnm("ydb_dist")_"/mumps",.stat) zwrite stat
+    YDB>set retval=$$statfile^%ydbposix($ztrnlnm("ydb_dist")_"/mumps",.stat) zwrite stat
     stat("atime")=1332555721
     stat("blksize")=4096
     stat("blocks")=24
@@ -193,28 +184,19 @@ Below are examples of usage of high level entryrefs in ^%POSIX. The file posixte
     stat("size")=8700
     stat("uid")=0
 
-    YDB>write stat("mode")\$$filemodeconst^%POSIX("S_IFREG")#2 ; It is a regular file
+    YDB>write stat("mode")\$$filemodeconst^%ydbposix("S_IFREG")#2 ; It is a regular file
     1
     YDB>
 
-    YDB>do syslog^%POSIX(str) zsystem "tail -1 /var/log/messages"
-    Mar 24 19:23:12 bhaskark mumps: THE QUICK BROWN FOX JUMPS OVER the lazy dog
-
-    YDB>
-
-    YDB>write $$version^%POSIX
-    r1
-    YDB>
-
-    YDB>write $horolog," : ",$$zhorolog^%POSIX
-    62626,60532 : 62626,60532.466276
+    YDB>write $$version^%ydbposix
+    v4.0.0
     YDB>
 
 -------------------------------------------------------------
 (Low Level) ydbposix calls
 -------------------------------------------------------------
 
-The high level entryrefs in ^%POSIX access low level functions in ydbposix.c that directly wrap POSIX functions. Unless otherwise noted, functions return 0 for a successful completion, and non-zero otherwise. Note that some POSIX functions only return success, and also that a non-zero return value triggers a "%YDB-E-ZCSTATUSRET, External call returned error status" YottaDB runtime error for your $ETRAP or $ZTRAP error handler. Where errno is the last argument passed by reference, it takes on the value of the errno from the underlying system call.
+The high level entryrefs in ^%ydbposix access low level functions in ydbposix.c that directly wrap POSIX functions. Unless otherwise noted, functions return 0 for a successful completion, and non-zero otherwise. Note that some POSIX functions only return success, and also that a non-zero return value triggers a "%YDB-E-ZCSTATUSRET, External call returned error status" YottaDB runtime error for your $ETRAP or $ZTRAP error handler. Where errno is the last argument passed by reference, it takes on the value of the errno from the underlying system call.
 
 .. note::
    The ydbposix YottaDB interface to call out to POSIX functions is a low-level interface designed for use by programmers rather than end-users. Misuse, abuse and bugs can result in programs that are fragile, hard to troubleshoot and potentially insecure.
@@ -223,11 +205,7 @@ The high level entryrefs in ^%POSIX access low level functions in ydbposix.c tha
 
 **$&ydbposix.clockgettime(clock,.tvsec,.tvnsec,.errno)**: Returns the time of the specified clock in seconds and nanoseconds. See ``man clock_gettime`` on your POSIX system for more information.
 
-**$&ydbposix.clockval(fmsymconst,.symval)**: Takes a symbolic clock ID constant in fmsymconst and returns the numeric value in symval. If no such constant exists, the return value is non-zero. Currently supported fmsymconst constants are the following. Please see ``clock_gettime()`` function man page for their meaning.
-
-.. parsed-literal::
-	"CLOCK_HIGHRES",            "CLOCK_MONOTONIC", "CLOCK_MONOTONIC_RAW",
-	"CLOCK_PROCESS_CPUTIME_ID", "CLOCK_REALTIME",  "CLOCK_THREAD_CPUTIME_ID"
+**$&ydbposix.clockval(fmsymconst,.symval)**: Takes a symbolic clock ID constant in fmsymconst and returns the numeric value in symval. If no such constant exists, the return value is non-zero. Please see the ``clock_gettime()`` function man page for the list of available clocks.
 
 **$&ydbposix.cp(source,dest,.errno)**: Copy file source to dest, preserving its permissions. Note that this function is not a wrapper to a single POSIX function but a basic POSIX-conformant implementation of the cp command available on most UNIX OSs.
 
@@ -253,7 +231,7 @@ The high level entryrefs in ^%POSIX access low level functions in ydbposix.c tha
 
 **$&ydbposix.regcomp(.pregstr,regex,cflags,.errno)**: Takes a regular expression regex, compiles it and returns a pointer to a descriptor of the compiled regular expression in pregstr. Application code *must not* modify the value of pregstr. cflags specifies the type of regular expression compilation. See ``man regex`` for more information.
 
-**$&ydbposix.regconst(regsymconst,.symval)**: Takes a symbolic regular expression constant in regsymconst and returns the numeric value in symval. If no such constant exists, the return value is non-zero. The $$regsymval^%POSIX() function uses ``$&ydbposix.regconst()``. Currently supported values of regsymconst are
+**$&ydbposix.regconst(regsymconst,.symval)**: Takes a symbolic regular expression constant in regsymconst and returns the numeric value in symval. If no such constant exists, the return value is non-zero. The $$regsymval^%ydbposix() function uses ``$&ydbposix.regconst()``. Currently supported values of regsymconst are
 
 .. parsed-literal::
 
@@ -262,11 +240,11 @@ The high level entryrefs in ^%POSIX access low level functions in ydbposix.c tha
 	"REG_EXTENDED",   "REG_ICASE",       "REG_NEWLINE",        "REG_NOMATCH",      "REG_NOSUB",     "REG_NOTBOL",
 	"REG_NOTEOL",     "sizeof(regex_t)", "sizeof(regmatch_t)", "sizeof(regoff_t)"
 
-**$&ydbposix.regexec(pregstr,string,nmatch,.pmatch,eflags,.matchsuccess)**: Takes a string in string and matches it against a previously compiled regular expression whose descriptor is in pregstr with matching flags in eflags, for which numeric values can be obtained from symbolic values with ``$$regconst^%POSIX()``. nmatch is the maximum number of matches to be returned and pmatch is a predefined string in which the function returns information about substrings matched. pmatch must be initialized to at least nmatch times the size of each match result which you can effect with: ``set $zpiece(pmatch,$zchar(0),nmatch*$$regsymval("sizeof(regmatch_t)")+1)=""`` matchsuccess is 1 if the match was successful, 0 if not. The return value is 0 for both successful and failing matches; a non-zero value indicates an error. See ``man regex`` for more information.
+**$&ydbposix.regexec(pregstr,string,nmatch,.pmatch,eflags,.matchsuccess)**: Takes a string in string and matches it against a previously compiled regular expression whose descriptor is in pregstr with matching flags in eflags, for which numeric values can be obtained from symbolic values with ``$$regconst^%ydbposix()``. nmatch is the maximum number of matches to be returned and pmatch is a predefined string in which the function returns information about substrings matched. pmatch must be initialized to at least nmatch times the size of each match result which you can effect with: ``set $zpiece(pmatch,$zchar(0),nmatch*$$regsymval("sizeof(regmatch_t)")+1)=""`` matchsuccess is 1 if the match was successful, 0 if not. The return value is 0 for both successful and failing matches; a non-zero value indicates an error. See ``man regex`` for more information.
 
 **$&ydbposix.regfree(pregstr)**: Takes a descriptor for a compiled regular expression, as provided by ``$&ydbposix.regcomp()`` and frees the memory associated with the compiled regular expression. After executing ``$&ydbposix.regfree()``, the descriptor can be safely deleted; deleting a descriptor prior to calling this function results in a memory leak because deleting the descriptor makes the memory used for the compiled expression unrecoverable.
 
-**$&ydbposix.regofft2int(regofftbytes,.regofftint)**: On both little- and big-endian platforms, takes a sequence of bytes of size sizeof(regoff_t) and returns it as an integer. ``$$regsconst^%POSIX("sizeof(regoff_t)")`` provides the size of regoff_t. Always returns 0.
+**$&ydbposix.regofft2int(regofftbytes,.regofftint)**: On both little- and big-endian platforms, takes a sequence of bytes of size sizeof(regoff_t) and returns it as an integer. ``$$regsconst^%ydbposix("sizeof(regoff_t)")`` provides the size of regoff_t. Always returns 0.
 
 **$&ydbposix.rmdir(pathname,.errno)**: Removes a directory, which must be empty. See ``man 2 rmdir`` for more information.
 
@@ -311,26 +289,26 @@ The high level entryrefs in ^%POSIX access low level functions in ydbposix.c tha
 
 **$&ydbposix.utimes(file,.errno)**: Updates the access and modification timestamps of a file. See ``man utimes`` for more information.
 
-posixtest.m contains examples of use of the low level ydbposix interfaces.
+_ydbposixtest.m contains examples of use of the low level ydbposix interfaces.
 
 -------------------------------------------------------------
-The %POSIX local variable
+The %ydbposix local variable
 -------------------------------------------------------------
 
-The ydbposix plugin uses the %POSIX local variable to store information pertaining to POSIX external calls. For example, a call to ``$&regsymval^%POSIX("REG_NOTBOL")`` that returns a numeric value also sets the node ``%POSIX("regmatch","REG_NOTBOL")`` to that value. Subsequent calls to ``$$regsymval^%POSIX("REG_NOTBOL")`` return the value stored in %POSIX rather than calling out the low level function. This means that KILLs or NEWs that remove the value in %POSIX, result in a call to the low level function, and SETs of values may cause inappropriate results from subsequent invocations.
+The ydbposix plugin uses the %ydbposix local variable to store information pertaining to POSIX external calls. For example, a call to ``$&regsymval^%ydbposix("REG_NOTBOL")`` that returns a numeric value also sets the node ``%ydbposix("regmatch","REG_NOTBOL")`` to that value. Subsequent calls to ``$$regsymval^%ydbposix("REG_NOTBOL")`` return the value stored in %ydbposix rather than calling out the low level function. This means that KILLs or NEWs that remove the value in %ydbposix, result in a call to the low level function, and SETs of values may cause inappropriate results from subsequent invocations.
 
-If your application already uses %POSIX for another purpose, you can edit _POSIX.m and replace all occurrences of %POSIX with another available local variable name.
+If your application already uses %ydbposix for another purpose, you can edit _ydbposix.m and replace all occurrences of %ydbposix with another available local variable name.
 
 -------------------------------------------------------------
 Memory Usage Considerations
 -------------------------------------------------------------
 
-When ``$&ydbposix.regcomp()`` is called to compile a regular expression, it allocates needed memory, and returns a descriptor to the compiled code. Until a subsequent call to ``$&ydbposix.regfree()`` with that descriptor, the memory is retained. The high level regmatch^%POSIX() entryref stores descriptors in %POSIX("regmatch",...) nodes. If an application deletes or modifies these nodes prior to calling ``$&ydbposix.regfree()`` to release compiled regular expressions, that memory cannot be released during the life of the process. If your application uses scope management (using KILL and/or NEW) that adversely interacts with this, you should consider modifying _POSIX.m to free the cached compiled regular expression immediately after the call to ``$&ydbposix.regexec()``, or to store the descriptors in a global variable specific to the process, rather than in a local variable.
+When ``$&ydbposix.regcomp()`` is called to compile a regular expression, it allocates needed memory, and returns a descriptor to the compiled code. Until a subsequent call to ``$&ydbposix.regfree()`` with that descriptor, the memory is retained. The high level regmatch^%ydbposix() entryref stores descriptors in %ydbposix("regmatch",...) nodes. If an application deletes or modifies these nodes prior to calling ``$&ydbposix.regfree()`` to release compiled regular expressions, that memory cannot be released during the life of the process. If your application uses scope management (using KILL and/or NEW) that adversely interacts with this, you should consider modifying _ydbposix.m to free the cached compiled regular expression immediately after the call to ``$&ydbposix.regexec()``, or to store the descriptors in a global variable specific to the process, rather than in a local variable.
 
 -------------------------------------------------------------
 Error Handling
 -------------------------------------------------------------
 
-Entryrefs within ^%POSIX except the top one (calling which is not meaningful), raise errors but do not set their own error handlers with $ETRAP or $ZTRAP. Application code error handlers should deal with these errors. In particular, note that non-zero function return values from $&ydbposix functions result in ZCSTATUSRET errors.
+Entryrefs within ^%ydbposix except the top one (calling which is not meaningful), raise errors but do not set their own error handlers with $ETRAP or $ZTRAP. Application code error handlers should deal with these errors. In particular, note that non-zero function return values from $&ydbposix functions result in ZCSTATUSRET errors.
 
-Look at the end of _POSIX.m for errors raised by entryrefs in %POSIX.
+Look at the end of _ydbposix.m for errors raised by entryrefs in %ydbposix.

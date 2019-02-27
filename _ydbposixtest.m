@@ -13,20 +13,17 @@
 ;								;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-posixtest	; test POSIX plugin
+%ydbposixtest
+	; test POSIX plugin
 	; Initialization
-        new ddzh,dh1,dh2,dir,file,errno,gid,hour,i,io,isdst,min,month,msg,os,oslist,out,result,retval,sec,stat
-	new syslog1,syslog2,tmp,tv,tvsec,tvusec,tvnsec,uid,ver1,ver2,year,mask,mode1,mode2,link,path,clock,value,size
+        new %ydbposix,arch,clock,computeddh1,ddzh,dh1,dh2,diffca,diffma,dir,file,errmsg,errno,gid
+	new hour,i,io,isdst,link,mask,mday,min,mode1,mode2,mon,msg,os,oslist,out,out1,out2,path
+	new result,retval,sec,setenvtst,size,stat,tmp,tv,tvsec,tvusec,tvnsec,uid,value,ver1,ver2
+	new wday,yday,year
         set io=$io
         set os=$piece($zv," ",3)
         set setenvtst=1
         set arch=$piece($zv," ",4)
-        set syslog1=$ztrnlnm("syslog_warning")
-        set:'$length(syslog1) syslog1=$zsearch("/var/log/syslog","")
-        set:'$length(syslog1) syslog1=$zsearch("/var/log/messages","")
-;        if '$length(syslog1) write "FAIL syslog1 is null string",! quit
-        set syslog2=$ztrnlnm("syslog_info")
-	set:'$length(syslog2) syslog2=syslog1
 
         ; Get version - check it later
         set ver1=$$version^%ydbposix
@@ -108,8 +105,7 @@ posixtest	; test POSIX plugin
         do REGFREE^%ydbposix("%ydbposix(""regmatch"",""^AIX"","_$order(%ydbposix("regmatch","^AIX",""))_")")
 
         ; Check statfile - indirectly tests mkdtemp also. Note that not all stat parameters can be reliably tested
-        if ("OSF1"=os) set dir="posixtest"_$j_"_XXXXXX"
-        else  set dir="/tmp/posixtest"_$j_"_XXXXXX"
+        set dir="/tmp/posixtest"_$j_"_XXXXXX"
         set retval=$$mktmpdir^%ydbposix(.dir) write:'retval "FAIL mktmpdir retval=",retval,!
         set retval=$$statfile^%ydbposix(.dir,.stat) write:'retval "FAIL statfile retval=",retval,!
         if stat("ino") write "PASS mktmpdir",!
@@ -149,28 +145,20 @@ posixtest	; test POSIX plugin
         else  write "FAIL STATFILE.ids gid=",gid," stat(""gid"")=",stat("gid")," uid=",uid," stat(""uid"")=",stat("uid"),!
         zsystem "rm -f "_file
 
-	; Execute the syslog test if in M mode
+	; Execute the syslog test
         ; Check syslog - caveat: test assumes call to syslog gets message there before process reads it
-        ; Also,location of messages depends on syslog configuration
-        if ("M"=$zchset) do
-        . set msg="Warning from process "_$j_" at "_ddzh,out="FAIL syslog - msg """_msg_""" not found in "_syslog1
-        . if $$syslog^%ydbposix(msg,"LOG_USER","LOG_WARNING")
-        . open syslog1:(readonly:exception="set tname=syslog1 g BADOPEN")
-        . ; wait 1 sec before trying read.  If the read still fails you may have to increase the time.
-        . hang 1
-        . use syslog1 for  read tmp quit:$zeof  if $find(tmp,msg) set out="PASS syslog" quit
-        . use io close syslog1
-        . write out,!
-        . if ("OSF1"=os) set logtype="LOG_USER"
-        . else  set logtype="LOG_ERR"
-        . set msg="Notice from process "_$j_" at "_ddzh,out="FAIL SYSLOG - msg """_msg_""" not found in "_syslog1
-        . if $$SYSLOG^%ydbposix(msg,logtype,"LOG_INFO")
-        . open syslog2:(readonly:exception="s tname=syslog2 g BADOPEN")
-        . ; wait 1 sec before trying read.  If the read still fails you may have to increase the time.
-        . hang 1
-        . use syslog2 for  read tmp quit:$zeof  if $find(tmp,msg) set out="PASS SYSLOG" quit
-        . use io close syslog2
-        . write out,!
+	set msg="Warning from process "_$j_" at "_ddzh,out="FAIL syslog - msg """_msg_""" not found in syslog"
+        if $$syslog^%ydbposix(msg,"LOG_USER","LOG_WARNING")
+        open "syslog":(shell="/bin/sh":command="journalctl --user -S """_$zdate(ddzh,"YYYY-MM-DD 24:60:SS")_"""":readonly)::"pipe"
+        use "syslog" for  read tmp quit:$zeof  if $find(tmp,msg) set out="PASS syslog1" quit
+        use io close "syslog"
+        write out,!
+        set msg="Notice from process "_$j_" at "_ddzh,out="FAIL SYSLOG - msg """_msg_""" not found in syslog"
+        if $$SYSLOG^%ydbposix(msg,"LOG_ERR","LOG_INFO")
+        open "syslog":(shell="/bin/sh":command="journalctl --user -S """_$zdate(ddzh,"YYYY-MM-DD 24:60:SS")_"""":readonly)::"pipe"
+        use "syslog" for  read tmp quit:$zeof  if $find(tmp,msg) set out="PASS syslog2" quit
+        use io close "syslog"
+        write out,!
 
         ; Check setenv and unsetenv
         if 1=setenvtst do

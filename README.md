@@ -20,7 +20,7 @@ When installed in the `$ydb_dist/plugin` directory, YDBposix consists of the fol
 
 ## Installing YDB POSIX Plugin
 
-YottaDB must be installed and available before installing the POSIX plugin. https://yottadb.com/product/get-started/ has instructions on installing YottaDB. Download and unpack the POSIS plugin in a temporary directory, and make that the current directory. Then:
+YottaDB must be installed and available before installing the POSIX plugin. https://yottadb.com/product/get-started/ has instructions on installing YottaDB. Download and unpack the POSIX plugin in a temporary directory, and make that the current directory. Then:
 
 ```shell
 source $(pkg-config --variable=prefix yottadb)/ydb_env_set
