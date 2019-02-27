@@ -22,9 +22,11 @@ When installed in the `$ydb_dist/plugin` directory, YDBposix consists of the fol
 
 - `r/_ydbposix.m` – M source code for higher level `^%ydbposix` entryrefs that M application code can call.
 
-- `o/_ydbposix.so` – a shared library with M mode object code for `^%ydbposix` entryrefs
+- `r/_ydbposixtest.m` – M source code for `%ydbposixtest` routine to test plugin with `mumps -run %ydbposix`
 
-- `o/utf8/_ydbposix.so` – if YottaDB is installed with UTF-8 support, a shared library with UTF-8 mode object code for `^%ydbposix` entryrefs
+- `o/_ydbposix.so` – a shared library with M mode object code for `^%ydbposix` & `^%ydbposixtest` entryrefs
+
+- `o/utf8/_ydbposix.so` – if YottaDB is installed with UTF-8 support, a shared library with UTF-8 mode object code
 
 -------------------------------------------------------------
 Installation
@@ -42,13 +44,13 @@ YottaDB must be installed and available before installing the POSIX plugin. http
 Testing
 -------------------------------------------------------------
 
-The expected output of make test is as below; manually verify whether the statement about Daylight Savings Time is correct.
+The expected output of `mumps -run %ydbposixtest` is as below; manually verify whether the statement about Daylight Savings Time is correct.
 
 .. parsed-literal::
     PASS Invocation
     PASS $zhorolog
     PASS $ZHOROLOG
-    Daylight Savings Time is in effect
+    Daylight Savings Time is not in effect
     PASS mktime()
     PASS Microsecond resolution
     PASS regmatch^%ydbposix 1
@@ -72,11 +74,11 @@ The expected output of make test is as below; manually verify whether the statem
     PASS signal
     PASS STATFILE.times
     PASS STATFILE.ids
-    PASS syslog
-    PASS SYSLOG
+    PASS syslog1
+    PASS syslog2
     PASS setenv
     PASS unsetenv
-    PASS rmdir
+    FAIL rmdir
     PASS MKTMPDIR
     PASS mkdir
     PASS MKDIR
@@ -88,7 +90,6 @@ The expected output of make test is as below; manually verify whether the statem
     PASS CP
     PASS Nanosecond resolution
     PASS SYSCONF
-
 
 -------------------------------------------------------------
 Use

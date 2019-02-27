@@ -14,9 +14,11 @@ When installed in the `$ydb_dist/plugin` directory, YDBposix consists of the fol
 
 - `r/_ydbposix.m` – M source code for higher level `^%ydbposix` entryrefs that M application code can call.
 
-- `o/_ydbposix.so` – a shared library with M mode object code for `^%ydbposix` entryrefs
+- `r/_ydbposixtest.m` – M source code for `%ydbposixtest` routine to test plugin with `mumps -run %ydbposix`
 
-- `o/utf8/_ydbposix.so` – if YottaDB is installed with UTF-8 support, a shared library with UTF-8 mode object code for `^%ydbposix` entryrefs
+- `o/_ydbposix.so` – a shared library with M mode object code for `^%ydbposix` & `^%ydbposixtest` entryrefs
+
+- `o/utf8/_ydbposix.so` – if YottaDB is installed with UTF-8 support, a shared library with UTF-8 mode object code
 
 ## Installing YDB POSIX Plugin
 
@@ -27,4 +29,5 @@ source $(pkg-config --variable=prefix yottadb)/ydb_env_set
 mkdir build && cd build
 cmake ..
 make && sudo make install
+mumps -run %ydbposixtest
 ```
