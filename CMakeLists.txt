@@ -33,12 +33,12 @@ install(TARGETS ydbposix
 # Add commands to compile .m files
 
 add_library(_ydbposix SHARED
-  _ydbposix.m
+  _ydbposix.m _ydbposixtest.m
 )
 
 SET_TARGET_PROPERTIES(_ydbposix PROPERTIES PREFIX "")
 
-install(FILES _ydbposix.m
+install(FILES _ydbposix.m _ydbposixtest.m
   DESTINATION ${ydb_install_dir}/r/
 )
 
