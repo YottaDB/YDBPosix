@@ -107,7 +107,7 @@
         ; Check statfile - indirectly tests mkdtemp also. Note that not all stat parameters can be reliably tested
         set dir="/tmp/posixtest"_$j_"_XXXXXX"
         set retval=$$mktmpdir^%ydbposix(.dir) write:'retval "FAIL mktmpdir retval=",retval,!
-        set retval=$$statfile^%ydbposix(.dir,.stat) write:'retval "FAIL statfile retval=",retval,!
+        set retval=$$statfile^%ydbposix(.dir,.stat) write:retval "FAIL statfile retval=",retval,!
         if stat("ino") write "PASS mktmpdir",!
         else  write "FAIL mktmpdir stat(ino)=",stat("ino"),!
         ; Check that mtime atime and ctime atime are no more than 1 sec apart and tvsec is not greater that ctime
@@ -134,7 +134,7 @@
         set file="YDB_JOBEXAM.ZSHOW_DMP_"_$j_"_1"
         if $&ydbposix.signalval("SIGUSR1",.result)!$zsigproc($j,result) write "FAIL signal",!
         else  write "PASS signal",!
-        set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE",!
+        set retval=$$STATFILE^%ydbposix(file,.stat) write:retval "FAIL STATFILE",!
         if ((stat("mtime")-(stat("atime")+stat("ctime")/2)'>1)&(tvsec-1'>stat("ctime"))) write "PASS STATFILE.times",!
         else  write "FAIL STATFILE.times file=",file," atime=",stat("atime")," ctime=",stat("ctime")," mtime=",stat("mtime")," tv_sec=",tvsec,!
         open "uid":(shell="/bin/sh":command="id -u":readonly)::"pipe"
@@ -147,13 +147,13 @@
 
 	; Execute the syslog test
         ; Check syslog - caveat: test assumes call to syslog gets message there before process reads it
-	set msg="Warning from process "_$j_" at "_ddzh,out="FAIL syslog - msg """_msg_""" not found in syslog"
+	set msg="Warning from process "_$j_" at "_ddzh,out="FAIL syslog1 - msg """_msg_""" not found in syslog"
         if $$syslog^%ydbposix(msg,"LOG_USER","LOG_WARNING")
         open "syslog":(shell="/bin/sh":command="journalctl --user -S """_$zdate(ddzh,"YYYY-MM-DD 24:60:SS")_"""":readonly)::"pipe"
         use "syslog" for  read tmp quit:$zeof  if $find(tmp,msg) set out="PASS syslog1" quit
         use io close "syslog"
         write out,!
-        set msg="Notice from process "_$j_" at "_ddzh,out="FAIL SYSLOG - msg """_msg_""" not found in syslog"
+        set msg="Notice from process "_$j_" at "_ddzh,out="FAIL syslog2 - msg """_msg_""" not found in syslog"
         if $$SYSLOG^%ydbposix(msg,"LOG_ERR","LOG_INFO")
         open "syslog":(shell="/bin/sh":command="journalctl --user -S """_$zdate(ddzh,"YYYY-MM-DD 24:60:SS")_"""":readonly)::"pipe"
         use "syslog" for  read tmp quit:$zeof  if $find(tmp,msg) set out="PASS syslog2" quit
@@ -170,39 +170,33 @@
         . else  write "FAIL unsetenv $ztrnlnm(""ydbposixtest"")=",tmp," should be unset",!
 
         ; Check rmdir
-        kill out1,out2
         set retval=$&ydbposix.rmdir(dir,.errno)
-        open "statfile":(shell="/bin/sh":command="$ydb_dist/mumps -run %XCMD 'd statfile^%ydbposix("""_dir_""",.stat)'":stderr="statfileerr":readonly)::"pipe"
-        use "statfile" for i=1:1 read tmp quit:$zeof  set out1(i)=tmp
-        use "statfileerr" for i=1:1 read tmp quit:$zeof  set out2(i)=tmp
-        use io close "statfile"
-	set errmsg="%YDB-E-ZCSTATUSRET, External call returned error status"
-	set msg=""
-	if ($data(out1)&'$data(out2)) set msg=$get(out1(1))
-	else  if ($data(out2)&'$data(out1)) set msg=$get(out2(1))
-        if errmsg=msg write "PASS rmdir",!
-        else  write "FAIL rmdir",! zwrite:$data(out1) out1 zwrite:$data(out2) out2
+	if retval write "FAIL rmdir - return value from rmdir is ",retval,!
+	else  do
+	. set retval=$$statfile^%ydbposix(dir,.errno)
+	. if 2'=retval write "FAIL rmdir – return value from statfile is ",retval,!
+	. else  write "PASS rmdir",!
 
         ; Check MKTMPDIR
         set dir="/tmp/posixtest"_$j_"_XXXXXX"
         set retval=$$MKTMPDIR^%ydbposix(.dir) write:'retval "FAIL MKTMPDIR retval=",retval,!
-        set retval=$$STATFILE^%ydbposix(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+        set retval=$$STATFILE^%ydbposix(dir,.stat) write:retval "FAIL STATFILE retval=",retval,!
         if stat("ino") write "PASS MKTMPDIR",!
         else  write "FAIL MKTMPDIR stat(ino)=",stat("ino"),!
         set retval=$&ydbposix.rmdir(dir,.errno)
 
         ; Check mkdir
         set dir="/tmp/posixtest"_$j_$$^%RANDSTR(6)
-        set retval=$$mkdir^%ydbposix(dir,"S_IRWXU") write:'retval "FAIL MKTMPDIR retval=",retval,!
-        set retval=$$STATFILE^%ydbposix(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+        set retval=$$mkdir^%ydbposix(dir,"S_IRWXU") write:retval "FAIL MKTMPDIR retval=",retval,!
+        set retval=$$STATFILE^%ydbposix(dir,.stat) write:retval "FAIL STATFILE retval=",retval,!
         if stat("ino") write "PASS mkdir",!
         else  write "FAIL mkdir stat(ino)=",stat("ino"),!
         set retval=$&ydbposix.rmdir(dir,.errno)
 
         ; Check MKDIR
         set dir="/tmp/posixtest"_$j_$$^%RANDSTR(6)
-        set retval=$$MKDIR^%ydbposix(dir,"S_IRWXU") write:'retval "FAIL MKTMPDIR retval=",retval,!
-        set retval=$$STATFILE^%ydbposix(dir,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+        set retval=$$MKDIR^%ydbposix(dir,"S_IRWXU") write:retval "FAIL MKTMPDIR retval=",retval,!
+        set retval=$$STATFILE^%ydbposix(dir,.stat) write:retval "FAIL STATFILE retval=",retval,!
         if stat("ino") write "PASS MKDIR",!
         else  write "FAIL MKDIR stat(ino)=",stat("ino"),!
         set retval=$&ydbposix.rmdir(dir,.errno)
@@ -213,11 +207,11 @@
 	set file="/tmp/posixtest"_$j_$$^%RANDSTR(6)
 	open file:newversion
 	close file
-	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:retval "FAIL STATFILE retval=",retval,!
 	set tvsec=stat("mtime"),tvnsec=stat("nmtime")
 	hang 0.1	; OSs cluster timestamps that are close to each other
 	set retval=$$UTIMES^%ydbposix(file) write:'retval "FAIL UTIMES retval=",retval,!
-	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:retval "FAIL STATFILE retval=",retval,!
 	if ((0'=tmp)&(tvsec'=stat("mtime"))!(tvnsec'=stat("nmtime")!((0=tvnsec)&(0=stat("nmtime"))))) write "PASS UTIMES",!
 	else  write "FAIL UTIMES stat(mtime)=",stat("mtime")," stat(nmtime)=",stat("nmtime"),!
 	set mode2=$$FUNC^%DO(stat("mode"))#1000 ; Get the last three digits
@@ -229,7 +223,7 @@
 	; Check CHMOD
 	set mode1=$$filemodeconst^%ydbposix("S_IXGRP")
 	set retval=$$CHMOD^%ydbposix(file,mode1) write:'retval "FAIL CHMOD retval=",retval,!
-	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:retval "FAIL STATFILE retval=",retval,!
 	set mode2=$$FUNC^%DO(stat("mode"))#1000 ; Get the last three digits
 	set mode1=$$FUNC^%DO(mode1)
 	if (+mode1=+mode2) write "PASS CHMOD",!
@@ -238,7 +232,7 @@
 	; Check SYMLINK and REALPATH
 	set link="/tmp/posixtest"_$j_$$^%RANDSTR(6)
 	set retval=$$SYMLINK^%ydbposix(file,link) write:'retval "FAIL SYMLINK retval=",retval,!
-	set retval=$$STATFILE^%ydbposix(link,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(link,.stat) write:retval "FAIL STATFILE retval=",retval,!
 	if stat("ino") write "PASS SYMLINK",!
 	else  write "FAIL SYMLINK stat(ino)=",stat("ino"),!
 	set retval=$$REALPATH^%ydbposix(file,.path) write:'retval "FAIL REALPATH retval=",retval,!
@@ -255,11 +249,11 @@
 	set value=""
 	for i=1:1:10 set tmp=$$^%RANDSTR(1000) set value=value_tmp_$char(10) write tmp,!
 	close file
-	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:retval "FAIL STATFILE retval=",retval,!
 	set size=stat("size")
 	; Copy to a non-existent destination.
 	set retval=$$CP^%ydbposix(file,link) write:'retval "FAIL CP retval=",retval,!
-	set retval=$$STATFILE^%ydbposix(link,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(link,.stat) write:retval "FAIL STATFILE retval=",retval,!
 	; Verify the contents and size file of the copy.
 	open link
 	use link
@@ -276,11 +270,11 @@
 	write value
 	close link
 	set value=value_$char(10)
-	set retval=$$STATFILE^%ydbposix(link,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(link,.stat) write:retval "FAIL STATFILE retval=",retval,!
 	set size=stat("size")
 	; Copy the new small file onto the existent destination.
 	set retval=$$CP^%ydbposix(link,file) write:'retval "FAIL CP retval=",retval,!
-	set retval=$$STATFILE^%ydbposix(file,.stat) write:'retval "FAIL STATFILE retval=",retval,!
+	set retval=$$STATFILE^%ydbposix(file,.stat) write:retval "FAIL STATFILE retval=",retval,!
 	; Verify the contents and size file of the copy.
 	open file:readonly
 	use file

@@ -72,9 +72,9 @@ MKDIR(dirname,mode)
 	set retval=$$mkdir(dirname,mode)
 	quit:$quit retval quit
 mkdir(dirname,mode)
-	new errno
-	if $&ydbposix.mkdir(dirname,$select(mode'=+mode:$$filemodeconst(mode),1:mode),.errno)
-	quit:$quit 1 quit
+	new errno,retval
+	set retval=$&ydbposix.mkdir(dirname,$select(mode'=+mode:$$filemodeconst(mode),1:mode),.errno)
+	quit:$quit retval quit
 
 ; Convert  a  broken-down  time  structure to calendar time representation.
 MKTIME(year,mon,mday,hour,min,sec,wday,yday,isdst,unixtime)
@@ -95,7 +95,7 @@ mktmpdir(template)
 	new errno,mode,retval,savetemplate
 	set:"XXXXXX"'=$extract(template,$length(template)-5,$length(template)) $ecode=",U254,"
 	set savetemplate=template
-	do &ydbposix.mkdtemp(.template,.errno)
+	do &ydbposix.mkdtemp(.template,.errno)	; discard return value since it is a pointer into heap space
 	set retval=0
 	if (savetemplate=template) do
 	. set $extract(template,$length(template)-5,$length(template))=$$^%RANDSTR(6)
@@ -190,7 +190,7 @@ STATFILE(f,s)
 	quit:$quit retval quit
 statfile(f,s)
 	new atime,blksize,blocks,ctime,dev,errno,gid,ino,mode,mtime,natime,nctime,nlink,nmtime,rdev,retval,size,uid
-	if $&ydbposix.stat(f,.dev,.ino,.mode,.nlink,.uid,.gid,.rdev,.size,.blksize,.blocks,.atime,.natime,.mtime,.nmtime,.ctime,.nctime,.errno)
+	set retval=$&ydbposix.stat(f,.dev,.ino,.mode,.nlink,.uid,.gid,.rdev,.size,.blksize,.blocks,.atime,.natime,.mtime,.nmtime,.ctime,.nctime,.errno)
 	kill s
 	set s("atime")=atime
 	set s("blksize")=blksize
@@ -208,7 +208,7 @@ statfile(f,s)
 	set s("rdev")=rdev
 	set s("size")=size
 	set s("uid")=uid
-	quit:$quit 1 quit
+	quit:$quit retval  quit
 
 ; Create a symbolic link
 SYMLINK(target,name)
