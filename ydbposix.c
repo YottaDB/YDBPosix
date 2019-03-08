@@ -190,8 +190,8 @@ int posix_regexec(int argc, ydb_string_t *pregstr, char *string, int nmatch, ydb
 int posix_regfree(int argc, ydb_string_t *pregstr);
 int posix_rmdir(int argc, char *pathname, int *err_num);
 int posix_setenv(int argc, char *name, char *value, int overwrite, int *err_num);
-int posix_stat(int argc, char *fname, ydb_ulong_t *dev, ydb_ulong_t *ino, ydb_ulong_t *mode,
-			ydb_ulong_t *nlink, ydb_ulong_t *uid, ydb_ulong_t *gid, ydb_ulong_t *rdev, long *size,
+int posix_stat(int argc, char *fname, unsigned long *dev, unsigned long *ino, unsigned long *mode,
+			unsigned long *nlink, unsigned long *uid, unsigned long *gid, unsigned long *rdev, long *size,
 			long *blksize, long *blocks, long *atime, long *atimen, long *mtime,
 			long *mtimen, long *ctime, long *ctimen, int *err_num);
 int posix_symlink(int argc, char *target, char *name, int *err_num);
@@ -492,8 +492,8 @@ int posix_setenv(int argc, char *name, char *value, int overwrite, int *err_num)
 	return (int)*err_num;
 }
 
-int posix_stat(int argc, char *fname, ydb_ulong_t *dev, ydb_ulong_t *ino, ydb_ulong_t *mode,
-			ydb_ulong_t *nlink, ydb_ulong_t *uid, ydb_ulong_t *gid, ydb_ulong_t *rdev, long *size,
+int posix_stat(int argc, char *fname, unsigned long *dev, unsigned long *ino, unsigned long *mode,
+			unsigned long *nlink, unsigned long *uid, unsigned long *gid, unsigned long *rdev, long *size,
 			long *blksize, long *blocks, long *atime, long *atimen, long *mtime,
 			long *mtimen, long *ctime, long *ctimen, int *err_num)
 {
@@ -505,13 +505,13 @@ int posix_stat(int argc, char *fname, ydb_ulong_t *dev, ydb_ulong_t *ino, ydb_ul
 	*err_num = (-1 == stat((char *)fname, &thisfile)) ? (int)errno : 0;
 	if (0 == *err_num)
 	{
-		*dev     = (ydb_ulong_t)thisfile.st_dev;	/* ID of device containing file */
-		*ino     = (ydb_ulong_t)thisfile.st_ino;	/* inode number */
-		*mode    = (ydb_ulong_t)thisfile.st_mode;	/* protection */
-		*nlink   = (ydb_ulong_t)thisfile.st_nlink;	/* number of hard links */
-		*uid     = (ydb_ulong_t)thisfile.st_uid;	/* user ID of owner */
-		*gid     = (ydb_ulong_t)thisfile.st_gid;	/* group ID of owner */
-		*rdev    = (ydb_ulong_t)thisfile.st_rdev;	/* device ID (if special file) */
+		*dev     = (unsigned long)thisfile.st_dev;	/* ID of device containing file */
+		*ino     = (unsigned long)thisfile.st_ino;	/* inode number */
+		*mode    = (unsigned long)thisfile.st_mode;	/* protection */
+		*nlink   = (unsigned long)thisfile.st_nlink;	/* number of hard links */
+		*uid     = (unsigned long)thisfile.st_uid;	/* user ID of owner */
+		*gid     = (unsigned long)thisfile.st_gid;	/* group ID of owner */
+		*rdev    = (unsigned long)thisfile.st_rdev;	/* device ID (if special file) */
 		*size    = (long)thisfile.st_size;	/* total size, in bytes */
 		*blksize = (long)thisfile.st_blksize;	/* blocksize for file system I/O */
 		*blocks  = (long)thisfile.st_blocks;	/* number of 512B blocks allocated */

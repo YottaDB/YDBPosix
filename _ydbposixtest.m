@@ -17,7 +17,7 @@
 	; test POSIX plugin
 	; Initialization
         new %ydbposix,arch,clock,computeddh1,ddzh,dh1,dh2,diffca,diffma,dir,file,errmsg,errno,gid
-	new hour,i,io,isdst,link,mask,mday,min,mode1,mode2,mon,msg,os,oslist,out,out1,out2,path
+	new hour,i,io,isdst,link,mask,mday,min,mode1,mode2,mon,msg,msg1,os,oslist,out,out1,out2,path
 	new result,retval,sec,setenvtst,size,stat,tmp,tv,tvsec,tvusec,tvnsec,uid,value,ver1,ver2
 	new wday,yday,year
         set io=$io
@@ -145,20 +145,18 @@
         else  write "FAIL STATFILE.ids gid=",gid," stat(""gid"")=",stat("gid")," uid=",uid," stat(""uid"")=",stat("uid"),!
         zsystem "rm -f "_file
 
-	; Execute the syslog test
-        ; Check syslog - caveat: test assumes call to syslog gets message there before process reads it
+	; Execute the syslog test; wait upto 60 seconds for messages to show up in syslog
 	set msg="Warning from process "_$j_" at "_ddzh,out="FAIL syslog1 - msg """_msg_""" not found in syslog"
-        if $$syslog^%ydbposix(msg,"LOG_USER","LOG_WARNING")
-        open "syslog":(shell="/bin/sh":command="journalctl --user -S """_$zdate(ddzh,"YYYY-MM-DD 24:60:SS")_"""":readonly)::"pipe"
-        use "syslog" for  read tmp quit:$zeof  if $find(tmp,msg) set out="PASS syslog1" quit
-        use io close "syslog"
-        write out,!
-        set msg="Notice from process "_$j_" at "_ddzh,out="FAIL syslog2 - msg """_msg_""" not found in syslog"
-        if $$SYSLOG^%ydbposix(msg,"LOG_ERR","LOG_INFO")
-        open "syslog":(shell="/bin/sh":command="journalctl --user -S """_$zdate(ddzh,"YYYY-MM-DD 24:60:SS")_"""":readonly)::"pipe"
-        use "syslog" for  read tmp quit:$zeof  if $find(tmp,msg) set out="PASS syslog2" quit
-        use io close "syslog"
-        write out,!
+        set msg1="Notice from process "_$j_" at "_ddzh,out1="FAIL syslog2 - msg """_msg1_""" not found in syslog"
+        if $$syslog^%ydbposix(msg,"LOG_USER","LOG_WARNING")&$$SYSLOG^%ydbposix(msg1,"LOG_ERR","LOG_INFO")
+	set dh1=60*1E6+$zut
+        open "journalctl":(shell="/bin/sh":command="journalctl --user -f -S """_$zdate(ddzh,"YYYY-MM-DD 24:60:SS")_"""":readonly)::"pipe"
+	use "journalctl"
+	for  read tmp do  quit:"PASS syslog1"=out&("PASS syslog2"=out1)!(dh1<$zut)
+	. set:$find(tmp,msg) out="PASS syslog1"
+	. set:$find(tmp,msg1) out1="PASS syslog2"
+	use io close "journalctl"
+	write out,!,out1,!
 
         ; Check setenv and unsetenv
         if 1=setenvtst do
