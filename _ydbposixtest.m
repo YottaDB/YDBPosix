@@ -148,9 +148,10 @@
 	; Execute the syslog test; wait upto 60 seconds for messages to show up in syslog
 	set msg="Warning from process "_$j_" at "_ddzh,out="FAIL syslog1 - msg """_msg_""" not found in syslog"
         set msg1="Notice from process "_$j_" at "_ddzh,out1="FAIL syslog2 - msg """_msg1_""" not found in syslog"
-        if $$syslog^%ydbposix(msg,"LOG_USER","LOG_WARNING")&$$SYSLOG^%ydbposix(msg1,"LOG_ERR","LOG_INFO")
-	set dh1=60*1E6+$zut
-        open "journalctl":(shell="/bin/sh":command="journalctl --user -f -S """_$zdate(ddzh,"YYYY-MM-DD 24:60:SS")_"""":readonly)::"pipe"
+        if $$syslog^%ydbposix(msg,"LOG_USER","LOG_WARNING")
+	if $$SYSLOG^%ydbposix(msg1,"LOG_ERR","LOG_INFO")
+	set dh1=60E6+$zut
+        open "journalctl":(shell="/bin/sh":command="journalctl -f -S """_$zdate(ddzh,"YYYY-MM-DD 24:60:SS")_"""":readonly)::"pipe"
 	use "journalctl"
 	for  read tmp do  quit:"PASS syslog1"=out&("PASS syslog2"=out1)!(dh1<$zut)
 	. set:$find(tmp,msg) out="PASS syslog1"
