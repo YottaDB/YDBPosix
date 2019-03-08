@@ -29,5 +29,7 @@ source $(pkg-config --variable=prefix yottadb)/ydb_env_set
 mkdir build && cd build
 cmake ..
 make && sudo make install
+source $(pkg-config --variable=prefix yottadb)/ydb_env_unset ; clear and update environment variables to
+source $(pkg-config --variable=prefix yottadb)/ydb_env_set   ; reflect newly installed plugin
 mumps -run %ydbposixtest
 ```
