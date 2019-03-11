@@ -26,7 +26,7 @@ YottaDB must be installed and available before installing the POSIX plugin. http
 
 ```shell
 source $(pkg-config --variable=prefix yottadb)/ydb_env_set
-mkdir build && cd build
+mkdir build_M && cd build_M
 cmake ..
 make && sudo make install
 ```
@@ -35,7 +35,7 @@ If YottaDB is installed with UTF-8 support, use these additional commands to ins
 
 ```shell
 cd ..
-rm -rf build && mkdir build && cd build
+mkdir build_UTF8 && cd build_UTF8
 cmake -DMUMPS_UTF8_MODE=1 ..
 make && sudo make install
 ```
