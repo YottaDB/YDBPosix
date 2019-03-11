@@ -29,7 +29,27 @@ source $(pkg-config --variable=prefix yottadb)/ydb_env_set
 mkdir build && cd build
 cmake ..
 make && sudo make install
-source $(pkg-config --variable=prefix yottadb)/ydb_env_unset ; clear and update environment variables to
-source $(pkg-config --variable=prefix yottadb)/ydb_env_set   ; reflect newly installed plugin
+```
+
+If YottaDB is installed with UTF-8 support, use these additional commands to install the plugin compiled for UTF-8 mode:
+
+```shell
+cd ..
+rm -rf build && mkdir build && cd build
+cmake -DMUMPS_UTF8_MODE=1 ..
+make && sudo make install
+```
+
+After installing the POSIX plugin, it is always a good idea to clear environment variables and set them again when you want to use the plugin, as the environment variables needed for the POSIX plugin go beyond those for YottaDB itself.
+
+```shell
+source $(pkg-config --variable=prefix yottadb)/ydb_env_unset
+```
+
+
+At any time after installing the POSIX plugin, you can always test it.
+
+```shell
+source $(pkg-config --variable=prefix yottadb)/ydb_env_set
 mumps -run %ydbposixtest
 ```
