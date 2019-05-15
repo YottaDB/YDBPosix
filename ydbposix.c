@@ -334,7 +334,8 @@ int posix_localtime(int argc, long timep, int *sec, int *min, int *hour,
 
 	if (11 != argc)
 		return (int)-argc;
-	if (currtimetm = localtime((time_t *)&timep))	/* Warning - assignment */
+	currtimetm = localtime((time_t *)&timep);
+	if (currtimetm)
 	{
 		*sec	= (int)currtimetm->tm_sec;
 		*min	= (int)currtimetm->tm_min;
