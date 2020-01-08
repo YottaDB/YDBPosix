@@ -1,0 +1,29 @@
+stages:
+  - build-and-test
+
+image:
+  name: yottadb/yottadb:latest-master
+  entrypoint: [""]
+
+# this should be two separate steps later on ('build' should produce
+# an installable binary package that we can install and test in the
+# 'test' stage
+build-and-test:
+  stage: build-and-test
+  script:
+    - apt-get -y update
+    - apt-get -y install sudo make cmake gcc systemd
+    - source $(pkg-config --variable=prefix yottadb)/ydb_env_set
+    - mkdir build_UTF8 && cd build_UTF8
+    - cmake -DMUMPS_UTF8_MODE=1 ..
+    - make && sudo make install
+    - source $(pkg-config --variable=prefix yottadb)/ydb_env_unset
+    - source $(pkg-config --variable=prefix yottadb)/ydb_env_set
+    # XXX: the following should really be set by ydb_env_set, right?
+    - export ydb_routines="/opt/yottadb/current/plugin/r ${ydb_routines}"
+    # The tests use journalctl but systemd in a container does not make
+    # too much sense, so we install it and run a standalone journald
+    # instance on the background
+    - /lib/systemd/systemd-journald &
+    - $ydb_dist/mumps -run %ydbposixtest
+
