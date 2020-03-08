@@ -146,7 +146,7 @@
         zsystem "rm -f "_file
 
 	; Execute the syslog test; wait upto 60 seconds for messages to show up in syslog
-	if $ztrnlnm("CI")'="" write "SKIP journalctl test is BROKEN in CI environment"
+	if '$$hasSystemd() write "SKIP journalctl test on non-systemd system"
 	else  do
 	. set msg="Warning from process "_$j_" at "_ddzh,out="FAIL syslog1 - msg """_msg_""" not found in syslog"
 	. set msg1="Notice from process "_$j_" at "_ddzh,out1="FAIL syslog2 - msg """_msg1_""" not found in syslog"
@@ -307,6 +307,14 @@ BADOPEN
        use $p
        write "Cannot open "_tname_" for reading.  Check permissions",!
        quit
+
+hasSystemd()
+	; if the os init system is systemd:
+	; - /proc/1/cmdline would start with "/lib/systemd/systemd" followed by arguments
+	; - /proc/1/comm would be equal to "systemd"_$C(10)
+	new comm,f
+	set f="/proc/1/comm" open f:readonly use f read comm close f
+	quit $extract(comm,1,7)="systemd"
 
 octalAnd(num1,num2)
 	new i,j,num,bnum1,bnum2,len1,len2,digit,piece,bnum
