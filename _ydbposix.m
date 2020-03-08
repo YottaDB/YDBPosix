@@ -138,7 +138,7 @@ regmatch(str,patt,pattflags,matchflags,matchresults,maxresults)
 	. . zkill %ydbposix("regcomp","errno")
 	. . set %ydbposix("regmatch",patt,pfval)=pregstr
 	; nothing matched and that is due to an error in regcomp
-	i '$data(%ydbposix("regmatch",patt,pfval)) quit:$quit -errno_",regcomp" quit
+	if '$data(%ydbposix("regmatch",patt,pfval)) quit:$quit -errno_",regcomp" quit
 	set:'$data(maxresults) maxresults=1
 	set $zpiece(resultbuf,$zchar(0),maxresults*$$regsymval("sizeof(regmatch_t)")+1)=""
 	if $length($get(matchflags)) for i=1:1:$length(matchflags,"+") do
@@ -147,15 +147,15 @@ regmatch(str,patt,pattflags,matchflags,matchresults,maxresults)
 	else  set mfval=0
 	if $&ydbposix.regexec(%ydbposix("regmatch",patt,pfval),str,maxresults,.resultbuf,mfval,.matchsuccess)
 	zkill %ydbposix("regexec","errno")
-	s i=0
+	set i=0
 	do:matchsuccess
 	. kill matchresults
 	. set regmatchtsize=$$regsymval("sizeof(regmatch_t)"),j=1 for i=1:1:maxresults do  if 'matchresults(i,"start") kill matchresults(i) quit
-	. . k nextrmso,nextrmeo
+	. . kill nextrmso,nextrmeo
 	. . if '$&ydbposix.regofft2offsets($zextract(resultbuf,j,$increment(j,regmatchtsize)-1),.nextrmso,.nextrmeo) do
 	. . . set matchresults(i,"start")=1+nextrmso
 	. . . set matchresults(i,"end")=1+nextrmeo
-	. i $increment(i,-1)
+	. if $increment(i,-1)
 	quit:$quit i quit
 
 ; Get numeric value for regular expression symbolic constant - only lower case because this is an internal utility routine
