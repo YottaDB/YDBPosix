@@ -146,7 +146,7 @@
         zsystem "rm -f "_file
 
 	; Execute the syslog test; wait upto 60 seconds for messages to show up in syslog
-	if '$$hasSystemd() write "SKIP journalctl test on non-systemd system"
+	if '$$hasSystemd() write "SKIP journalctl test on non-systemd system",!
 	else  do
 	. set msg="Warning from process "_$j_" at "_ddzh,out="FAIL syslog1 - msg """_msg_""" not found in syslog"
 	. set msg1="Notice from process "_$j_" at "_ddzh,out1="FAIL syslog2 - msg """_msg1_""" not found in syslog"
