@@ -3,7 +3,7 @@
 ; Copyright (c) 2012-2015 Fidelity National Information		;
 ; Services, Inc. and/or its subsidiaries. All rights reserved.	;
 ;								;
-; Copyright (c) 2018-2019 YottaDB LLC and/or its subsidiaries.	;
+; Copyright (c) 2018-2020 YottaDB LLC and/or its subsidiaries.	;
 ; All rights reserved.						;
 ;								;
 ;	This source code contains the intellectual property	;
@@ -150,12 +150,12 @@ regmatch(str,patt,pattflags,matchflags,matchresults,maxresults)
 	set i=0
 	do:matchsuccess
 	. kill matchresults
-	. set regmatchtsize=$$regsymval("sizeof(regmatch_t)"),j=1 for i=1:1:maxresults do  if 'matchresults(i,"start") kill matchresults(i) quit
+	. set regmatchtsize=$$regsymval("sizeof(regmatch_t)"),j=1
+	. for i=1:1:maxresults do  if '$data(matchresults(i,"start")) set i=i-1 quit
 	. . kill nextrmso,nextrmeo
-	. . if '$&ydbposix.regofft2offsets($zextract(resultbuf,j,$increment(j,regmatchtsize)-1),.nextrmso,.nextrmeo) do
+	. . do:'$&ydbposix.regofft2offsets($zextract(resultbuf,j,$increment(j,regmatchtsize)-1),.nextrmso,.nextrmeo)
 	. . . set matchresults(i,"start")=1+nextrmso
 	. . . set matchresults(i,"end")=1+nextrmeo
-	. if $increment(i,-1)
 	quit:$quit i quit
 
 ; Get numeric value for regular expression symbolic constant - only lower case because this is an internal utility routine
