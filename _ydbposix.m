@@ -151,11 +151,15 @@ regmatch(str,patt,pattflags,matchflags,matchresults,maxresults)
 	do:matchsuccess
 	. kill matchresults
 	. set regmatchtsize=$$regsymval("sizeof(regmatch_t)"),j=1
-	. for i=1:1:maxresults do  if '$data(matchresults(i,"start")) set i=i-1 quit
+	. ; If we find `matchresults(i,"start")` is 0, it means match happened until `i-1` only hence the `kill` and `i-1` below
+	. for i=1:1:maxresults do  if 'matchresults(i,"start") kill matchresults(i) set i=i-1 quit
 	. . kill nextrmso,nextrmeo
-	. . do:'$&ydbposix.regofft2offsets($zextract(resultbuf,j,$increment(j,regmatchtsize)-1),.nextrmso,.nextrmeo)
+	. . ; Note: `$&ydbposix.regofft2offsets()` returns 0 in all cases where 3 parameters (valid # of parms) are passed.
+	. . ; Therefore, the `if` check always succeeds and the `do` code always executes.
+	. . if '$&ydbposix.regofft2offsets($zextract(resultbuf,j,$increment(j,regmatchtsize)-1),.nextrmso,.nextrmeo) do
 	. . . set matchresults(i,"start")=1+nextrmso
 	. . . set matchresults(i,"end")=1+nextrmeo
+	. . ; Because the `do` code above is always executed, `matchresults(i)` is guaranteed to be set at this point.
 	quit:$quit i quit
 
 ; Get numeric value for regular expression symbolic constant - only lower case because this is an internal utility routine
