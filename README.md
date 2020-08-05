@@ -36,7 +36,7 @@ If YottaDB is installed with UTF-8 support, use these additional commands to ins
 ```shell
 cd ..
 mkdir build_UTF8 && cd build_UTF8
-cmake -DMUMPS_UTF8_MODE=1 ..
+cmake -DM_UTF8_MODE=1 ..
 make && sudo make install
 ```
 

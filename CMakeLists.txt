@@ -1,6 +1,6 @@
 #################################################################
 #								#
-# Copyright (c) 2018 YottaDB LLC and/or its subsidiaries.	#
+# Copyright (c) 2018-2020 YottaDB LLC and/or its subsidiaries.	#
 # All rights reserved.						#
 #								#
 #	This source code contains the intellectual property	#
@@ -12,7 +12,7 @@
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ydbcmake/")
 
-project(YDBPosix C MUMPS)
+project(YDBPosix C M)
 cmake_minimum_required(VERSION 2.8)
 
 # Find YottaDB
@@ -42,7 +42,7 @@ install(FILES _ydbposix.m _ydbposixtest.m
   DESTINATION ${ydb_install_dir}/r/
 )
 
-if(MUMPS_UTF8_MODE)
+if(M_UTF8_MODE)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so
     DESTINATION ${ydb_install_dir}/o/utf8
   )
