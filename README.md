@@ -53,3 +53,23 @@ At any time after installing the POSIX plugin, you can always test it.
 source $(pkg-config --variable=prefix yottadb)/ydb_env_set
 mumps -run %ydbposixtest
 ```
+
+## Contributing
+
+To contribute or help with further development, [fork the repository](https://docs.gitlab.com/ee/gitlab-basics/fork-project.html), clone your fork to a local copy and begin contributing! Please also set up the pre-commit script to automatically enforce some coding conventions. Assuming you are in the top-level directory, the following will work:
+
+```sh
+ln -s ../../pre-commit .git/hooks
+```
+
+Note that this script requires `tcsh`.
+
+### YDBCMake
+
+YDBPosix uses the upstream [YDBCMake] repository for building using YottaDB as the M compiler. Any changes to `ydbcmake/` should first be upstreamed to that repository.
+Once the changes are upstreamed, you can merge them into YDBPosix using
+```
+git pull --no-rebase git@gitlab.com:YottaDB/Tools/YDBCMake.git
+```
+
+[YDBCMake]: https://gitlab.com/YottaDB/Tools/YDBCMake
