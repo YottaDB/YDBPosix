@@ -1,3 +1,15 @@
+#################################################################
+#								#
+# Copyright (c) 2020 YottaDB LLC and/or its subsidiaries.	#
+# All rights reserved.						#
+#								#
+#	This source code contains the intellectual property	#
+#	of its copyright holder(s), and is made available	#
+#	under a license.  If you do not know the terms of	#
+#	the license, please stop and do not read further.	#
+#								#
+#################################################################
+
 stages:
   - build-and-test
 
@@ -15,7 +27,7 @@ build-and-test:
     - apt-get -y install sudo make cmake gcc systemd
     - source $(pkg-config --variable=prefix yottadb)/ydb_env_set
     - mkdir build_UTF8 && cd build_UTF8
-    - cmake -DMUMPS_UTF8_MODE=1 ..
+    - cmake -DM_UTF8_MODE=1 ..
     - make && sudo make install
     - source $(pkg-config --variable=prefix yottadb)/ydb_env_unset
     - source $(pkg-config --variable=prefix yottadb)/ydb_env_set
