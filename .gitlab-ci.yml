@@ -24,12 +24,8 @@ build-and-test:
   stage: build-and-test
   script:
     - apt-get -y update
-    - apt-get -y install sudo make cmake gcc systemd git
+    - apt-get -y install sudo make cmake gcc systemd
     - source $(pkg-config --variable=prefix yottadb)/ydb_env_set
-    # Copy commit gpg key verify script to build directory and execute
-    - wget https://gitlab.com/YottaDB/DB/YDB/-/raw/master/ci/commit_gpgkey_verify.sh
-    - chmod +x commit_gpgkey_verify.sh
-    - ./commit_gpgkey_verify.sh
     - mkdir build_UTF8 && cd build_UTF8
     - cmake -DM_UTF8_MODE=1 ..
     - make && sudo make install
@@ -42,4 +38,15 @@ build-and-test:
     # instance on the background
     - /lib/systemd/systemd-journald &
     - $ydb_dist/mumps -run %ydbposixtest
+
+gpgkey-verify:
+  image: ubuntu:18.04
+  stage: build-and-test
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq git wget gnupg
+  script:
+    # Copy commit gpg key verify script to build directory and execute
+    - wget https://gitlab.com/YottaDB/DB/YDB/-/raw/master/ci/commit_gpgkey_verify.sh
+    - chmod +x commit_gpgkey_verify.sh
+    - ./commit_gpgkey_verify.sh https://gitlab.com/YottaDB/Util/YDBPosix
 
