@@ -39,14 +39,15 @@ build-and-test:
     - /lib/systemd/systemd-journald &
     - $ydb_dist/mumps -run %ydbposixtest
 
-gpgkey-verify:
+commit-verify:
   image: ubuntu:18.04
   stage: build-and-test
   before_script:
     - apt-get update -qq && apt-get install -y -qq git wget gnupg
   script:
     # Copy commit gpg key verify script to build directory and execute
-    - wget https://gitlab.com/YottaDB/DB/YDB/-/raw/master/ci/commit_gpgkey_verify.sh
-    - chmod +x commit_gpgkey_verify.sh
-    - ./commit_gpgkey_verify.sh https://gitlab.com/YottaDB/Util/YDBPosix
-
+    - wget https://gitlab.com/YottaDB/DB/YDB/-/raw/master/ci/commit_verify.sh
+    - chmod +x commit_verify.sh
+    - ./commit_verify.sh ./needs_copyright.sh
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "external_pull_request" || $CI_PIPELINE_SOURCE == "merge_request_event"'
