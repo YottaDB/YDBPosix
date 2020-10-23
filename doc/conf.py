@@ -1,6 +1,6 @@
 #################################################################
 #								#
-# Copyright (c) 2019 YottaDB LLC and/or its subsidiaries.	#
+# Copyright (c) 2019-2020 YottaDB LLC and/or its subsidiaries.	#
 # All rights reserved.						#
 #								#
 #	This source code contains the intellectual property	#
@@ -66,7 +66,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'YDBposix'
-copyright = u'2018-2019, YottaDB LLC'
+copyright = u'2018-2020, YottaDB LLC'
 author = u'YottaDB LLC'
 
 # The version info for the project you're documenting, acts as replacement for

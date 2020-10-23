@@ -1,3 +1,14 @@
+.. ###############################################################
+.. #                                                             #
+.. # Copyright (c) 2020 YottaDB LLC and/or its subsidiaries.     #
+.. # All rights reserved.                                        #
+.. #                                                             #
+.. #     This source code contains the intellectual property     #
+.. #     of its copyright holder(s), and is made available       #
+.. #     under a license.  If you do not know the terms of       #
+.. #     the license, please stop and do not read further.       #
+.. #                                                             #
+.. ###############################################################
 
 ============
 YDB Posix
@@ -34,7 +45,8 @@ Installation
 
 YottaDB must be installed and available before installing the POSIX plugin. https://yottadb.com/product/get-started/ has instructions on installing YottaDB. Download and unpack the POSIX plugin in a temporary directory, and make that the current directory. Then:
 
-.. parsed literal::
+.. code-block:: bash
+		
     source $(pkg-config --variable=prefix yottadb)/ydb_env_set
     mkdir build && cd build
     cmake ..
@@ -46,7 +58,8 @@ Testing
 
 The expected output of `mumps -run %ydbposixtest` is as below; manually verify whether the statement about Daylight Savings Time is correct.
 
-.. parsed-literal::
+.. code-block:: none
+		
     PASS Invocation
     PASS $zhorolog
     PASS $ZHOROLOG
@@ -161,7 +174,8 @@ Examples of ^%ydbposix usage
 
 Below are examples of usage of high level entryrefs in ^%ydbposix. The file _ydbposixtest.m contains examples of use of the functions in ydbposix.
 
-.. parsed-literal::
+.. code-block:: none
+		
     YDB>set str="THE QUICK BROWN FOX JUMPS OVER the lazy dog"
 
     YDB>write:$$regmatch^%ydbposix(str,"the",,,.result) $extract(str,result(1,"start"),result(1,"end")-1)
@@ -212,7 +226,8 @@ The high level entryrefs in ^%ydbposix access low level functions in ydbposix.c 
 
 **$&ydbposix.filemodeconst(fmsymconst,.symval)**: Takes a symbolic regular file mode constant in fmsymconst and returns the numeric value in symval. If no such constant exists, the return value is non-zero. Currently supported fmsymconst constants are the following. Please see ``stat()`` function man page for their meaning.
 
-.. parsed-literal::
+.. code-block:: none
+		
         "S_IFBLK",  "S_IFCHR", "S_IFDIR", "S_IFIFO", "S_IFLNK", "S_IFMT",  "S_IFREG",
         "S_IFSOCK", "S_IRGRP", "S_IROTH", "S_IRUSR", "S_IRWXG", "S_IRWXO", "S_IRWXU",
 	"S_ISGID",  "S_ISUID", "S_ISVTX", "S_IWGRP", "S_IWOTH", "S_IWUSR", "S_IXGRP",
@@ -234,7 +249,7 @@ The high level entryrefs in ^%ydbposix access low level functions in ydbposix.c 
 
 **$&ydbposix.regconst(regsymconst,.symval)**: Takes a symbolic regular expression constant in regsymconst and returns the numeric value in symval. If no such constant exists, the return value is non-zero. The $$regsymval^%ydbposix() function uses ``$&ydbposix.regconst()``. Currently supported values of regsymconst are
 
-.. parsed-literal::
+.. code-block:: none
 
 	"REG_BADBR",      "REG_BADPAT",      "REG_BADRPT",         "REG_EBRACE",       "REG_EBRACK",    "REG_ECOLLATE",
 	"REG_ECTYPE",     "REG_EESCAPE",     "REG_EPAREN",         "REG_ERANGE",       "REG_ESPACE",    "REG_ESUBREG",
@@ -253,7 +268,8 @@ The high level entryrefs in ^%ydbposix access low level functions in ydbposix.c 
 
 **$&ydbposix.signalval(signame,.sigval)**: Takes a signal name (such as "SIGUSR1") and provides its value in sigval. A non-zero return value means that no value was found for the name. Currently supported signames are
 
-.. parsed-literal::
+.. code-block:: none
+
 	"SIGABRT", "SIGALRM", "SIGBUS",  "SIGCHLD", "SIGCONT", "SIGFPE",  "SIGHUP",  "SIGILL",
 	"SIGINT",  "SIGKILL", "SIGPIPE", "SIGQUIT", "SIGSEGV", "SIGSTOP", "SIGTERM", "SIGTRAP",
 	"SIGTSTP", "SIGTTIN", "SIGTTOU", "SIGURG",  "SIGUSR1", "SIGUSR2", "SIGXCPU", "SIGXFSZ"
@@ -266,7 +282,7 @@ The high level entryrefs in ^%ydbposix access low level functions in ydbposix.c 
 
 **$&ydbposix.sysconfval(fmsymconst,.symval)**: Takes a sysconf option name (such as "PAGESIZE") and provides the corresponding _SC... value in sigval. A non-zero return value means that no value was found for the name. Currently supported sysconf options are
 
-.. parsed-literal::
+.. code-block:: none
 
         "ARG_MAX",          "BC_BASE_MAX",   "BC_DIM_MAX",      "BC_SCALE_MAX",    "BC_STRING_MAX",   "CHILD_MAX",
        	"COLL_WEIGHTS_MAX", "EXPR_NEST_MAX", "HOST_NAME_MAX",   "LINE_MAX",        "LOGIN_NAME_MAX",  "OPEN_MAX",
@@ -278,7 +294,7 @@ The high level entryrefs in ^%ydbposix access low level functions in ydbposix.c 
 
 **$&ydbposix.syslogconst(syslogsymconst,.syslogsymval)**: Takes a symbolic syslog facility or level name (e.g., "LOG_USER") in syslogsymconst and returns its value in syslogsymval. A non-zero return value means that a value was not found. Currently supported values of syslogsymconst are
 
-.. parsed-literal::
+.. code-block:: none
 
         "LOG_ALERT",  "LOG_CRIT",   "LOG_DEBUG",  "LOG_EMERG",  "LOG_ERR",    "LOG_INFO",   "LOG_LOCAL0",
 	"LOG_LOCAL1", "LOG_LOCAL2", "LOG_LOCAL3", "LOG_LOCAL4", "LOG_LOCAL5", "LOG_LOCAL6", "LOG_LOCAL7",
