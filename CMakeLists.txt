@@ -12,6 +12,7 @@
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ydbcmake/")
 
+unset(M_UTF8_MODE)
 project(YDBPosix C M)
 cmake_minimum_required(VERSION 2.8)
 
@@ -32,23 +33,102 @@ install(TARGETS ydbposix
 
 # Add commands to compile .m files
 
-add_library(_ydbposix SHARED
-  _ydbposix.m _ydbposixtest.m
-)
-
-SET_TARGET_PROPERTIES(_ydbposix PROPERTIES PREFIX "")
-
 install(FILES _ydbposix.m _ydbposixtest.m
   DESTINATION ${ydb_install_dir}/r/
 )
 
-if(M_UTF8_MODE)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so
-    DESTINATION ${ydb_install_dir}/o/utf8
+set(args "_ydbposix.m _ydbposixtest.m")
+add_custom_command(
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/_ydbposixm.so
+  DEPENDS ${in} ${CMAKE_CURRENT_SOURCE_DIR}/ydbposixso.cmake ${CMAKE_M_COMPILER}
+  COMMAND ${CMAKE_COMMAND}
+    -D ydb_dist=${ydb_install_dir}
+    -D ydb_routines=.
+    -D ydb_chset=""
+    -D ydb_icu_version=""
+    -D LC_ALL=""
+    -D ydb=${CMAKE_M_COMPILER}
+    -D CMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -D "args=${args}"
+    -D "sofile=${CMAKE_CURRENT_BINARY_DIR}/_ydbposixm.so"
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/ydbposixso.cmake
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  VERBATIM
   )
-else()
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so
-    DESTINATION ${ydb_install_dir}/o/
+add_custom_target(ydbposixm ALL DEPENDS _ydbposixm.so)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_ydbposixm.so
+  DESTINATION ${ydb_install_dir}/o/ RENAME _ydbposix.so
+)
+
+if(EXISTS ${ydb_install_dir}/o/utf8)
+  # If UTF-8 mode is installed, build the UTF8 version of _ydbposix.so too
+  find_program(PKGCONFIG NAMES pkg-config)
+  if(PKGCONFIG)
+    execute_process(
+      COMMAND ${PKGCONFIG} --modversion icu-io
+      OUTPUT_VARIABLE icu_version
+      RESULT_VARIABLE icu_failed
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+    if(icu_failed)
+      message(FATAL_ERROR "Command\n ${PKGCONFIG} --modversion icu-io\nfailed (${icu_failed}).")
+    elseif("x${icu_version}" MATCHES "^x([0-9]+\\.[0-9]+)")
+      set(ydb_icu_version "${CMAKE_MATCH_1}")
+    else()
+      message(FATAL_ERROR "Command\n ${PKGCONFIG} --modversion icu-io\nproduced unrecognized output:\n ${icu_version}")
+    endif()
+  else()
+    message(FATAL_ERROR "Unable to find 'pkg-config'.  Set PKGCONFIG in CMake cache.")
+  endif()
+
+  find_program(LOCALECFG NAMES locale)
+  if(LOCALECFG)
+    execute_process(
+      COMMAND ${LOCALECFG} -a
+      OUTPUT_VARIABLE locale_list
+      RESULT_VARIABLE locale_failed
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+    if(locale_failed)
+      message(FATAL_ERROR "Command\n ${LOCALECFG} -a\nfailed (${locale_failed}).")
+    endif()
+    STRING(REGEX REPLACE "\n" ";" locale_list "${locale_list}")
+    foreach(lc ${locale_list})
+      string(TOLOWER "${lc}" lc_lower)
+      if("x${lc_lower}" MATCHES "^x[a-zA-Z_]+\\.?utf-?8")
+	set(LC_ALL ${lc})
+	message("-- Setting locale to ${LC_ALL}")
+	break()
+      endif()
+    endforeach(lc)
+    if("${LC_ALL}" STREQUAL "")
+      message("Locale undefined. Expect to see NONUTF8LOCALE during M routine compilation: ${locale_list}\n")
+    endif()
+  else()
+    message(FATAL_ERROR "Unable to find 'locale'.  Set LOCALECFG in CMake cache.")
+  endif()
+  set(CMAKE_M_COMPILER ${mumps_dir}/utf8/mumps)
+  set(ydb_chset "UTF-8")
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/_ydbposixutf8.so
+    DEPENDS ${in} ${CMAKE_CURRENT_SOURCE_DIR}/ydbposixso.cmake ${mumps_dir}/utf8/mumps
+    COMMAND ${CMAKE_COMMAND}
+      -D ydb_dist=${ydb_install_dir}
+      -D ydb_routines=.
+      -D ydb_chset=${ydb_chset}
+      -D ydb_icu_version=${ydb_icu_version}
+      -D LC_ALL=${LC_ALL}
+      -D ydb=${mumps_dir}/utf8/mumps
+      -D CMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -D "args=${args}"
+      -D "sofile=${CMAKE_CURRENT_BINARY_DIR}/_ydbposixutf8.so"
+      -P ${CMAKE_CURRENT_SOURCE_DIR}/ydbposixso.cmake
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    VERBATIM
+    )
+  add_custom_target(ydbposixutf8 ALL DEPENDS _ydbposixutf8.so)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_ydbposixutf8.so
+    DESTINATION ${ydb_install_dir}/o/utf8/ RENAME _ydbposix.so
   )
 endif()
 

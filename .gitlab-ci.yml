@@ -26,8 +26,8 @@ build-and-test:
     - apt-get -y update
     - apt-get -y install sudo make cmake gcc systemd
     - source $(pkg-config --variable=prefix yottadb)/ydb_env_set
-    - mkdir build_UTF8 && cd build_UTF8
-    - cmake -DM_UTF8_MODE=1 ..
+    - mkdir build && cd build
+    - cmake ..
     - make && sudo make install
     - source $(pkg-config --variable=prefix yottadb)/ydb_env_unset
     - source $(pkg-config --variable=prefix yottadb)/ydb_env_set

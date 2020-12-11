@@ -31,15 +31,6 @@ cmake ..
 make && sudo make install
 ```
 
-If YottaDB is installed with UTF-8 support, use these additional commands to install the plugin compiled for UTF-8 mode:
-
-```shell
-cd ..
-mkdir build_UTF8 && cd build_UTF8
-cmake -DM_UTF8_MODE=1 ..
-make && sudo make install
-```
-
 After installing the POSIX plugin, it is always a good idea to clear environment variables and set them again when you want to use the plugin, as the environment variables needed for the POSIX plugin go beyond those for YottaDB itself.
 
 ```shell
