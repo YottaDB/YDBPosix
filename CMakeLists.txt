@@ -127,6 +127,7 @@ if(EXISTS ${ydb_install_dir}/o/utf8)
     VERBATIM
     )
   add_custom_target(ydbposixutf8 ALL DEPENDS _ydbposixutf8.so)
+  add_dependencies(ydbposixutf8 ydbposixm)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_ydbposixutf8.so
     DESTINATION ${ydb_install_dir}/o/utf8/ RENAME _ydbposix.so
   )
