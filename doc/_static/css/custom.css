@@ -1,6 +1,6 @@
 /****************************************************************
  *								*
- * Copyright (c) 2019 YottaDB LLC and/or its subsidiaries.	*
+ * Copyright (c) 2019-2021 YottaDB LLC and/or its subsidiaries.	*
  * All rights reserved.						*
  *								*
  *	This source code contains the intellectual property	*
@@ -25,7 +25,6 @@
 body {
 	background-color: #3b1a68;
 	width: 150%;
-	font-family: "Raleway Medium",Tahoma,sans-serif;
 }
 .cse .gsc-search-button input.gsc-search-button-v2,
 input.gsc-search-button-v2 {
