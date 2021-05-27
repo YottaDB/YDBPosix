@@ -1,6 +1,6 @@
 #################################################################
 #								#
-# Copyright (c) 2020 YottaDB LLC and/or its subsidiaries.	#
+# Copyright (c) 2021 YottaDB LLC and/or its subsidiaries.	#
 # All rights reserved.						#
 #								#
 #	This source code contains the intellectual property	#
@@ -23,21 +23,19 @@ image:
 build-and-test:
   stage: build-and-test
   script:
-    - apt-get -y update
-    - apt-get -y install sudo make cmake gcc systemd
-    - source $(pkg-config --variable=prefix yottadb)/ydb_env_set
+    - apt-get update -qq
+    - apt-get -y -qq install sudo make cmake gcc systemd
     - mkdir build && cd build
     - cmake ..
-    - make && sudo make install
-    - source $(pkg-config --variable=prefix yottadb)/ydb_env_unset
-    - source $(pkg-config --variable=prefix yottadb)/ydb_env_set
-    # XXX: the following should really be set by ydb_env_set, right?
-    - export ydb_routines="/opt/yottadb/current/plugin/r ${ydb_routines}"
+    - make
     # The tests use journalctl but systemd in a container does not make
     # too much sense, so we install it and run a standalone journald
     # instance on the background
     - /lib/systemd/systemd-journald &
-    - $ydb_dist/mumps -run %ydbposixtest
+    - make test ARGS="-V"
+    - make install
+    - source $(pkg-config --variable=prefix yottadb)/ydb_env_set
+    - $ydb_dist/yottadb -run %ydbposixtest
 
 commit-verify:
   image: ubuntu:18.04

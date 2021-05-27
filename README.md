@@ -14,7 +14,7 @@ When installed in the `$ydb_dist/plugin` directory, YDBposix consists of the fol
 
 - `r/_ydbposix.m` – M source code for higher level `^%ydbposix` entryrefs that M application code can call.
 
-- `r/_ydbposixtest.m` – M source code for `%ydbposixtest` routine to test plugin with `mumps -run %ydbposix`
+- `r/_ydbposixtest.m` – M source code for `%ydbposixtest` routine to test plugin with `yottadb -run %ydbposix`
 
 - `o/_ydbposix.so` – a shared library with M mode object code for `^%ydbposix` & `^%ydbposixtest` entryrefs
 
@@ -25,24 +25,21 @@ When installed in the `$ydb_dist/plugin` directory, YDBposix consists of the fol
 YottaDB must be installed and available before installing the POSIX plugin. https://yottadb.com/product/get-started/ has instructions on installing YottaDB. Download and unpack the POSIX plugin in a temporary directory, and make that the current directory. Then:
 
 ```shell
-source $(pkg-config --variable=prefix yottadb)/ydb_env_set
-mkdir build_M && cd build_M
+mkdir build && cd build
 cmake ..
-make && sudo make install
+make
+[(optional to test functionality)] make test ARGS="-V"
+sudo make install
 ```
-
-After installing the POSIX plugin, it is always a good idea to clear environment variables and set them again when you want to use the plugin, as the environment variables needed for the POSIX plugin go beyond those for YottaDB itself.
-
-```shell
-source $(pkg-config --variable=prefix yottadb)/ydb_env_unset
-```
-
 
 At any time after installing the POSIX plugin, you can always test it.
 
 ```shell
+export ydb_dir=$(mktemp -d)
 source $(pkg-config --variable=prefix yottadb)/ydb_env_set
-mumps -run %ydbposixtest
+yottadb -run %ydbposixtest
+source $(pkg-config --variable=prefix yottadb)/ydb_env_unset
+rm -r $ydb_dir
 ```
 
 ## Contributing

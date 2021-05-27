@@ -1,6 +1,6 @@
 #################################################################
 #								#
-# Copyright (c) 2018-2020 YottaDB LLC and/or its subsidiaries.	#
+# Copyright (c) 2018-2021 YottaDB LLC and/or its subsidiaries.	#
 # All rights reserved.						#
 #								#
 #	This source code contains the intellectual property	#
@@ -134,8 +134,13 @@ if(EXISTS ${ydb_install_dir}/o/utf8)
 endif()
 
 # Handle the .xc file
+set(install_dir ${ydb_install_dir})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ydbposix.xc.in
   ${CMAKE_CURRENT_BINARY_DIR}/ydbposix.xc
+)
+set(install_dir ${CMAKE_CURRENT_BINARY_DIR})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ydbposix.xc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc
 )
 
 add_custom_target(place_ydbposix_xc ALL
@@ -145,3 +150,17 @@ add_custom_target(place_ydbposix_xc ALL
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ydbposix.xc
   DESTINATION ${ydb_install_dir}/
 )
+
+# Testing
+enable_testing()
+add_test(ydbposixtest_m ${CMAKE_M_COMPILER} -run %ydbposixtest)
+set_tests_properties(ydbposixtest_m PROPERTIES FAIL_REGULAR_EXPRESSION "FAIL;YDB-E-")
+set_tests_properties(ydbposixtest_m PROPERTIES
+	ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/_ydbposixm.so ${mumps_dir}/libyottadbutil.so;ydb_chset=M")
+
+if(EXISTS ${mumps_dir}/utf8)
+	add_test(ydbposixtest_utf8 ${CMAKE_M_COMPILER} -run %ydbposixtest)
+	set_tests_properties(ydbposixtest_utf8 PROPERTIES FAIL_REGULAR_EXPRESSION "FAIL;YDB-E-")
+	set_tests_properties(ydbposixtest_utf8 PROPERTIES
+		ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/_ydbposixutf8.so ${mumps_dir}/utf8/libyottadbutil.so;ydb_chset=UTF-8;ydb_icu_version=${ydb_icu_version}")
+endif()

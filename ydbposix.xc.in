@@ -1,4 +1,4 @@
-$ydb_dist/plugin/libydbposix.so
+@install_dir@/libydbposix.so
 chmod:			int posix_chmod(I:ydb_char_t*, I:ydb_int_t, O:ydb_int_t*)
 clockgettime:		int posix_clock_gettime(I:ydb_int_t, O:ydb_long_t*, O:ydb_long_t*, O:ydb_int_t*)
 clockval:		int posixhelper_clockval(I:ydb_char_t*, O:ydb_int_t*)
