@@ -24,7 +24,7 @@ build-and-test:
   stage: build-and-test
   script:
     - apt-get update -qq
-    - apt-get -y -qq install sudo make cmake gcc systemd pkg-config libicu-dev
+    - apt-get -y -qq install sudo make cmake gcc systemd pkg-config libicu-dev git
     - mkdir build && cd build
     - cmake ..
     - make

@@ -2,7 +2,7 @@
 
 #################################################################
 #								#
-# Copyright (c) 2020 YottaDB LLC and/or its subsidiaries.	#
+# Copyright (c) 2020-2022 YottaDB LLC and/or its subsidiaries.	#
 # All rights reserved.						#
 #								#
 #	This source code contains the intellectual property	#
@@ -23,6 +23,11 @@ if ! [ $# = 1 ]; then
 fi
 
 file="$1"
+
+# Don't require deleted files to have a copyright
+if ! [ -e "$file" ]; then
+       exit 1
+fi
 
 skipextensions="rst png html in"	# List of extensions that cannot have copyrights.
 	# .rst  -> file used to generate documentation. Since final documentation has

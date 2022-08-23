@@ -2,7 +2,7 @@
 #
 #################################################################
 #                                                               #
-# Copyright (c) 2020-2022 YottaDB LLC and/or its subsidiaries.       #
+# Copyright (c) 2020-2022 YottaDB LLC and/or its subsidiaries.  #
 # All rights reserved.                                          #
 #                                                               #
 #       This source code contains the intellectual property     #
@@ -16,7 +16,8 @@
 # Pre-commit hook that
 #	1) Enforces YottaDB Copyright in changed modules
 #
-set filelist = `git diff --name-only HEAD`
+cd `git rev-parse --show-toplevel`
+set filelist = `git diff --name-only --cached HEAD`
 set fixlist = ""
 set curyear = `date +%Y`
 @ exitstatus = 0
@@ -39,7 +40,7 @@ foreach file ($filelist)
 		echo "note: automatically committing copyright updates to $file"
 		# Preserve the original file permissions
 		chmod --reference=$file $tempfile
-		mv $tempfile $file
+		cp $tempfile $file
 		git add $file
 	else if ($copyright_status != 0) then
 		set fixlist = "$fixlist $file"
@@ -59,8 +60,9 @@ endif
 # -----------------------------------------------------------------
 set nowhitespace_extensions = ""	# List of extensions that cannot have trailing white space removed. Currently none.
 
-set filelist = `git diff --name-only HEAD`	# recompute "filelist" in case Step (1) had regenerated new files
+set filelist = `git diff --name-only --cached HEAD`	# recompute "filelist" in case Step (1) had regenerated new files
 foreach file ($filelist)
+
 	if (! -e $file) then
 		# If file is being deleted as part of this commit, skip whitespace conversion on it
 		continue
@@ -74,6 +76,11 @@ foreach file ($filelist)
 				break
 			endif
 		end
+		file --mime $file | grep "binary" > /dev/null
+		if ($status == 0) then
+			set skip = 1
+			break
+		endif
 		if ($skip) then
 			continue
 		endif
