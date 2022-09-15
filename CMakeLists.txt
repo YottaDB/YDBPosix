@@ -15,7 +15,7 @@ cmake_minimum_required(VERSION 3.14)
 include(FetchContent)
 FetchContent_Declare(YDBCMake
 	GIT_REPOSITORY	https://gitlab.com/YottaDB/Tools/YDBCMake.git
-	GIT_TAG		ec3ed1781a8a9ebeee67cd524029da5176183e8b
+	GIT_TAG		50e7f4a2484b1a8649d6ef1c4a17e626806c886b
 )
 FetchContent_MakeAvailable(YDBCMake)
 message(STATUS "YDBCMake Source Directory: ${ydbcmake_SOURCE_DIR}")
@@ -63,7 +63,7 @@ enable_testing()
 add_test(ydbposixtest_m ${CMAKE_M_COMPILER} -run %ydbposixtest)
 set_tests_properties(ydbposixtest_m PROPERTIES FAIL_REGULAR_EXPRESSION "FAIL;YDB-E-")
 set_tests_properties(ydbposixtest_m PROPERTIES
-	ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/M/_ydbposix.so ${mumps_dir}/libyottadbutil.so;ydb_chset=M")
+	ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so ${mumps_dir}/libyottadbutil.so;ydb_chset=M")
 
 if(EXISTS ${mumps_dir}/utf8)
 	add_test(ydbposixtest_utf8 ${CMAKE_M_COMPILER} -run %ydbposixtest)
