@@ -52,12 +52,3 @@ ln -s ../../pre-commit .git/hooks
 
 Note that this script requires `tcsh`.
 
-### YDBCMake
-
-YDBPosix uses the upstream [YDBCMake] repository for building using YottaDB as the M compiler. Any changes to `ydbcmake/` should first be upstreamed to that repository.
-Once the changes are upstreamed, you can merge them into YDBPosix using
-```
-git pull --no-rebase git@gitlab.com:YottaDB/Tools/YDBCMake.git
-```
-
-[YDBCMake]: https://gitlab.com/YottaDB/Tools/YDBCMake
