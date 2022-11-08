@@ -26,7 +26,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${ydbcmake_SOURCE_DIR}/ydbcmake/")
 
 # Needed because we are compiling C code with flags
 if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE RelWithDebInfo)
+	set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "")
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
