@@ -1,9 +1,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;								;
-; Copyright (c) 2012-2015 Fidelity National Information		;
+; Copyright (c) 2012-2022 Fidelity National Information		;
 ; Services, Inc. and/or its subsidiaries. All rights reserved.	;
 ;								;
-; Copyright (c) 2018-2020 YottaDB LLC and/or its subsidiaries.	;
+; Copyright (c) 2018-2023 YottaDB LLC and/or its subsidiaries.	;
 ; All rights reserved.						;
 ;								;
 ;	This source code contains the intellectual property	;
@@ -14,7 +14,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Current ydbposix version.
-YDBPOSIXVERSION	;v4.0.0
+YDBPOSIXVERSION	;v5.0.0
 
 %ydbposix
 	; High level wrappers to low level POSIX functions
@@ -75,6 +75,31 @@ mkdir(dirname,mode)
 	new errno,retval
 	set retval=$&ydbposix.mkdir(dirname,$select(mode'=+mode:$$filemodeconst(mode),1:mode),.errno)
 	quit:$quit retval quit
+
+; Get value for symbolic resource limits - only lower case because this is an internal utility routine
+rlimitconst(sym)	; get numeric value for resource limit symbolic constant
+	quit:$data(%ydbposix("rlimit",sym)) %ydbposix("rlimit",sym)
+	new symval
+	if $&ydbposix.rlimitconst(sym,.symval)
+	set %ydbposix("rlimit",sym)=symval
+	quit symval
+
+; Get a resource limit
+GETRLIMIT(rlimit,cv)
+	new retval
+	set retval=$$getrlimit(rlimit,.cv)
+	quit:$quit retval quit
+getrlimit(rlimit,cv)
+	new errno
+	if $&ydbposix.getrlimit($select(rlimit'=+rlimit:$$rlimitconst(rlimit),1:rlimit),.cv,.errno) quit:$quit *errno quit
+	quit:$quit 1 quit
+
+GETUID(id)
+	do getuid(.id)
+	quit:$quit 1 quit
+getuid(id)
+	set id=$&ydbposix.getuid()
+	quit:$quit 1 quit
 
 ; Convert  a  broken-down  time  structure to calendar time representation.
 MKTIME(year,mon,mday,hour,min,sec,wday,yday,isdst,unixtime)

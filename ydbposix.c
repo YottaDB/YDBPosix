@@ -1,9 +1,9 @@
 /****************************************************************
  *								*
- * Copyright (c) 2012-2015 Fidelity National Information 	*
+ * Copyright (c) 2012-2022 Fidelity National Information	*
  * Services, Inc. and/or its subsidiaries. All rights reserved.	*
  *								*
- * Copyright (c) 2018-2019 YottaDB LLC and/or its subsidiaries. *
+ * Copyright (c) 2018-2023 YottaDB LLC and/or its subsidiaries. *
  * All rights reserved.						*
  *								*
  *	This source code contains the intellectual property	*
@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/resource.h>
 
 #include "libyottadb.h"
 
@@ -103,6 +104,24 @@ static const int fmode_values[] =
 	S_IXOTH,  S_IXUSR
 };
 
+static const char *rlimit[] =
+{	/* skip NICE because it has evil implications in GT.M */
+# ifndef _AIX
+	"RLIMIT_MEMLOCK",	"RLIMIT_MSGQUEUE",	"RLIMIT_LOCKS",	"RLIMIT_NPROC",	"RLIMIT_RTPRIO",	"RLIMIT_SIGPENDING"
+# endif
+	"RLIMIT_AS",		"RLIMIT_CORE",		"RLIMIT_CPU",	"RLIMIT_DATA",	"RLIMIT_FSIZE",
+	"RLIMIT_NOFILE",	"RLIMIT_STACK",		"RLIMIT_RSS"
+};
+
+static const int rlimit_values[]=
+{
+# ifndef _AIX
+	RLIMIT_MEMLOCK,		RLIMIT_MSGQUEUE,	RLIMIT_LOCKS,	RLIMIT_NPROC,	RLIMIT_RTPRIO,		RLIMIT_SIGPENDING,
+# endif
+	RLIMIT_AS,		RLIMIT_CORE,		RLIMIT_CPU,	RLIMIT_DATA,	RLIMIT_FSIZE,
+	RLIMIT_NOFILE,		RLIMIT_STACK,		RLIMIT_RSS
+};
+
 static const char *priority[] =
 {
 	"LOG_ALERT",  "LOG_CRIT",   "LOG_DEBUG",  "LOG_EMERG", "LOG_ERR",
@@ -174,7 +193,9 @@ int posix_clock_gettime(int argc, int clk_id, long *tv_sec, long *tv_nsec, int *
 int posix_chmod(int argc, char *file, int mode, int *err_num);
 int posix_clock_gettime(int argc, int clk_id, long *tv_sec, long *tv_nsec, int *err_num);
 int posix_cp(int argc, char *source, char *dest, int *err_num);
+int posix_getrlimit(int argc, int resource, unsigned long *cv, int *err_num);
 int posix_gettimeofday(int argc, long *tv_sec, long *tv_usec, int *err_num);
+int posix_getuid(int argc, unsigned long *id);
 int posix_localtime(int argc, long timep, int *sec, int *min, int *hour,
 			     int *mday, int *mon, int *year, int *wday,
 			     int *yday, int *isdst, int *err_num);
@@ -205,11 +226,13 @@ int posixutil_searchstrtab(const char *tblstr[], const int tblval[], int tblsize
 
 int posixhelper_clockval(int argc, char *symconst, int *symval);
 int posixhelper_filemodeconst(int argc, char *symconst, int *symval);
+int posixhelper_rlimitconst(int argc, char *symconst, int *symval);
 int posixhelper_regconst(int argc, char *symconst, int *symval);
 int posixhelper_regofft2offsets(int argc, ydb_string_t *regofftbytes, int *rmso, int *rmeo);
 int posixhelper_signalval(int argc, char *symconst, int *symval);
 int posixhelper_sysconfval(int argc, char *symconst, int *symval);
 int posixhelper_syslogconst(int argc, char *symconst, int *symval);
+
 
 /* POSIX routines */
 
@@ -309,6 +332,22 @@ int posix_cp(int argc, char *source, char *dest, int *err_num)
 	return (int)*err_num;
 }
 
+int posix_getrlimit(int argc, int resource, unsigned long *cv, int *err_num)
+{
+        struct rlimit	rl;
+
+	if (3 != argc)
+		return (int)-argc;
+	else if (-1 == getrlimit(resource, &rl))
+		*err_num = errno;
+	else
+	{
+		*cv = (unsigned long)rl.rlim_cur;
+		*err_num = 0;
+	}
+	return (int)*err_num;
+}
+
 int posix_gettimeofday(int argc, long *tv_sec, long *tv_usec, int *err_num)
 {
 	struct timeval currtimeval;
@@ -325,6 +364,15 @@ int posix_gettimeofday(int argc, long *tv_sec, long *tv_usec, int *err_num)
 	}
 	return (int)*err_num;
 }
+
+int posix_getuid(int argc, unsigned long *id)
+{
+	if (1 != argc)
+		return (int)-argc;
+	*id = (unsigned long)getuid();
+	return 0;
+}
+
 
 int posix_localtime(int argc, long timep, int *sec, int *min, int *hour,
 			     int *mday, int *mon, int *year, int *wday,
@@ -626,6 +674,14 @@ int posixhelper_filemodeconst(int argc, char *symconst, int *symval)
 	if (2 != argc)
 		return (int)-argc;
 	return posixutil_searchstrtab(fmodes, fmode_values, sizeof(fmodes) / sizeof(fmodes[0]), symconst, symval);
+}
+
+/* Given a symbolic constant for limit, provide the numeric value */
+int posixhelper_rlimitconst(int argc, char *symconst, int *symval)
+{
+	if (2 != argc)
+		return (int)-argc;
+	return posixutil_searchstrtab(rlimit, rlimit_values, sizeof(rlimit) / sizeof(rlimit[0]), symconst, symval);
 }
 
 /* Given a symbolic constant for regex facility or level, provide the numeric value */

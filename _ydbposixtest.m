@@ -1,9 +1,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;								;
-; Copyright (c) 2012-2015 Fidelity National Information		;
+; Copyright (c) 2012-2022 Fidelity National Information		;
 ; Services, Inc. and/or its subsidiaries. All rights reserved.	;
 ;								;
-; Copyright (c) 2018-2019 YottaDB LLC and/or its subsidiaries.	;
+; Copyright (c) 2018-2023 YottaDB LLC and/or its subsidiaries.	;
 ; All rights reserved.						;
 ;								;
 ;	This source code contains the intellectual property	;
@@ -60,6 +60,41 @@
         for i=0:1  set retval=$&ydbposix.gettimeofday(.tvsec,.tvusec,.errno) quit:tvusec  set:i $extract(tmp,1,4)="FAIL"
         write tmp,!
         set tv=tvusec/1E6+tvsec
+
+        ; Check that getrlimit returns expected values; uses getuid to check values against /process
+	set file="/proc/"_$job_"/limits"	; get our values from /proc
+	open file:readonly
+	use file:rewind
+	do
+	. new bad,i,val		; parse out the getrlimit values
+	. read v			; don't want header
+	. for i=1:1:16 read v set val($piece($text(@$translate($piece(v," ",2,3)," ")),";",2))=$piece($extract(v,27,99)," ")
+	. close file			; then check some, using both lower and upper case forms, to see they match the /proc values
+	. for lim="MSGQUEUE","MEMLOCK" if $&ydbposix.getrlimit("RLIMIT_"_lim,.value,.errno),value'=val(lim),$increment(bad) zwrite val(lim),value
+	. for lim="SIGPENDING","NPROC" if $&ydbposix.getrlimit("RLIMIT_"_lim,.value,.errno),value'=val(lim),$increment(bad) zwrite val(lim),value
+	. write $select('$get(bad):"PASS",1:"FAIL")," GETRLIMIT",!
+	; table below used in the first FOR loop above helps match the /proc text to the corresponding RLIMIT keyword
+addressspace;AS
+corefile;CORE
+cputime;CPU
+datasize;DATA
+filelocks;LOCKS
+filesize;FSIZE
+lockedmemory;MEMLOCK
+msgqueuesize;MSGQUEUE
+openfiles;NOFILE
+pendingsignals;SIGPENDING
+processes;NPROC
+realtimepriority;RTPRIO
+residentset;RSS
+stacksize;STACK
+
+	; Check that getuid returns an appropriate value
+	do
+	. new id,pipe
+	. set pipe="pipe" open pipe:(command="id -u")::pipe use pipe read id close pipe
+	. if '$&ydbposix.getuid(.value),value
+	. write $select(id=value:"PASS",1:"FAIL")," GETUID",!
 
         ; Check regular expression pattern matching
         set oslist="AIXHP-UXLinuxSolaris"
