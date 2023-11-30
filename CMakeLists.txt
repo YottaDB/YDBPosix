@@ -1,6 +1,6 @@
 #################################################################
 #								#
-# Copyright (c) 2018-2022 YottaDB LLC and/or its subsidiaries.	#
+# Copyright (c) 2018-2023 YottaDB LLC and/or its subsidiaries.	#
 # All rights reserved.						#
 #								#
 #	This source code contains the intellectual property	#
@@ -38,6 +38,8 @@ find_package(YOTTADB REQUIRED)
 # Compile/Install the C callout library
 add_library(ydbposix SHARED ydbposix.c)
 target_include_directories(ydbposix PRIVATE ${YOTTADB_INCLUDE_DIRS})
+target_link_libraries(ydbposix PRIVATE m)
+
 install(TARGETS ydbposix DESTINATION ${YOTTADB_C_PLUGIN_DIR})
 
 # Compile/Install the M Plugin
@@ -59,6 +61,12 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ydbposix.xc
 set(install_dir ${CMAKE_CURRENT_BINARY_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ydbposix.xc.in
   ${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc
+)
+
+# Copy math library output ref file
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libmath.ref
+  ${CMAKE_CURRENT_BINARY_DIR}/libmath.ref
+  COPYONLY
 )
 
 # Testing

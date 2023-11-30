@@ -729,3 +729,271 @@ int posixhelper_syslogconst(int argc, char *symconst, int *symval)
 	return posixutil_searchstrtab(priority, priority_values, sizeof(priority) / sizeof(priority[0]), symconst, symval);
 }
 
+/* libm functions contributed to YottaDB by a contributor who wished to remain anonymous */
+#include <math.h>
+
+int posix_m_exp   (int c, double *x, double *rc);
+int posix_m_log   (int c, double *x, double *rc);
+int posix_m_log10 (int c, double *x, double *rc);
+int posix_m_cos   (int c, double *x, double *rc);
+int posix_m_sin   (int c, double *x, double *rc);
+int posix_m_arcsin(int c, double *x, double *rc);
+int posix_m_arccos(int c, double *x, double *rc);
+int posix_m_tan   (int c, double *x, double *rc);
+int posix_m_arctan(int c, double *x, double *rc);
+int posix_m_sqrt  (int c, double *x, double *rc);
+int posix_m_cosh  (int c, double *x, double *rc);
+int posix_m_sinh  (int c, double *x, double *rc);
+int posix_m_tanh  (int c, double *x, double *rc);
+int posix_m_acosh (int c, double *x, double *rc);
+int posix_m_asinh (int c, double *x, double *rc);
+int posix_m_atanh (int c, double *x, double *rc);
+int posix_m_ceil  (int c, double *x, double *rc);
+int posix_m_fabs  (int c, double *x, double *rc);
+int posix_m_floor (int c, double *x, double *rc);
+int posix_m_pow   (int c, double *x, double *y, double *rc);
+int posix_m_fmod  (int c, double *x, double *y, double *rc);
+int posix_m_fdim  (int c, double *x, double *y, double *rc);
+int posix_m_fmax  (int c, double *x, double *y, double *rc);
+int posix_m_fmin  (int c, double *x, double *y, double *rc);
+int posix_m_fma   (int c, double *x, double *y, double *z, double *rc);
+
+
+int posix_m_exp(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =exp(*x);
+
+	return 0;
+}
+
+int posix_m_log(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+	if (*x<0)
+		return -1;
+
+	*rc =log(*x);
+	return 0;
+}
+
+int posix_m_log10(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+	if (*x <0)
+		return -1;
+
+	*rc =log10(*x);
+	return 0;
+}
+
+int posix_m_cos(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =cos(*x);
+	return 0;
+}
+
+int posix_m_sin(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+	*rc =sin(*x);
+	return 0;
+}
+
+int posix_m_arcsin(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+	if ((*x <-1) || (*x >1))
+		return -1;
+
+	*rc =asin(*x);
+	return 0;
+}
+
+int posix_m_arccos(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+	if ((*x <-1) || (*x >1))
+		return -1;
+
+	*rc=acos(*x);
+	return 0;
+}
+
+int posix_m_tan(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =tan(*x);
+	return 0;
+}
+
+int posix_m_arctan(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =atan(*x);
+	return 0;
+}
+
+int posix_m_sqrt(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+	if (*x <0)
+		return -1;
+
+	*rc =sqrt(*x);
+	return 0;
+}
+
+int posix_m_cosh(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =cosh(*x);
+	return 0;
+}
+
+int posix_m_sinh(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =sinh(*x);
+	return 0;
+}
+
+int posix_m_tanh(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =tanh(*x);
+	return 0;
+}
+
+int posix_m_acosh(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+	if (*x <1)
+		return -1;
+
+	*rc =acosh(*x);
+	return 0;
+}
+
+int posix_m_asinh(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =asinh(*x);
+	return 0;
+}
+
+int posix_m_atanh(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+	if ((*x <-1) || (*x >1))
+		return -1;
+
+	*rc =atanh(*x);
+	return 0;
+}
+
+int posix_m_ceil(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =ceil(*x);
+	return 0;
+}
+
+int posix_m_fabs(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =fabs(*x);
+	return 0;
+}
+
+int posix_m_floor(int argc, double *x, double *rc)
+{
+	if (2 !=argc)
+		return -argc;
+
+	*rc =floor(*x);
+	return 0;
+}
+
+int posix_m_pow(int argc, double *x, double *y, double *rc)
+{
+	if (3 !=argc)
+		return -argc;
+
+	*rc =pow(*x,*y);
+	return 0;
+}
+
+int posix_m_fmod(int argc, double *x, double *y, double *rc)
+{
+	if (3 !=argc)
+		return -argc;
+
+	*rc =fmod(*x,*y);
+	return 0;
+}
+
+int posix_m_fdim(int argc, double *x, double *y, double *rc)
+{
+	if (3 !=argc)
+		return -argc;
+
+	*rc =fdim(*x,*y);
+	return 0;
+}
+
+int posix_m_fmax(int argc, double *x, double *y, double *rc)
+{
+	if (3 !=argc)
+		return -argc;
+
+	*rc =fmax(*x,*y);
+	return 0;
+}
+
+int posix_m_fmin(int argc, double *x, double *y, double *rc)
+{
+	if (3 !=argc)
+		return -argc;
+
+	*rc =fmin(*x,*y);
+	return 0;
+}
+
+int posix_m_fma(int argc, double *x, double *y, double *z, double *rc)
+{
+	if (4 !=argc)
+		return -argc;
+
+	*rc =fma(*x,*y,*z);
+	return 0;
+}

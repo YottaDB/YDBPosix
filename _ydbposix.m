@@ -14,7 +14,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Current ydbposix version.
-YDBPOSIXVERSION	;v5.0.0
+YDBPOSIXVERSION	;v6.0.0
 
 %ydbposix
 	; High level wrappers to low level POSIX functions
@@ -339,6 +339,157 @@ zhorolog()
 	if $&ydbposix.gettimeofday(.tvsec,.tvusec,.errno)
 	if $&ydbposix.localtime(tvsec,.sec,.min,.hour,.mday,.mon,.year,.wday,.yday,.isdst,.errno)
 	quit:$quit $$FUNC^%DATE(mon+1_"/"_mday_"/"_(1900+year))_","_(((hour*60)+min)*60+sec)_$select(tvusec:tvusec*1E-6,1:"") quit
+
+; libm functions contributed to YottaDB by a contributor who wished to remain anonymous
+EXP(x,errno)	goto exp+1
+exp(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.exp(x,.out)
+	quit:$quit out quit
+
+LOG(x,errno)	goto log+1
+log(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.log(x,.out)
+	quit:$quit out quit
+
+LOG10(x,errno)	goto log10+1
+log10(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.log10(x,.out)
+	quit:$quit out quit
+
+COS(x,errno)	goto cos+1
+cos(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.cos(x,.out)
+	quit:$quit out quit
+
+SIN(x,errno)	goto sin+1
+sin(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.sin(x,.out)
+	quit:$quit out quit
+
+ARCSIN(x,errno)	goto arcsin+1
+arcsin(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.arcsin(x,.out)
+	quit:$quit out quit
+
+ARCCOS(x,errno)	goto arccos+1
+arccos(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.arccos(x,.out)
+	quit:$quit out quit
+
+TAN(x,errno)	goto tan+1
+tan(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.tan(x,.out)
+	quit:$quit out quit
+
+ARCTAN(x,errno)	goto arctan+1
+arctan(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.arctan(x,.out)
+	quit:$quit out quit
+
+SQRT(x,errno)	goto sqrt+1
+sqrt(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.sqrt(x,.out)
+	quit:$quit out quit
+
+COSH(x,errno)	goto cosh+1
+cosh(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.cosh(x,.out)
+	quit:$quit out quit
+
+SINH(x,errno)	goto sinh+1
+sinh(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.sinh(x,.out)
+	quit:$quit out quit
+
+TANH(x,errno)	goto tanh+1
+tanh(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.tanh(x,.out)
+	quit:$quit out quit
+
+ACOSH(x,errno)	goto acosh+1
+acosh(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.acosh(x,.out)
+	quit:$quit out quit
+
+ASINH(x,errno)	goto asinh+1
+asinh(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.asinh(x,.out)
+	quit:$quit out quit
+
+ATANH(x,errno)	goto atanh+1
+atanh(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.atanh(x,.out)
+	quit:$quit out quit
+
+CEIL(x,errno)	goto ceil+1
+ceil(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.ceil(x,.out)
+	quit:$quit out quit
+
+FABS(x,errno)	goto fabs+1
+fabs(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.fabs(x,.out)
+	quit:$quit out quit
+
+FLOOR(x,errno)	goto floor+1
+floor(x,errno)	;$$;
+	new out
+	set errno=$&ydbposix.floor(x,.out)
+	quit:$quit out quit
+
+POW(x,y,errno)	goto pow+1
+pow(x,y,errno)	;$$;
+	new out
+	set errno=$&ydbposix.pow(x,y,.out)
+	quit:$quit out quit
+
+FMOD(x,y,errno)	goto fmod+1
+fmod(x,y,errno)	;$$;
+	new out
+	set errno=$&ydbposix.fmod(x,y,.out)
+	quit:$quit out quit
+
+FDIM(x,y,errno)	goto fdim+1
+fdim(x,y,errno)	;$$;
+	new out
+	set errno=$&ydbposix.fdim(x,y,.out)
+	quit:$quit out quit
+
+FMAX(x,y,errno)	goto fmax+1
+fmax(x,y,errno)	;$$;
+	new out
+	set errno=$&ydbposix.fmax(x,y,.out)
+	quit:$quit out quit
+
+FMIN(x,y,errno)	goto fmin+1
+fmin(x,y,errno)	;$$;
+	new out
+	set errno=$&ydbposix.fmin(x,y,.out)
+	quit:$quit out quit
+
+FMA(x,y,z,errno)	goto fma+1
+fma(x,y,z,errno)	;$$;
+	new out
+	set errno=$&ydbposix.fma(x,y,z,.out)
+	quit:$quit out quit
 
 ;	Error message texts
 U254	;"-F-BADTEMPLATE Template "_template_" does not end in ""XXXXXX"""

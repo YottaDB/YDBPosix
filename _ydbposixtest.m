@@ -334,8 +334,41 @@ stacksize;STACK
 	set retval=$$SYSCONF^%ydbposix("ARG_MAX",.value) write:'retval "FAIL SYSCONF retval=",retval,!
 	if (0<value) write "PASS SYSCONF",!
 	else  write "FAIL SYSCONF ARG_MAX=",value,!
-
+ydbmathtest ; FALLTHROUGH
 	; All done with posix test
+	; Check libmath output against a reference file
+	open "libm.out":newversion
+	use "libm.out"
+	new x,y,z,t,out
+	for x=-2:0.5:2 set out=$$exp^%ydbposix(x,.t)    write !,$s(t=0:"ok",1:"er"),":","exp:",x," ",out
+	for x=-2:0.5:2 set out=$$log^%ydbposix(x,.t)    write !,$s(t=0:"ok",1:"er"),":","log:",x," ",out
+	for x=-2:0.5:2 set out=$$log10^%ydbposix(x,.t)  write !,$s(t=0:"ok",1:"er"),":","log10:",x," ",out
+	for x=-2:0.5:2 set out=$$cos^%ydbposix(x,.t)    write !,$s(t=0:"ok",1:"er"),":","cos:",x," ",out
+	for x=-2:0.5:2 set out=$$sin^%ydbposix(x,.t)    write !,$s(t=0:"ok",1:"er"),":","sin:",x," ",out
+	for x=-2:0.5:2 set out=$$arcsin^%ydbposix(x,.t) write !,$s(t=0:"ok",1:"er"),":","arcsin:",x," ",out
+	for x=-2:0.5:2 set out=$$arccos^%ydbposix(x,.t) write !,$s(t=0:"ok",1:"er"),":","arccos:",x," ",out
+	for x=-2:0.5:2 set out=$$tan^%ydbposix(x,.t)    write !,$s(t=0:"ok",1:"er"),":","tan:",x," ",out
+	for x=-2:0.5:2 set out=$$arctan^%ydbposix(x,.t) write !,$s(t=0:"ok",1:"er"),":","arctan:",x," ",out
+	for x=-2:0.5:2 set out=$$sqrt^%ydbposix(x,.t)   write !,$s(t=0:"ok",1:"er"),":","sqrt:",x," ",out
+	for x=-2:0.5:2 set out=$$cosh^%ydbposix(x,.t)   write !,$s(t=0:"ok",1:"er"),":","cosh:",x," ",out
+	for x=-2:0.5:2 set out=$$sinh^%ydbposix(x,.t)   write !,$s(t=0:"ok",1:"er"),":","sinh:",x," ",out
+	for x=-2:0.5:2 set out=$$tanh^%ydbposix(x,.t)   write !,$s(t=0:"ok",1:"er"),":","tanh:",x," ",out
+	for x=-2:0.5:2 set out=$$acosh^%ydbposix(x,.t)  write !,$s(t=0:"ok",1:"er"),":","acosh:",x," ",out
+	for x=-2:0.5:2 set out=$$asinh^%ydbposix(x,.t)  write !,$s(t=0:"ok",1:"er"),":","asinh:",x," ",out
+	for x=-2:0.5:2 set out=$$atanh^%ydbposix(x,.t)  write !,$s(t=0:"ok",1:"er"),":","atanh:",x," ",out
+	for x=-2:0.5:2 set out=$$ceil^%ydbposix(x,.t)   write !,$s(t=0:"ok",1:"er"),":","ceil:",x," ",out
+	for x=-2:0.5:2 set out=$$fabs^%ydbposix(x,.t)   write !,$s(t=0:"ok",1:"er"),":","fabs:",x," ",out
+	for x=-2:0.5:2 set out=$$floor^%ydbposix(x,.t)  write !,$s(t=0:"ok",1:"er"),":","floor:",x," ",out
+	for x=-2:0.5:2 for y=-2:0.5:2 set out=$$pow^%ydbposix(x,y,.t)  write !,$s(t=0:"ok",1:"er"),":","pow:",x," ",y," ",out
+	for x=-2:0.5:2 for y=-2:0.5:2 set out=$$fmod^%ydbposix(x,y,.t) write !,$s(t=0:"ok",1:"er"),":","fmod:",x," ",y," ",out
+	for x=-2:0.5:2 for y=-2:0.5:2 set out=$$fdim^%ydbposix(x,y,.t) write !,$s(t=0:"ok",1:"er"),":","fdim:",x," ",y," ",out
+	for x=-2:0.5:2 for y=-2:0.5:2 set out=$$fmax^%ydbposix(x,y,.t) write !,$s(t=0:"ok",1:"er"),":","fmax:",x," ",y," ",out
+	for x=-2:0.5:2 for y=-2:0.5:2 set out=$$fmin^%ydbposix(x,y,.t) write !,$s(t=0:"ok",1:"er"),":","fmin:",x," ",y," ",out
+	for x=-2:0.5:2 for y=-2:0.5:2 for z=-2:0.5:2 set out=$$fma^%ydbposix(x,y,z,.t) write !,$s(t=0:"ok",1:"er"),":","fma:",x," ",y," ",z," ",out
+	close "libm.out"
+	zsystem "diff libm.out libmath.ref"
+	if $zsystem'=0 write "FAIL LIBM",!
+	else  write "PASS LIBM",!
 	quit
 
 BADOPEN

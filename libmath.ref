@@ -1,0 +1,1306 @@
+
+ok:exp:-2 .135335283236613
+ok:exp:-1.5 .22313016014843
+ok:exp:-1 .367879441171442
+ok:exp:-.5 .606530659712633
+ok:exp:0 1
+ok:exp:.5 1.64872127070013
+ok:exp:1 2.71828182845905
+ok:exp:1.5 4.48168907033806
+ok:exp:2 7.38905609893065
+er:log:-2 0
+er:log:-1.5 0
+er:log:-1 0
+er:log:-.5 0
+ok:log:0 0
+ok:log:.5 -.693147180559945
+ok:log:1 0
+ok:log:1.5 .405465108108164
+ok:log:2 .693147180559945
+er:log10:-2 0
+er:log10:-1.5 0
+er:log10:-1 0
+er:log10:-.5 0
+ok:log10:0 0
+ok:log10:.5 -.301029995663981
+ok:log10:1 0
+ok:log10:1.5 .176091259055681
+ok:log10:2 .301029995663981
+ok:cos:-2 -.416146836547142
+ok:cos:-1.5 .0707372016677029
+ok:cos:-1 .54030230586814
+ok:cos:-.5 .877582561890373
+ok:cos:0 1
+ok:cos:.5 .877582561890373
+ok:cos:1 .54030230586814
+ok:cos:1.5 .0707372016677029
+ok:cos:2 -.416146836547142
+ok:sin:-2 -.909297426825682
+ok:sin:-1.5 -.997494986604054
+ok:sin:-1 -.841470984807897
+ok:sin:-.5 -.479425538604203
+ok:sin:0 0
+ok:sin:.5 .479425538604203
+ok:sin:1 .841470984807897
+ok:sin:1.5 .997494986604054
+ok:sin:2 .909297426825682
+er:arcsin:-2 0
+er:arcsin:-1.5 0
+ok:arcsin:-1 -1.5707963267949
+ok:arcsin:-.5 -.523598775598299
+ok:arcsin:0 0
+ok:arcsin:.5 .523598775598299
+ok:arcsin:1 1.5707963267949
+er:arcsin:1.5 0
+er:arcsin:2 0
+er:arccos:-2 0
+er:arccos:-1.5 0
+ok:arccos:-1 3.14159265358979
+ok:arccos:-.5 2.0943951023932
+ok:arccos:0 1.5707963267949
+ok:arccos:.5 1.0471975511966
+ok:arccos:1 0
+er:arccos:1.5 0
+er:arccos:2 0
+ok:tan:-2 2.18503986326152
+ok:tan:-1.5 -14.1014199471717
+ok:tan:-1 -1.5574077246549
+ok:tan:-.5 -.54630248984379
+ok:tan:0 0
+ok:tan:.5 .54630248984379
+ok:tan:1 1.5574077246549
+ok:tan:1.5 14.1014199471717
+ok:tan:2 -2.18503986326152
+ok:arctan:-2 -1.10714871779409
+ok:arctan:-1.5 -.982793723247329
+ok:arctan:-1 -.785398163397448
+ok:arctan:-.5 -.463647609000806
+ok:arctan:0 0
+ok:arctan:.5 .463647609000806
+ok:arctan:1 .785398163397448
+ok:arctan:1.5 .982793723247329
+ok:arctan:2 1.10714871779409
+er:sqrt:-2 0
+er:sqrt:-1.5 0
+er:sqrt:-1 0
+er:sqrt:-.5 0
+ok:sqrt:0 0
+ok:sqrt:.5 .707106781186548
+ok:sqrt:1 1
+ok:sqrt:1.5 1.22474487139159
+ok:sqrt:2 1.4142135623731
+ok:cosh:-2 3.76219569108363
+ok:cosh:-1.5 2.35240961524325
+ok:cosh:-1 1.54308063481524
+ok:cosh:-.5 1.12762596520638
+ok:cosh:0 1
+ok:cosh:.5 1.12762596520638
+ok:cosh:1 1.54308063481524
+ok:cosh:1.5 2.35240961524325
+ok:cosh:2 3.76219569108363
+ok:sinh:-2 -3.62686040784702
+ok:sinh:-1.5 -2.12927945509482
+ok:sinh:-1 -1.1752011936438
+ok:sinh:-.5 -.521095305493747
+ok:sinh:0 0
+ok:sinh:.5 .521095305493747
+ok:sinh:1 1.1752011936438
+ok:sinh:1.5 2.12927945509482
+ok:sinh:2 3.62686040784702
+ok:tanh:-2 -.964027580075817
+ok:tanh:-1.5 -.905148253644866
+ok:tanh:-1 -.761594155955765
+ok:tanh:-.5 -.46211715726001
+ok:tanh:0 0
+ok:tanh:.5 .46211715726001
+ok:tanh:1 .761594155955765
+ok:tanh:1.5 .905148253644866
+ok:tanh:2 .964027580075817
+er:acosh:-2 0
+er:acosh:-1.5 0
+er:acosh:-1 0
+er:acosh:-.5 0
+er:acosh:0 0
+er:acosh:.5 0
+ok:acosh:1 0
+ok:acosh:1.5 .962423650119207
+ok:acosh:2 1.31695789692482
+ok:asinh:-2 -1.44363547517881
+ok:asinh:-1.5 -1.19476321728711
+ok:asinh:-1 -.881373587019543
+ok:asinh:-.5 -.481211825059603
+ok:asinh:0 0
+ok:asinh:.5 .481211825059603
+ok:asinh:1 .881373587019543
+ok:asinh:1.5 1.19476321728711
+ok:asinh:2 1.44363547517881
+er:atanh:-2 0
+er:atanh:-1.5 0
+ok:atanh:-1 0
+ok:atanh:-.5 -.549306144334055
+ok:atanh:0 0
+ok:atanh:.5 .549306144334055
+ok:atanh:1 0
+er:atanh:1.5 0
+er:atanh:2 0
+ok:ceil:-2 -2
+ok:ceil:-1.5 -1
+ok:ceil:-1 -1
+ok:ceil:-.5 0
+ok:ceil:0 0
+ok:ceil:.5 1
+ok:ceil:1 1
+ok:ceil:1.5 2
+ok:ceil:2 2
+ok:fabs:-2 2
+ok:fabs:-1.5 1.5
+ok:fabs:-1 1
+ok:fabs:-.5 .5
+ok:fabs:0 0
+ok:fabs:.5 .5
+ok:fabs:1 1
+ok:fabs:1.5 1.5
+ok:fabs:2 2
+ok:floor:-2 -2
+ok:floor:-1.5 -2
+ok:floor:-1 -1
+ok:floor:-.5 -1
+ok:floor:0 0
+ok:floor:.5 0
+ok:floor:1 1
+ok:floor:1.5 1
+ok:floor:2 2
+ok:pow:-2 -2 .25
+ok:pow:-2 -1.5 0
+ok:pow:-2 -1 -.5
+ok:pow:-2 -.5 0
+ok:pow:-2 0 1
+ok:pow:-2 .5 0
+ok:pow:-2 1 -2
+ok:pow:-2 1.5 0
+ok:pow:-2 2 4
+ok:pow:-1.5 -2 .444444444444444
+ok:pow:-1.5 -1.5 0
+ok:pow:-1.5 -1 -.666666666666667
+ok:pow:-1.5 -.5 0
+ok:pow:-1.5 0 1
+ok:pow:-1.5 .5 0
+ok:pow:-1.5 1 -1.5
+ok:pow:-1.5 1.5 0
+ok:pow:-1.5 2 2.25
+ok:pow:-1 -2 1
+ok:pow:-1 -1.5 0
+ok:pow:-1 -1 -1
+ok:pow:-1 -.5 0
+ok:pow:-1 0 1
+ok:pow:-1 .5 0
+ok:pow:-1 1 -1
+ok:pow:-1 1.5 0
+ok:pow:-1 2 1
+ok:pow:-.5 -2 4
+ok:pow:-.5 -1.5 0
+ok:pow:-.5 -1 -2
+ok:pow:-.5 -.5 0
+ok:pow:-.5 0 1
+ok:pow:-.5 .5 0
+ok:pow:-.5 1 -.5
+ok:pow:-.5 1.5 0
+ok:pow:-.5 2 .25
+ok:pow:0 -2 0
+ok:pow:0 -1.5 0
+ok:pow:0 -1 0
+ok:pow:0 -.5 0
+ok:pow:0 0 1
+ok:pow:0 .5 0
+ok:pow:0 1 0
+ok:pow:0 1.5 0
+ok:pow:0 2 0
+ok:pow:.5 -2 4
+ok:pow:.5 -1.5 2.82842712474619
+ok:pow:.5 -1 2
+ok:pow:.5 -.5 1.4142135623731
+ok:pow:.5 0 1
+ok:pow:.5 .5 .707106781186548
+ok:pow:.5 1 .5
+ok:pow:.5 1.5 .353553390593274
+ok:pow:.5 2 .25
+ok:pow:1 -2 1
+ok:pow:1 -1.5 1
+ok:pow:1 -1 1
+ok:pow:1 -.5 1
+ok:pow:1 0 1
+ok:pow:1 .5 1
+ok:pow:1 1 1
+ok:pow:1 1.5 1
+ok:pow:1 2 1
+ok:pow:1.5 -2 .444444444444444
+ok:pow:1.5 -1.5 .544331053951817
+ok:pow:1.5 -1 .666666666666667
+ok:pow:1.5 -.5 .816496580927726
+ok:pow:1.5 0 1
+ok:pow:1.5 .5 1.22474487139159
+ok:pow:1.5 1 1.5
+ok:pow:1.5 1.5 1.83711730708738
+ok:pow:1.5 2 2.25
+ok:pow:2 -2 .25
+ok:pow:2 -1.5 .353553390593274
+ok:pow:2 -1 .5
+ok:pow:2 -.5 .707106781186548
+ok:pow:2 0 1
+ok:pow:2 .5 1.4142135623731
+ok:pow:2 1 2
+ok:pow:2 1.5 2.82842712474619
+ok:pow:2 2 4
+ok:fmod:-2 -2 0
+ok:fmod:-2 -1.5 -.5
+ok:fmod:-2 -1 0
+ok:fmod:-2 -.5 0
+ok:fmod:-2 0 0
+ok:fmod:-2 .5 0
+ok:fmod:-2 1 0
+ok:fmod:-2 1.5 -.5
+ok:fmod:-2 2 0
+ok:fmod:-1.5 -2 -1.5
+ok:fmod:-1.5 -1.5 0
+ok:fmod:-1.5 -1 -.5
+ok:fmod:-1.5 -.5 0
+ok:fmod:-1.5 0 0
+ok:fmod:-1.5 .5 0
+ok:fmod:-1.5 1 -.5
+ok:fmod:-1.5 1.5 0
+ok:fmod:-1.5 2 -1.5
+ok:fmod:-1 -2 -1
+ok:fmod:-1 -1.5 -1
+ok:fmod:-1 -1 0
+ok:fmod:-1 -.5 0
+ok:fmod:-1 0 0
+ok:fmod:-1 .5 0
+ok:fmod:-1 1 0
+ok:fmod:-1 1.5 -1
+ok:fmod:-1 2 -1
+ok:fmod:-.5 -2 -.5
+ok:fmod:-.5 -1.5 -.5
+ok:fmod:-.5 -1 -.5
+ok:fmod:-.5 -.5 0
+ok:fmod:-.5 0 0
+ok:fmod:-.5 .5 0
+ok:fmod:-.5 1 -.5
+ok:fmod:-.5 1.5 -.5
+ok:fmod:-.5 2 -.5
+ok:fmod:0 -2 0
+ok:fmod:0 -1.5 0
+ok:fmod:0 -1 0
+ok:fmod:0 -.5 0
+ok:fmod:0 0 0
+ok:fmod:0 .5 0
+ok:fmod:0 1 0
+ok:fmod:0 1.5 0
+ok:fmod:0 2 0
+ok:fmod:.5 -2 .5
+ok:fmod:.5 -1.5 .5
+ok:fmod:.5 -1 .5
+ok:fmod:.5 -.5 0
+ok:fmod:.5 0 0
+ok:fmod:.5 .5 0
+ok:fmod:.5 1 .5
+ok:fmod:.5 1.5 .5
+ok:fmod:.5 2 .5
+ok:fmod:1 -2 1
+ok:fmod:1 -1.5 1
+ok:fmod:1 -1 0
+ok:fmod:1 -.5 0
+ok:fmod:1 0 0
+ok:fmod:1 .5 0
+ok:fmod:1 1 0
+ok:fmod:1 1.5 1
+ok:fmod:1 2 1
+ok:fmod:1.5 -2 1.5
+ok:fmod:1.5 -1.5 0
+ok:fmod:1.5 -1 .5
+ok:fmod:1.5 -.5 0
+ok:fmod:1.5 0 0
+ok:fmod:1.5 .5 0
+ok:fmod:1.5 1 .5
+ok:fmod:1.5 1.5 0
+ok:fmod:1.5 2 1.5
+ok:fmod:2 -2 0
+ok:fmod:2 -1.5 .5
+ok:fmod:2 -1 0
+ok:fmod:2 -.5 0
+ok:fmod:2 0 0
+ok:fmod:2 .5 0
+ok:fmod:2 1 0
+ok:fmod:2 1.5 .5
+ok:fmod:2 2 0
+ok:fdim:-2 -2 0
+ok:fdim:-2 -1.5 0
+ok:fdim:-2 -1 0
+ok:fdim:-2 -.5 0
+ok:fdim:-2 0 0
+ok:fdim:-2 .5 0
+ok:fdim:-2 1 0
+ok:fdim:-2 1.5 0
+ok:fdim:-2 2 0
+ok:fdim:-1.5 -2 .5
+ok:fdim:-1.5 -1.5 0
+ok:fdim:-1.5 -1 0
+ok:fdim:-1.5 -.5 0
+ok:fdim:-1.5 0 0
+ok:fdim:-1.5 .5 0
+ok:fdim:-1.5 1 0
+ok:fdim:-1.5 1.5 0
+ok:fdim:-1.5 2 0
+ok:fdim:-1 -2 1
+ok:fdim:-1 -1.5 .5
+ok:fdim:-1 -1 0
+ok:fdim:-1 -.5 0
+ok:fdim:-1 0 0
+ok:fdim:-1 .5 0
+ok:fdim:-1 1 0
+ok:fdim:-1 1.5 0
+ok:fdim:-1 2 0
+ok:fdim:-.5 -2 1.5
+ok:fdim:-.5 -1.5 1
+ok:fdim:-.5 -1 .5
+ok:fdim:-.5 -.5 0
+ok:fdim:-.5 0 0
+ok:fdim:-.5 .5 0
+ok:fdim:-.5 1 0
+ok:fdim:-.5 1.5 0
+ok:fdim:-.5 2 0
+ok:fdim:0 -2 2
+ok:fdim:0 -1.5 1.5
+ok:fdim:0 -1 1
+ok:fdim:0 -.5 .5
+ok:fdim:0 0 0
+ok:fdim:0 .5 0
+ok:fdim:0 1 0
+ok:fdim:0 1.5 0
+ok:fdim:0 2 0
+ok:fdim:.5 -2 2.5
+ok:fdim:.5 -1.5 2
+ok:fdim:.5 -1 1.5
+ok:fdim:.5 -.5 1
+ok:fdim:.5 0 .5
+ok:fdim:.5 .5 0
+ok:fdim:.5 1 0
+ok:fdim:.5 1.5 0
+ok:fdim:.5 2 0
+ok:fdim:1 -2 3
+ok:fdim:1 -1.5 2.5
+ok:fdim:1 -1 2
+ok:fdim:1 -.5 1.5
+ok:fdim:1 0 1
+ok:fdim:1 .5 .5
+ok:fdim:1 1 0
+ok:fdim:1 1.5 0
+ok:fdim:1 2 0
+ok:fdim:1.5 -2 3.5
+ok:fdim:1.5 -1.5 3
+ok:fdim:1.5 -1 2.5
+ok:fdim:1.5 -.5 2
+ok:fdim:1.5 0 1.5
+ok:fdim:1.5 .5 1
+ok:fdim:1.5 1 .5
+ok:fdim:1.5 1.5 0
+ok:fdim:1.5 2 0
+ok:fdim:2 -2 4
+ok:fdim:2 -1.5 3.5
+ok:fdim:2 -1 3
+ok:fdim:2 -.5 2.5
+ok:fdim:2 0 2
+ok:fdim:2 .5 1.5
+ok:fdim:2 1 1
+ok:fdim:2 1.5 .5
+ok:fdim:2 2 0
+ok:fmax:-2 -2 -2
+ok:fmax:-2 -1.5 -1.5
+ok:fmax:-2 -1 -1
+ok:fmax:-2 -.5 -.5
+ok:fmax:-2 0 0
+ok:fmax:-2 .5 .5
+ok:fmax:-2 1 1
+ok:fmax:-2 1.5 1.5
+ok:fmax:-2 2 2
+ok:fmax:-1.5 -2 -1.5
+ok:fmax:-1.5 -1.5 -1.5
+ok:fmax:-1.5 -1 -1
+ok:fmax:-1.5 -.5 -.5
+ok:fmax:-1.5 0 0
+ok:fmax:-1.5 .5 .5
+ok:fmax:-1.5 1 1
+ok:fmax:-1.5 1.5 1.5
+ok:fmax:-1.5 2 2
+ok:fmax:-1 -2 -1
+ok:fmax:-1 -1.5 -1
+ok:fmax:-1 -1 -1
+ok:fmax:-1 -.5 -.5
+ok:fmax:-1 0 0
+ok:fmax:-1 .5 .5
+ok:fmax:-1 1 1
+ok:fmax:-1 1.5 1.5
+ok:fmax:-1 2 2
+ok:fmax:-.5 -2 -.5
+ok:fmax:-.5 -1.5 -.5
+ok:fmax:-.5 -1 -.5
+ok:fmax:-.5 -.5 -.5
+ok:fmax:-.5 0 0
+ok:fmax:-.5 .5 .5
+ok:fmax:-.5 1 1
+ok:fmax:-.5 1.5 1.5
+ok:fmax:-.5 2 2
+ok:fmax:0 -2 0
+ok:fmax:0 -1.5 0
+ok:fmax:0 -1 0
+ok:fmax:0 -.5 0
+ok:fmax:0 0 0
+ok:fmax:0 .5 .5
+ok:fmax:0 1 1
+ok:fmax:0 1.5 1.5
+ok:fmax:0 2 2
+ok:fmax:.5 -2 .5
+ok:fmax:.5 -1.5 .5
+ok:fmax:.5 -1 .5
+ok:fmax:.5 -.5 .5
+ok:fmax:.5 0 .5
+ok:fmax:.5 .5 .5
+ok:fmax:.5 1 1
+ok:fmax:.5 1.5 1.5
+ok:fmax:.5 2 2
+ok:fmax:1 -2 1
+ok:fmax:1 -1.5 1
+ok:fmax:1 -1 1
+ok:fmax:1 -.5 1
+ok:fmax:1 0 1
+ok:fmax:1 .5 1
+ok:fmax:1 1 1
+ok:fmax:1 1.5 1.5
+ok:fmax:1 2 2
+ok:fmax:1.5 -2 1.5
+ok:fmax:1.5 -1.5 1.5
+ok:fmax:1.5 -1 1.5
+ok:fmax:1.5 -.5 1.5
+ok:fmax:1.5 0 1.5
+ok:fmax:1.5 .5 1.5
+ok:fmax:1.5 1 1.5
+ok:fmax:1.5 1.5 1.5
+ok:fmax:1.5 2 2
+ok:fmax:2 -2 2
+ok:fmax:2 -1.5 2
+ok:fmax:2 -1 2
+ok:fmax:2 -.5 2
+ok:fmax:2 0 2
+ok:fmax:2 .5 2
+ok:fmax:2 1 2
+ok:fmax:2 1.5 2
+ok:fmax:2 2 2
+ok:fmin:-2 -2 -2
+ok:fmin:-2 -1.5 -2
+ok:fmin:-2 -1 -2
+ok:fmin:-2 -.5 -2
+ok:fmin:-2 0 -2
+ok:fmin:-2 .5 -2
+ok:fmin:-2 1 -2
+ok:fmin:-2 1.5 -2
+ok:fmin:-2 2 -2
+ok:fmin:-1.5 -2 -2
+ok:fmin:-1.5 -1.5 -1.5
+ok:fmin:-1.5 -1 -1.5
+ok:fmin:-1.5 -.5 -1.5
+ok:fmin:-1.5 0 -1.5
+ok:fmin:-1.5 .5 -1.5
+ok:fmin:-1.5 1 -1.5
+ok:fmin:-1.5 1.5 -1.5
+ok:fmin:-1.5 2 -1.5
+ok:fmin:-1 -2 -2
+ok:fmin:-1 -1.5 -1.5
+ok:fmin:-1 -1 -1
+ok:fmin:-1 -.5 -1
+ok:fmin:-1 0 -1
+ok:fmin:-1 .5 -1
+ok:fmin:-1 1 -1
+ok:fmin:-1 1.5 -1
+ok:fmin:-1 2 -1
+ok:fmin:-.5 -2 -2
+ok:fmin:-.5 -1.5 -1.5
+ok:fmin:-.5 -1 -1
+ok:fmin:-.5 -.5 -.5
+ok:fmin:-.5 0 -.5
+ok:fmin:-.5 .5 -.5
+ok:fmin:-.5 1 -.5
+ok:fmin:-.5 1.5 -.5
+ok:fmin:-.5 2 -.5
+ok:fmin:0 -2 -2
+ok:fmin:0 -1.5 -1.5
+ok:fmin:0 -1 -1
+ok:fmin:0 -.5 -.5
+ok:fmin:0 0 0
+ok:fmin:0 .5 0
+ok:fmin:0 1 0
+ok:fmin:0 1.5 0
+ok:fmin:0 2 0
+ok:fmin:.5 -2 -2
+ok:fmin:.5 -1.5 -1.5
+ok:fmin:.5 -1 -1
+ok:fmin:.5 -.5 -.5
+ok:fmin:.5 0 0
+ok:fmin:.5 .5 .5
+ok:fmin:.5 1 .5
+ok:fmin:.5 1.5 .5
+ok:fmin:.5 2 .5
+ok:fmin:1 -2 -2
+ok:fmin:1 -1.5 -1.5
+ok:fmin:1 -1 -1
+ok:fmin:1 -.5 -.5
+ok:fmin:1 0 0
+ok:fmin:1 .5 .5
+ok:fmin:1 1 1
+ok:fmin:1 1.5 1
+ok:fmin:1 2 1
+ok:fmin:1.5 -2 -2
+ok:fmin:1.5 -1.5 -1.5
+ok:fmin:1.5 -1 -1
+ok:fmin:1.5 -.5 -.5
+ok:fmin:1.5 0 0
+ok:fmin:1.5 .5 .5
+ok:fmin:1.5 1 1
+ok:fmin:1.5 1.5 1.5
+ok:fmin:1.5 2 1.5
+ok:fmin:2 -2 -2
+ok:fmin:2 -1.5 -1.5
+ok:fmin:2 -1 -1
+ok:fmin:2 -.5 -.5
+ok:fmin:2 0 0
+ok:fmin:2 .5 .5
+ok:fmin:2 1 1
+ok:fmin:2 1.5 1.5
+ok:fmin:2 2 2
+ok:fma:-2 -2 -2 2
+ok:fma:-2 -2 -1.5 2.5
+ok:fma:-2 -2 -1 3
+ok:fma:-2 -2 -.5 3.5
+ok:fma:-2 -2 0 4
+ok:fma:-2 -2 .5 4.5
+ok:fma:-2 -2 1 5
+ok:fma:-2 -2 1.5 5.5
+ok:fma:-2 -2 2 6
+ok:fma:-2 -1.5 -2 1
+ok:fma:-2 -1.5 -1.5 1.5
+ok:fma:-2 -1.5 -1 2
+ok:fma:-2 -1.5 -.5 2.5
+ok:fma:-2 -1.5 0 3
+ok:fma:-2 -1.5 .5 3.5
+ok:fma:-2 -1.5 1 4
+ok:fma:-2 -1.5 1.5 4.5
+ok:fma:-2 -1.5 2 5
+ok:fma:-2 -1 -2 0
+ok:fma:-2 -1 -1.5 .5
+ok:fma:-2 -1 -1 1
+ok:fma:-2 -1 -.5 1.5
+ok:fma:-2 -1 0 2
+ok:fma:-2 -1 .5 2.5
+ok:fma:-2 -1 1 3
+ok:fma:-2 -1 1.5 3.5
+ok:fma:-2 -1 2 4
+ok:fma:-2 -.5 -2 -1
+ok:fma:-2 -.5 -1.5 -.5
+ok:fma:-2 -.5 -1 0
+ok:fma:-2 -.5 -.5 .5
+ok:fma:-2 -.5 0 1
+ok:fma:-2 -.5 .5 1.5
+ok:fma:-2 -.5 1 2
+ok:fma:-2 -.5 1.5 2.5
+ok:fma:-2 -.5 2 3
+ok:fma:-2 0 -2 -2
+ok:fma:-2 0 -1.5 -1.5
+ok:fma:-2 0 -1 -1
+ok:fma:-2 0 -.5 -.5
+ok:fma:-2 0 0 0
+ok:fma:-2 0 .5 .5
+ok:fma:-2 0 1 1
+ok:fma:-2 0 1.5 1.5
+ok:fma:-2 0 2 2
+ok:fma:-2 .5 -2 -3
+ok:fma:-2 .5 -1.5 -2.5
+ok:fma:-2 .5 -1 -2
+ok:fma:-2 .5 -.5 -1.5
+ok:fma:-2 .5 0 -1
+ok:fma:-2 .5 .5 -.5
+ok:fma:-2 .5 1 0
+ok:fma:-2 .5 1.5 .5
+ok:fma:-2 .5 2 1
+ok:fma:-2 1 -2 -4
+ok:fma:-2 1 -1.5 -3.5
+ok:fma:-2 1 -1 -3
+ok:fma:-2 1 -.5 -2.5
+ok:fma:-2 1 0 -2
+ok:fma:-2 1 .5 -1.5
+ok:fma:-2 1 1 -1
+ok:fma:-2 1 1.5 -.5
+ok:fma:-2 1 2 0
+ok:fma:-2 1.5 -2 -5
+ok:fma:-2 1.5 -1.5 -4.5
+ok:fma:-2 1.5 -1 -4
+ok:fma:-2 1.5 -.5 -3.5
+ok:fma:-2 1.5 0 -3
+ok:fma:-2 1.5 .5 -2.5
+ok:fma:-2 1.5 1 -2
+ok:fma:-2 1.5 1.5 -1.5
+ok:fma:-2 1.5 2 -1
+ok:fma:-2 2 -2 -6
+ok:fma:-2 2 -1.5 -5.5
+ok:fma:-2 2 -1 -5
+ok:fma:-2 2 -.5 -4.5
+ok:fma:-2 2 0 -4
+ok:fma:-2 2 .5 -3.5
+ok:fma:-2 2 1 -3
+ok:fma:-2 2 1.5 -2.5
+ok:fma:-2 2 2 -2
+ok:fma:-1.5 -2 -2 1
+ok:fma:-1.5 -2 -1.5 1.5
+ok:fma:-1.5 -2 -1 2
+ok:fma:-1.5 -2 -.5 2.5
+ok:fma:-1.5 -2 0 3
+ok:fma:-1.5 -2 .5 3.5
+ok:fma:-1.5 -2 1 4
+ok:fma:-1.5 -2 1.5 4.5
+ok:fma:-1.5 -2 2 5
+ok:fma:-1.5 -1.5 -2 .25
+ok:fma:-1.5 -1.5 -1.5 .75
+ok:fma:-1.5 -1.5 -1 1.25
+ok:fma:-1.5 -1.5 -.5 1.75
+ok:fma:-1.5 -1.5 0 2.25
+ok:fma:-1.5 -1.5 .5 2.75
+ok:fma:-1.5 -1.5 1 3.25
+ok:fma:-1.5 -1.5 1.5 3.75
+ok:fma:-1.5 -1.5 2 4.25
+ok:fma:-1.5 -1 -2 -.5
+ok:fma:-1.5 -1 -1.5 0
+ok:fma:-1.5 -1 -1 .5
+ok:fma:-1.5 -1 -.5 1
+ok:fma:-1.5 -1 0 1.5
+ok:fma:-1.5 -1 .5 2
+ok:fma:-1.5 -1 1 2.5
+ok:fma:-1.5 -1 1.5 3
+ok:fma:-1.5 -1 2 3.5
+ok:fma:-1.5 -.5 -2 -1.25
+ok:fma:-1.5 -.5 -1.5 -.75
+ok:fma:-1.5 -.5 -1 -.25
+ok:fma:-1.5 -.5 -.5 .25
+ok:fma:-1.5 -.5 0 .75
+ok:fma:-1.5 -.5 .5 1.25
+ok:fma:-1.5 -.5 1 1.75
+ok:fma:-1.5 -.5 1.5 2.25
+ok:fma:-1.5 -.5 2 2.75
+ok:fma:-1.5 0 -2 -2
+ok:fma:-1.5 0 -1.5 -1.5
+ok:fma:-1.5 0 -1 -1
+ok:fma:-1.5 0 -.5 -.5
+ok:fma:-1.5 0 0 0
+ok:fma:-1.5 0 .5 .5
+ok:fma:-1.5 0 1 1
+ok:fma:-1.5 0 1.5 1.5
+ok:fma:-1.5 0 2 2
+ok:fma:-1.5 .5 -2 -2.75
+ok:fma:-1.5 .5 -1.5 -2.25
+ok:fma:-1.5 .5 -1 -1.75
+ok:fma:-1.5 .5 -.5 -1.25
+ok:fma:-1.5 .5 0 -.75
+ok:fma:-1.5 .5 .5 -.25
+ok:fma:-1.5 .5 1 .25
+ok:fma:-1.5 .5 1.5 .75
+ok:fma:-1.5 .5 2 1.25
+ok:fma:-1.5 1 -2 -3.5
+ok:fma:-1.5 1 -1.5 -3
+ok:fma:-1.5 1 -1 -2.5
+ok:fma:-1.5 1 -.5 -2
+ok:fma:-1.5 1 0 -1.5
+ok:fma:-1.5 1 .5 -1
+ok:fma:-1.5 1 1 -.5
+ok:fma:-1.5 1 1.5 0
+ok:fma:-1.5 1 2 .5
+ok:fma:-1.5 1.5 -2 -4.25
+ok:fma:-1.5 1.5 -1.5 -3.75
+ok:fma:-1.5 1.5 -1 -3.25
+ok:fma:-1.5 1.5 -.5 -2.75
+ok:fma:-1.5 1.5 0 -2.25
+ok:fma:-1.5 1.5 .5 -1.75
+ok:fma:-1.5 1.5 1 -1.25
+ok:fma:-1.5 1.5 1.5 -.75
+ok:fma:-1.5 1.5 2 -.25
+ok:fma:-1.5 2 -2 -5
+ok:fma:-1.5 2 -1.5 -4.5
+ok:fma:-1.5 2 -1 -4
+ok:fma:-1.5 2 -.5 -3.5
+ok:fma:-1.5 2 0 -3
+ok:fma:-1.5 2 .5 -2.5
+ok:fma:-1.5 2 1 -2
+ok:fma:-1.5 2 1.5 -1.5
+ok:fma:-1.5 2 2 -1
+ok:fma:-1 -2 -2 0
+ok:fma:-1 -2 -1.5 .5
+ok:fma:-1 -2 -1 1
+ok:fma:-1 -2 -.5 1.5
+ok:fma:-1 -2 0 2
+ok:fma:-1 -2 .5 2.5
+ok:fma:-1 -2 1 3
+ok:fma:-1 -2 1.5 3.5
+ok:fma:-1 -2 2 4
+ok:fma:-1 -1.5 -2 -.5
+ok:fma:-1 -1.5 -1.5 0
+ok:fma:-1 -1.5 -1 .5
+ok:fma:-1 -1.5 -.5 1
+ok:fma:-1 -1.5 0 1.5
+ok:fma:-1 -1.5 .5 2
+ok:fma:-1 -1.5 1 2.5
+ok:fma:-1 -1.5 1.5 3
+ok:fma:-1 -1.5 2 3.5
+ok:fma:-1 -1 -2 -1
+ok:fma:-1 -1 -1.5 -.5
+ok:fma:-1 -1 -1 0
+ok:fma:-1 -1 -.5 .5
+ok:fma:-1 -1 0 1
+ok:fma:-1 -1 .5 1.5
+ok:fma:-1 -1 1 2
+ok:fma:-1 -1 1.5 2.5
+ok:fma:-1 -1 2 3
+ok:fma:-1 -.5 -2 -1.5
+ok:fma:-1 -.5 -1.5 -1
+ok:fma:-1 -.5 -1 -.5
+ok:fma:-1 -.5 -.5 0
+ok:fma:-1 -.5 0 .5
+ok:fma:-1 -.5 .5 1
+ok:fma:-1 -.5 1 1.5
+ok:fma:-1 -.5 1.5 2
+ok:fma:-1 -.5 2 2.5
+ok:fma:-1 0 -2 -2
+ok:fma:-1 0 -1.5 -1.5
+ok:fma:-1 0 -1 -1
+ok:fma:-1 0 -.5 -.5
+ok:fma:-1 0 0 0
+ok:fma:-1 0 .5 .5
+ok:fma:-1 0 1 1
+ok:fma:-1 0 1.5 1.5
+ok:fma:-1 0 2 2
+ok:fma:-1 .5 -2 -2.5
+ok:fma:-1 .5 -1.5 -2
+ok:fma:-1 .5 -1 -1.5
+ok:fma:-1 .5 -.5 -1
+ok:fma:-1 .5 0 -.5
+ok:fma:-1 .5 .5 0
+ok:fma:-1 .5 1 .5
+ok:fma:-1 .5 1.5 1
+ok:fma:-1 .5 2 1.5
+ok:fma:-1 1 -2 -3
+ok:fma:-1 1 -1.5 -2.5
+ok:fma:-1 1 -1 -2
+ok:fma:-1 1 -.5 -1.5
+ok:fma:-1 1 0 -1
+ok:fma:-1 1 .5 -.5
+ok:fma:-1 1 1 0
+ok:fma:-1 1 1.5 .5
+ok:fma:-1 1 2 1
+ok:fma:-1 1.5 -2 -3.5
+ok:fma:-1 1.5 -1.5 -3
+ok:fma:-1 1.5 -1 -2.5
+ok:fma:-1 1.5 -.5 -2
+ok:fma:-1 1.5 0 -1.5
+ok:fma:-1 1.5 .5 -1
+ok:fma:-1 1.5 1 -.5
+ok:fma:-1 1.5 1.5 0
+ok:fma:-1 1.5 2 .5
+ok:fma:-1 2 -2 -4
+ok:fma:-1 2 -1.5 -3.5
+ok:fma:-1 2 -1 -3
+ok:fma:-1 2 -.5 -2.5
+ok:fma:-1 2 0 -2
+ok:fma:-1 2 .5 -1.5
+ok:fma:-1 2 1 -1
+ok:fma:-1 2 1.5 -.5
+ok:fma:-1 2 2 0
+ok:fma:-.5 -2 -2 -1
+ok:fma:-.5 -2 -1.5 -.5
+ok:fma:-.5 -2 -1 0
+ok:fma:-.5 -2 -.5 .5
+ok:fma:-.5 -2 0 1
+ok:fma:-.5 -2 .5 1.5
+ok:fma:-.5 -2 1 2
+ok:fma:-.5 -2 1.5 2.5
+ok:fma:-.5 -2 2 3
+ok:fma:-.5 -1.5 -2 -1.25
+ok:fma:-.5 -1.5 -1.5 -.75
+ok:fma:-.5 -1.5 -1 -.25
+ok:fma:-.5 -1.5 -.5 .25
+ok:fma:-.5 -1.5 0 .75
+ok:fma:-.5 -1.5 .5 1.25
+ok:fma:-.5 -1.5 1 1.75
+ok:fma:-.5 -1.5 1.5 2.25
+ok:fma:-.5 -1.5 2 2.75
+ok:fma:-.5 -1 -2 -1.5
+ok:fma:-.5 -1 -1.5 -1
+ok:fma:-.5 -1 -1 -.5
+ok:fma:-.5 -1 -.5 0
+ok:fma:-.5 -1 0 .5
+ok:fma:-.5 -1 .5 1
+ok:fma:-.5 -1 1 1.5
+ok:fma:-.5 -1 1.5 2
+ok:fma:-.5 -1 2 2.5
+ok:fma:-.5 -.5 -2 -1.75
+ok:fma:-.5 -.5 -1.5 -1.25
+ok:fma:-.5 -.5 -1 -.75
+ok:fma:-.5 -.5 -.5 -.25
+ok:fma:-.5 -.5 0 .25
+ok:fma:-.5 -.5 .5 .75
+ok:fma:-.5 -.5 1 1.25
+ok:fma:-.5 -.5 1.5 1.75
+ok:fma:-.5 -.5 2 2.25
+ok:fma:-.5 0 -2 -2
+ok:fma:-.5 0 -1.5 -1.5
+ok:fma:-.5 0 -1 -1
+ok:fma:-.5 0 -.5 -.5
+ok:fma:-.5 0 0 0
+ok:fma:-.5 0 .5 .5
+ok:fma:-.5 0 1 1
+ok:fma:-.5 0 1.5 1.5
+ok:fma:-.5 0 2 2
+ok:fma:-.5 .5 -2 -2.25
+ok:fma:-.5 .5 -1.5 -1.75
+ok:fma:-.5 .5 -1 -1.25
+ok:fma:-.5 .5 -.5 -.75
+ok:fma:-.5 .5 0 -.25
+ok:fma:-.5 .5 .5 .25
+ok:fma:-.5 .5 1 .75
+ok:fma:-.5 .5 1.5 1.25
+ok:fma:-.5 .5 2 1.75
+ok:fma:-.5 1 -2 -2.5
+ok:fma:-.5 1 -1.5 -2
+ok:fma:-.5 1 -1 -1.5
+ok:fma:-.5 1 -.5 -1
+ok:fma:-.5 1 0 -.5
+ok:fma:-.5 1 .5 0
+ok:fma:-.5 1 1 .5
+ok:fma:-.5 1 1.5 1
+ok:fma:-.5 1 2 1.5
+ok:fma:-.5 1.5 -2 -2.75
+ok:fma:-.5 1.5 -1.5 -2.25
+ok:fma:-.5 1.5 -1 -1.75
+ok:fma:-.5 1.5 -.5 -1.25
+ok:fma:-.5 1.5 0 -.75
+ok:fma:-.5 1.5 .5 -.25
+ok:fma:-.5 1.5 1 .25
+ok:fma:-.5 1.5 1.5 .75
+ok:fma:-.5 1.5 2 1.25
+ok:fma:-.5 2 -2 -3
+ok:fma:-.5 2 -1.5 -2.5
+ok:fma:-.5 2 -1 -2
+ok:fma:-.5 2 -.5 -1.5
+ok:fma:-.5 2 0 -1
+ok:fma:-.5 2 .5 -.5
+ok:fma:-.5 2 1 0
+ok:fma:-.5 2 1.5 .5
+ok:fma:-.5 2 2 1
+ok:fma:0 -2 -2 -2
+ok:fma:0 -2 -1.5 -1.5
+ok:fma:0 -2 -1 -1
+ok:fma:0 -2 -.5 -.5
+ok:fma:0 -2 0 0
+ok:fma:0 -2 .5 .5
+ok:fma:0 -2 1 1
+ok:fma:0 -2 1.5 1.5
+ok:fma:0 -2 2 2
+ok:fma:0 -1.5 -2 -2
+ok:fma:0 -1.5 -1.5 -1.5
+ok:fma:0 -1.5 -1 -1
+ok:fma:0 -1.5 -.5 -.5
+ok:fma:0 -1.5 0 0
+ok:fma:0 -1.5 .5 .5
+ok:fma:0 -1.5 1 1
+ok:fma:0 -1.5 1.5 1.5
+ok:fma:0 -1.5 2 2
+ok:fma:0 -1 -2 -2
+ok:fma:0 -1 -1.5 -1.5
+ok:fma:0 -1 -1 -1
+ok:fma:0 -1 -.5 -.5
+ok:fma:0 -1 0 0
+ok:fma:0 -1 .5 .5
+ok:fma:0 -1 1 1
+ok:fma:0 -1 1.5 1.5
+ok:fma:0 -1 2 2
+ok:fma:0 -.5 -2 -2
+ok:fma:0 -.5 -1.5 -1.5
+ok:fma:0 -.5 -1 -1
+ok:fma:0 -.5 -.5 -.5
+ok:fma:0 -.5 0 0
+ok:fma:0 -.5 .5 .5
+ok:fma:0 -.5 1 1
+ok:fma:0 -.5 1.5 1.5
+ok:fma:0 -.5 2 2
+ok:fma:0 0 -2 -2
+ok:fma:0 0 -1.5 -1.5
+ok:fma:0 0 -1 -1
+ok:fma:0 0 -.5 -.5
+ok:fma:0 0 0 0
+ok:fma:0 0 .5 .5
+ok:fma:0 0 1 1
+ok:fma:0 0 1.5 1.5
+ok:fma:0 0 2 2
+ok:fma:0 .5 -2 -2
+ok:fma:0 .5 -1.5 -1.5
+ok:fma:0 .5 -1 -1
+ok:fma:0 .5 -.5 -.5
+ok:fma:0 .5 0 0
+ok:fma:0 .5 .5 .5
+ok:fma:0 .5 1 1
+ok:fma:0 .5 1.5 1.5
+ok:fma:0 .5 2 2
+ok:fma:0 1 -2 -2
+ok:fma:0 1 -1.5 -1.5
+ok:fma:0 1 -1 -1
+ok:fma:0 1 -.5 -.5
+ok:fma:0 1 0 0
+ok:fma:0 1 .5 .5
+ok:fma:0 1 1 1
+ok:fma:0 1 1.5 1.5
+ok:fma:0 1 2 2
+ok:fma:0 1.5 -2 -2
+ok:fma:0 1.5 -1.5 -1.5
+ok:fma:0 1.5 -1 -1
+ok:fma:0 1.5 -.5 -.5
+ok:fma:0 1.5 0 0
+ok:fma:0 1.5 .5 .5
+ok:fma:0 1.5 1 1
+ok:fma:0 1.5 1.5 1.5
+ok:fma:0 1.5 2 2
+ok:fma:0 2 -2 -2
+ok:fma:0 2 -1.5 -1.5
+ok:fma:0 2 -1 -1
+ok:fma:0 2 -.5 -.5
+ok:fma:0 2 0 0
+ok:fma:0 2 .5 .5
+ok:fma:0 2 1 1
+ok:fma:0 2 1.5 1.5
+ok:fma:0 2 2 2
+ok:fma:.5 -2 -2 -3
+ok:fma:.5 -2 -1.5 -2.5
+ok:fma:.5 -2 -1 -2
+ok:fma:.5 -2 -.5 -1.5
+ok:fma:.5 -2 0 -1
+ok:fma:.5 -2 .5 -.5
+ok:fma:.5 -2 1 0
+ok:fma:.5 -2 1.5 .5
+ok:fma:.5 -2 2 1
+ok:fma:.5 -1.5 -2 -2.75
+ok:fma:.5 -1.5 -1.5 -2.25
+ok:fma:.5 -1.5 -1 -1.75
+ok:fma:.5 -1.5 -.5 -1.25
+ok:fma:.5 -1.5 0 -.75
+ok:fma:.5 -1.5 .5 -.25
+ok:fma:.5 -1.5 1 .25
+ok:fma:.5 -1.5 1.5 .75
+ok:fma:.5 -1.5 2 1.25
+ok:fma:.5 -1 -2 -2.5
+ok:fma:.5 -1 -1.5 -2
+ok:fma:.5 -1 -1 -1.5
+ok:fma:.5 -1 -.5 -1
+ok:fma:.5 -1 0 -.5
+ok:fma:.5 -1 .5 0
+ok:fma:.5 -1 1 .5
+ok:fma:.5 -1 1.5 1
+ok:fma:.5 -1 2 1.5
+ok:fma:.5 -.5 -2 -2.25
+ok:fma:.5 -.5 -1.5 -1.75
+ok:fma:.5 -.5 -1 -1.25
+ok:fma:.5 -.5 -.5 -.75
+ok:fma:.5 -.5 0 -.25
+ok:fma:.5 -.5 .5 .25
+ok:fma:.5 -.5 1 .75
+ok:fma:.5 -.5 1.5 1.25
+ok:fma:.5 -.5 2 1.75
+ok:fma:.5 0 -2 -2
+ok:fma:.5 0 -1.5 -1.5
+ok:fma:.5 0 -1 -1
+ok:fma:.5 0 -.5 -.5
+ok:fma:.5 0 0 0
+ok:fma:.5 0 .5 .5
+ok:fma:.5 0 1 1
+ok:fma:.5 0 1.5 1.5
+ok:fma:.5 0 2 2
+ok:fma:.5 .5 -2 -1.75
+ok:fma:.5 .5 -1.5 -1.25
+ok:fma:.5 .5 -1 -.75
+ok:fma:.5 .5 -.5 -.25
+ok:fma:.5 .5 0 .25
+ok:fma:.5 .5 .5 .75
+ok:fma:.5 .5 1 1.25
+ok:fma:.5 .5 1.5 1.75
+ok:fma:.5 .5 2 2.25
+ok:fma:.5 1 -2 -1.5
+ok:fma:.5 1 -1.5 -1
+ok:fma:.5 1 -1 -.5
+ok:fma:.5 1 -.5 0
+ok:fma:.5 1 0 .5
+ok:fma:.5 1 .5 1
+ok:fma:.5 1 1 1.5
+ok:fma:.5 1 1.5 2
+ok:fma:.5 1 2 2.5
+ok:fma:.5 1.5 -2 -1.25
+ok:fma:.5 1.5 -1.5 -.75
+ok:fma:.5 1.5 -1 -.25
+ok:fma:.5 1.5 -.5 .25
+ok:fma:.5 1.5 0 .75
+ok:fma:.5 1.5 .5 1.25
+ok:fma:.5 1.5 1 1.75
+ok:fma:.5 1.5 1.5 2.25
+ok:fma:.5 1.5 2 2.75
+ok:fma:.5 2 -2 -1
+ok:fma:.5 2 -1.5 -.5
+ok:fma:.5 2 -1 0
+ok:fma:.5 2 -.5 .5
+ok:fma:.5 2 0 1
+ok:fma:.5 2 .5 1.5
+ok:fma:.5 2 1 2
+ok:fma:.5 2 1.5 2.5
+ok:fma:.5 2 2 3
+ok:fma:1 -2 -2 -4
+ok:fma:1 -2 -1.5 -3.5
+ok:fma:1 -2 -1 -3
+ok:fma:1 -2 -.5 -2.5
+ok:fma:1 -2 0 -2
+ok:fma:1 -2 .5 -1.5
+ok:fma:1 -2 1 -1
+ok:fma:1 -2 1.5 -.5
+ok:fma:1 -2 2 0
+ok:fma:1 -1.5 -2 -3.5
+ok:fma:1 -1.5 -1.5 -3
+ok:fma:1 -1.5 -1 -2.5
+ok:fma:1 -1.5 -.5 -2
+ok:fma:1 -1.5 0 -1.5
+ok:fma:1 -1.5 .5 -1
+ok:fma:1 -1.5 1 -.5
+ok:fma:1 -1.5 1.5 0
+ok:fma:1 -1.5 2 .5
+ok:fma:1 -1 -2 -3
+ok:fma:1 -1 -1.5 -2.5
+ok:fma:1 -1 -1 -2
+ok:fma:1 -1 -.5 -1.5
+ok:fma:1 -1 0 -1
+ok:fma:1 -1 .5 -.5
+ok:fma:1 -1 1 0
+ok:fma:1 -1 1.5 .5
+ok:fma:1 -1 2 1
+ok:fma:1 -.5 -2 -2.5
+ok:fma:1 -.5 -1.5 -2
+ok:fma:1 -.5 -1 -1.5
+ok:fma:1 -.5 -.5 -1
+ok:fma:1 -.5 0 -.5
+ok:fma:1 -.5 .5 0
+ok:fma:1 -.5 1 .5
+ok:fma:1 -.5 1.5 1
+ok:fma:1 -.5 2 1.5
+ok:fma:1 0 -2 -2
+ok:fma:1 0 -1.5 -1.5
+ok:fma:1 0 -1 -1
+ok:fma:1 0 -.5 -.5
+ok:fma:1 0 0 0
+ok:fma:1 0 .5 .5
+ok:fma:1 0 1 1
+ok:fma:1 0 1.5 1.5
+ok:fma:1 0 2 2
+ok:fma:1 .5 -2 -1.5
+ok:fma:1 .5 -1.5 -1
+ok:fma:1 .5 -1 -.5
+ok:fma:1 .5 -.5 0
+ok:fma:1 .5 0 .5
+ok:fma:1 .5 .5 1
+ok:fma:1 .5 1 1.5
+ok:fma:1 .5 1.5 2
+ok:fma:1 .5 2 2.5
+ok:fma:1 1 -2 -1
+ok:fma:1 1 -1.5 -.5
+ok:fma:1 1 -1 0
+ok:fma:1 1 -.5 .5
+ok:fma:1 1 0 1
+ok:fma:1 1 .5 1.5
+ok:fma:1 1 1 2
+ok:fma:1 1 1.5 2.5
+ok:fma:1 1 2 3
+ok:fma:1 1.5 -2 -.5
+ok:fma:1 1.5 -1.5 0
+ok:fma:1 1.5 -1 .5
+ok:fma:1 1.5 -.5 1
+ok:fma:1 1.5 0 1.5
+ok:fma:1 1.5 .5 2
+ok:fma:1 1.5 1 2.5
+ok:fma:1 1.5 1.5 3
+ok:fma:1 1.5 2 3.5
+ok:fma:1 2 -2 0
+ok:fma:1 2 -1.5 .5
+ok:fma:1 2 -1 1
+ok:fma:1 2 -.5 1.5
+ok:fma:1 2 0 2
+ok:fma:1 2 .5 2.5
+ok:fma:1 2 1 3
+ok:fma:1 2 1.5 3.5
+ok:fma:1 2 2 4
+ok:fma:1.5 -2 -2 -5
+ok:fma:1.5 -2 -1.5 -4.5
+ok:fma:1.5 -2 -1 -4
+ok:fma:1.5 -2 -.5 -3.5
+ok:fma:1.5 -2 0 -3
+ok:fma:1.5 -2 .5 -2.5
+ok:fma:1.5 -2 1 -2
+ok:fma:1.5 -2 1.5 -1.5
+ok:fma:1.5 -2 2 -1
+ok:fma:1.5 -1.5 -2 -4.25
+ok:fma:1.5 -1.5 -1.5 -3.75
+ok:fma:1.5 -1.5 -1 -3.25
+ok:fma:1.5 -1.5 -.5 -2.75
+ok:fma:1.5 -1.5 0 -2.25
+ok:fma:1.5 -1.5 .5 -1.75
+ok:fma:1.5 -1.5 1 -1.25
+ok:fma:1.5 -1.5 1.5 -.75
+ok:fma:1.5 -1.5 2 -.25
+ok:fma:1.5 -1 -2 -3.5
+ok:fma:1.5 -1 -1.5 -3
+ok:fma:1.5 -1 -1 -2.5
+ok:fma:1.5 -1 -.5 -2
+ok:fma:1.5 -1 0 -1.5
+ok:fma:1.5 -1 .5 -1
+ok:fma:1.5 -1 1 -.5
+ok:fma:1.5 -1 1.5 0
+ok:fma:1.5 -1 2 .5
+ok:fma:1.5 -.5 -2 -2.75
+ok:fma:1.5 -.5 -1.5 -2.25
+ok:fma:1.5 -.5 -1 -1.75
+ok:fma:1.5 -.5 -.5 -1.25
+ok:fma:1.5 -.5 0 -.75
+ok:fma:1.5 -.5 .5 -.25
+ok:fma:1.5 -.5 1 .25
+ok:fma:1.5 -.5 1.5 .75
+ok:fma:1.5 -.5 2 1.25
+ok:fma:1.5 0 -2 -2
+ok:fma:1.5 0 -1.5 -1.5
+ok:fma:1.5 0 -1 -1
+ok:fma:1.5 0 -.5 -.5
+ok:fma:1.5 0 0 0
+ok:fma:1.5 0 .5 .5
+ok:fma:1.5 0 1 1
+ok:fma:1.5 0 1.5 1.5
+ok:fma:1.5 0 2 2
+ok:fma:1.5 .5 -2 -1.25
+ok:fma:1.5 .5 -1.5 -.75
+ok:fma:1.5 .5 -1 -.25
+ok:fma:1.5 .5 -.5 .25
+ok:fma:1.5 .5 0 .75
+ok:fma:1.5 .5 .5 1.25
+ok:fma:1.5 .5 1 1.75
+ok:fma:1.5 .5 1.5 2.25
+ok:fma:1.5 .5 2 2.75
+ok:fma:1.5 1 -2 -.5
+ok:fma:1.5 1 -1.5 0
+ok:fma:1.5 1 -1 .5
+ok:fma:1.5 1 -.5 1
+ok:fma:1.5 1 0 1.5
+ok:fma:1.5 1 .5 2
+ok:fma:1.5 1 1 2.5
+ok:fma:1.5 1 1.5 3
+ok:fma:1.5 1 2 3.5
+ok:fma:1.5 1.5 -2 .25
+ok:fma:1.5 1.5 -1.5 .75
+ok:fma:1.5 1.5 -1 1.25
+ok:fma:1.5 1.5 -.5 1.75
+ok:fma:1.5 1.5 0 2.25
+ok:fma:1.5 1.5 .5 2.75
+ok:fma:1.5 1.5 1 3.25
+ok:fma:1.5 1.5 1.5 3.75
+ok:fma:1.5 1.5 2 4.25
+ok:fma:1.5 2 -2 1
+ok:fma:1.5 2 -1.5 1.5
+ok:fma:1.5 2 -1 2
+ok:fma:1.5 2 -.5 2.5
+ok:fma:1.5 2 0 3
+ok:fma:1.5 2 .5 3.5
+ok:fma:1.5 2 1 4
+ok:fma:1.5 2 1.5 4.5
+ok:fma:1.5 2 2 5
+ok:fma:2 -2 -2 -6
+ok:fma:2 -2 -1.5 -5.5
+ok:fma:2 -2 -1 -5
+ok:fma:2 -2 -.5 -4.5
+ok:fma:2 -2 0 -4
+ok:fma:2 -2 .5 -3.5
+ok:fma:2 -2 1 -3
+ok:fma:2 -2 1.5 -2.5
+ok:fma:2 -2 2 -2
+ok:fma:2 -1.5 -2 -5
+ok:fma:2 -1.5 -1.5 -4.5
+ok:fma:2 -1.5 -1 -4
+ok:fma:2 -1.5 -.5 -3.5
+ok:fma:2 -1.5 0 -3
+ok:fma:2 -1.5 .5 -2.5
+ok:fma:2 -1.5 1 -2
+ok:fma:2 -1.5 1.5 -1.5
+ok:fma:2 -1.5 2 -1
+ok:fma:2 -1 -2 -4
+ok:fma:2 -1 -1.5 -3.5
+ok:fma:2 -1 -1 -3
+ok:fma:2 -1 -.5 -2.5
+ok:fma:2 -1 0 -2
+ok:fma:2 -1 .5 -1.5
+ok:fma:2 -1 1 -1
+ok:fma:2 -1 1.5 -.5
+ok:fma:2 -1 2 0
+ok:fma:2 -.5 -2 -3
+ok:fma:2 -.5 -1.5 -2.5
+ok:fma:2 -.5 -1 -2
+ok:fma:2 -.5 -.5 -1.5
+ok:fma:2 -.5 0 -1
+ok:fma:2 -.5 .5 -.5
+ok:fma:2 -.5 1 0
+ok:fma:2 -.5 1.5 .5
+ok:fma:2 -.5 2 1
+ok:fma:2 0 -2 -2
+ok:fma:2 0 -1.5 -1.5
+ok:fma:2 0 -1 -1
+ok:fma:2 0 -.5 -.5
+ok:fma:2 0 0 0
+ok:fma:2 0 .5 .5
+ok:fma:2 0 1 1
+ok:fma:2 0 1.5 1.5
+ok:fma:2 0 2 2
+ok:fma:2 .5 -2 -1
+ok:fma:2 .5 -1.5 -.5
+ok:fma:2 .5 -1 0
+ok:fma:2 .5 -.5 .5
+ok:fma:2 .5 0 1
+ok:fma:2 .5 .5 1.5
+ok:fma:2 .5 1 2
+ok:fma:2 .5 1.5 2.5
+ok:fma:2 .5 2 3
+ok:fma:2 1 -2 0
+ok:fma:2 1 -1.5 .5
+ok:fma:2 1 -1 1
+ok:fma:2 1 -.5 1.5
+ok:fma:2 1 0 2
+ok:fma:2 1 .5 2.5
+ok:fma:2 1 1 3
+ok:fma:2 1 1.5 3.5
+ok:fma:2 1 2 4
+ok:fma:2 1.5 -2 1
+ok:fma:2 1.5 -1.5 1.5
+ok:fma:2 1.5 -1 2
+ok:fma:2 1.5 -.5 2.5
+ok:fma:2 1.5 0 3
+ok:fma:2 1.5 .5 3.5
+ok:fma:2 1.5 1 4
+ok:fma:2 1.5 1.5 4.5
+ok:fma:2 1.5 2 5
+ok:fma:2 2 -2 2
+ok:fma:2 2 -1.5 2.5
+ok:fma:2 2 -1 3
+ok:fma:2 2 -.5 3.5
+ok:fma:2 2 0 4
+ok:fma:2 2 .5 4.5
+ok:fma:2 2 1 5
+ok:fma:2 2 1.5 5.5
+ok:fma:2 2 2 6
