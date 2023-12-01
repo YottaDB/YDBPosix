@@ -68,6 +68,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libmath.ref
   ${CMAKE_CURRENT_BINARY_DIR}/libmath.ref
   COPYONLY
 )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libmath.ref
+  DESTINATION ${YOTTADB_PLUGIN_PREFIX}/posix/
+)
 
 # Testing
 enable_testing()
