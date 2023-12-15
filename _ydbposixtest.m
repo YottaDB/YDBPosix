@@ -17,7 +17,7 @@
 	; test POSIX plugin
 	; Initialization
         new %ydbposix,arch,clock,computeddh1,ddzh,dh1,dh2,diffca,diffma,dir,file,errmsg,errno,gid
-	new hour,i,io,isdst,link,mask,mday,min,mode1,mode2,mon,msg,msg1,os,oslist,out,out1,out2,path
+	new hour,i,io,isdst,link,mask,mday,min,mode1,mode2,prevmode,mon,msg,msg1,os,oslist,out,out1,out2,path
 	new result,retval,sec,setenvtst,size,stat,tmp,tv,tvsec,tvusec,tvnsec,uid,value,ver1,ver2
 	new wday,yday,year
         set io=$io
@@ -239,7 +239,7 @@ stacksize;STACK
 
 	; Check UMASK and UTIMES
 	set mode1=$$filemodeconst^%ydbposix("S_IWUSR")
-	set retval=$$UMASK^%ydbposix(mode1,.tmp) write:'retval "FAIL UMASK retval=",retval,!
+	set retval=$$UMASK^%ydbposix(mode1,.prevmode) write:'retval "FAIL UMASK1 retval=",retval,!
 	set file="/tmp/posixtest"_$j_$$^%RANDSTR(6)
 	open file:newversion
 	close file
@@ -255,6 +255,8 @@ stacksize;STACK
 	set mask=$$octalAnd(mode1,mode2)
 	if (666=mask) write "PASS UMASK",! ; comparing with octal 0666
 	else  write "FAIL UMASK stat(mode)=",stat("mode"),!
+	; Restore UMASK to previous value
+	set retval=$$UMASK^%ydbposix(prevmode,.tmp) write:'retval "FAIL UMASK2 retval=",retval,!
 
 	; Check CHMOD
 	set mode1=$$filemodeconst^%ydbposix("S_IXGRP")
@@ -337,8 +339,12 @@ stacksize;STACK
 ydbmathtest ; FALLTHROUGH
 	; All done with posix test
 	; Check libmath output against a reference file
-	open "libm.out":newversion
-	use "libm.out"
+	; We have two tests (one for M mode, one for UTF-8 mode, set-up in CMakeLists.txt).
+	; If they run concurrently, it's possible that the "libm.out" file will be overwritten by each other
+	; That's why we have $zchset here.
+	new outfile set outfile="libm."_$zchset_".out"
+	open outfile:newversion
+	use outfile
 	new x,y,z,t,out
 	for x=-2:0.5:2 set out=$$exp^%ydbposix(x,.t)    write !,$s(t=0:"ok",1:"er"),":","exp:",x," ",out
 	for x=-2:0.5:2 set out=$$log^%ydbposix(x,.t)    write !,$s(t=0:"ok",1:"er"),":","log:",x," ",out
@@ -365,8 +371,8 @@ ydbmathtest ; FALLTHROUGH
 	for x=-2:0.5:2 for y=-2:0.5:2 set out=$$fmax^%ydbposix(x,y,.t) write !,$s(t=0:"ok",1:"er"),":","fmax:",x," ",y," ",out
 	for x=-2:0.5:2 for y=-2:0.5:2 set out=$$fmin^%ydbposix(x,y,.t) write !,$s(t=0:"ok",1:"er"),":","fmin:",x," ",y," ",out
 	for x=-2:0.5:2 for y=-2:0.5:2 for z=-2:0.5:2 set out=$$fma^%ydbposix(x,y,z,.t) write !,$s(t=0:"ok",1:"er"),":","fma:",x," ",y," ",z," ",out
-	close "libm.out"
-	zsystem "diff libm.out libmath.ref"
+	close outfile
+	zsystem "diff "_outfile_" libmath.ref"
 	if $zsystem'=0 write "FAIL LIBM",!
 	else  write "PASS LIBM",!
 	quit
