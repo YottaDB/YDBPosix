@@ -1,6 +1,6 @@
 #################################################################
 #								#
-# Copyright (c) 2018-2023 YottaDB LLC and/or its subsidiaries.	#
+# Copyright (c) 2018-2024 YottaDB LLC and/or its subsidiaries.	#
 # All rights reserved.						#
 #								#
 #	This source code contains the intellectual property	#
@@ -31,6 +31,28 @@ endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 project(YDBPosix C M)
+
+# Option to enable ASAN
+option(ENABLE_ASAN "Enable address sanitizer in build?" OFF)
+
+# Check if YottaDB is compiled using ASAN. If so, enable ASAN by default
+execute_process(COMMAND nm $ENV{ydb_dist}/libyottadb.so
+	COMMAND grep -c "U __asan_init"
+	OUTPUT_VARIABLE YDBASAN)
+if(${YDBASAN} GREATER_EQUAL 1)
+	set(ENABLE_ASAN ON)
+	message(STATUS "Forcing Address Sanitizer usage as YottaDB is compiled using Address Sanitizer")
+endif()
+
+if(${ENABLE_ASAN})
+        # Address sanitizer enabled. Use proper compiler/linker flags
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fsanitize-recover=address")
+	execute_process(
+		COMMAND gcc -print-file-name=libasan.so
+		OUTPUT_VARIABLE LIBASAN_PATH
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+endif()
 
 # Find YottaDB
 find_package(YOTTADB REQUIRED)
@@ -77,11 +99,19 @@ enable_testing()
 add_test(ydbposixtest_m ${CMAKE_M_COMPILER} -run %ydbposixtest)
 set_tests_properties(ydbposixtest_m PROPERTIES FAIL_REGULAR_EXPRESSION "FAIL;YDB-E-")
 set_tests_properties(ydbposixtest_m PROPERTIES
-	ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so ${mumps_dir}/libyottadbutil.so;ydb_chset=M")
+	ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so ${mumps_dir}/libyottadbutil.so;ydb_chset=M;ASAN_OPTIONS=detect_leaks=0")
 
 if(EXISTS ${mumps_dir}/utf8)
 	add_test(ydbposixtest_utf8 ${CMAKE_M_COMPILER} -run %ydbposixtest)
 	set_tests_properties(ydbposixtest_utf8 PROPERTIES FAIL_REGULAR_EXPRESSION "FAIL;YDB-E-")
 	set_tests_properties(ydbposixtest_utf8 PROPERTIES
-		ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/utf8/_ydbposix.so ${mumps_dir}/utf8/libyottadbutil.so;ydb_chset=UTF-8;ydb_icu_version=${ydb_icu_version}")
+		ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/utf8/_ydbposix.so ${mumps_dir}/utf8/libyottadbutil.so;ydb_chset=UTF-8;ydb_icu_version=${ydb_icu_version};ASAN_OPTIONS=detect_leaks=0")
+	if(ENABLE_ASAN)
+		set_property(TEST ydbposixtest_utf8 APPEND PROPERTY ENVIRONMENT ";LD_PRELOAD=${LIBASAN_PATH}")
+	endif()
+
+endif()
+
+if(ENABLE_ASAN)
+	set_property(TEST ydbposixtest_m APPEND PROPERTY ENVIRONMENT ";LD_PRELOAD=${LIBASAN_PATH}")
 endif()
