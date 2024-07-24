@@ -3,7 +3,7 @@
  * Copyright (c) 2012-2022 Fidelity National Information	*
  * Services, Inc. and/or its subsidiaries. All rights reserved.	*
  *								*
- * Copyright (c) 2018-2023 YottaDB LLC and/or its subsidiaries. *
+ * Copyright (c) 2018-2024 YottaDB LLC and/or its subsidiaries. *
  * All rights reserved.						*
  *								*
  *	This source code contains the intellectual property	*
@@ -70,7 +70,7 @@ static const char *clocks[] =
 {
 	"CLOCK_BOOTTIME",
 	"CLOCK_MONOTONIC",
-	"CLOCK_MONOTONIC_COARSE"
+	"CLOCK_MONOTONIC_COARSE",
 	"CLOCK_MONOTONIC_RAW",
 	"CLOCK_PROCESS_CPUTIME_ID",
 	"CLOCK_REALTIME",
@@ -107,7 +107,7 @@ static const int fmode_values[] =
 static const char *rlimit[] =
 {	/* skip NICE because it has evil implications in GT.M */
 # ifndef _AIX
-	"RLIMIT_MEMLOCK",	"RLIMIT_MSGQUEUE",	"RLIMIT_LOCKS",	"RLIMIT_NPROC",	"RLIMIT_RTPRIO",	"RLIMIT_SIGPENDING"
+	"RLIMIT_MEMLOCK",	"RLIMIT_MSGQUEUE",	"RLIMIT_LOCKS",	"RLIMIT_NPROC",	"RLIMIT_RTPRIO",	"RLIMIT_SIGPENDING",
 # endif
 	"RLIMIT_AS",		"RLIMIT_CORE",		"RLIMIT_CPU",	"RLIMIT_DATA",	"RLIMIT_FSIZE",
 	"RLIMIT_NOFILE",	"RLIMIT_STACK",		"RLIMIT_RSS"
@@ -302,7 +302,6 @@ int posix_cp(int argc, char *source, char *dest, int *err_num)
 		EINTR_OPER(read(fd1, buffer, CP_BUF_SIZE), read_count);
 		if (0 < read_count)
 		{
-			written_count = 0;
 			buf_ptr = buffer;
 			while (0 < read_count)
 			{
