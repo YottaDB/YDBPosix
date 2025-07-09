@@ -1,6 +1,6 @@
 #################################################################
 #								#
-# Copyright (c) 2021-2024 YottaDB LLC and/or its subsidiaries.	#
+# Copyright (c) 2021-2025 YottaDB LLC and/or its subsidiaries.	#
 # All rights reserved.						#
 #								#
 #	This source code contains the intellectual property	#
@@ -13,14 +13,11 @@
 stages:
   - build-and-test
 
-image:
-  name: yottadb/yottadb:latest-master
-  entrypoint: [""]
-
 # this should be two separate steps later on ('build' should produce
 # an installable binary package that we can install and test in the
 # 'test' stage
 build-and-test:
+  image: yottadb/yottadb-base:latest-master
   stage: build-and-test
   script:
     - apt-get update -qq
@@ -38,6 +35,7 @@ build-and-test:
     - $ydb_dist/yottadb -run %ydbposixtest
 
 build-and-test-ASAN:
+  image: yottadb/yottadb-base:latest-master
   stage: build-and-test
   script:
     - apt-get update -qq
@@ -59,7 +57,7 @@ build-and-test-ASAN:
     - LD_PRELOAD=`find /usr/lib -name "libasan.so"` ASAN_OPTIONS="detect_leaks=0" $ydb_dist/yottadb -run %ydbposixtest
 
 commit-verify:
-  image: ubuntu:22.04
+  image: ubuntu:24.04
   stage: build-and-test
   before_script:
     - apt-get update -qq && apt-get install -y -qq git wget gnupg
@@ -70,9 +68,7 @@ commit-verify:
     - ./commit_verify.sh ./needs_copyright.sh https://gitlab.com/YottaDB/Util/YDBPosix
 
 clang-tidy:
-  image:
-    name: yottadb/yottadb:latest-master
-    entrypoint: [""]
+  image: yottadb/yottadb-base:latest-master
   stage: build-and-test
   interruptible: true
   artifacts:
@@ -96,11 +92,12 @@ clang-tidy:
         libicu-dev
         git
         wget
+        libclang-rt-14-dev
     - wget https://gitlab.com/YottaDB/DB/YDB/-/raw/master/ci/sort_warnings.sh -P ci/
     - wget https://gitlab.com/YottaDB/DB/YDB/-/raw/master/ci/create_tidy_warnings.sh -P ci/
     - chmod +x ci/create_tidy_warnings.sh ci/sort_warnings.sh
     # This sed command is for removing path in find command that defined in ci/create_tidy_warnings.sh
-    # that we previously downloaded from YDB repository 
+    # that we previously downloaded from YDB repository
     # So we changed from sr_linux, sr_unix, sr_port and sr_$(uname -m) to current directory (.)
     - sed -i s'/sr_linux\/ sr_unix\/ sr_port\/ sr_$(uname -m)/./g' ci/create_tidy_warnings.sh
     # This sed command is for adding line "-clang-diagnostic-unused-command-line-argument," after line
