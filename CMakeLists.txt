@@ -1,6 +1,6 @@
 #################################################################
 #								#
-# Copyright (c) 2018-2025 YottaDB LLC and/or its subsidiaries.	#
+# Copyright (c) 2018-2026 YottaDB LLC and/or its subsidiaries.	#
 # All rights reserved.						#
 #								#
 #	This source code contains the intellectual property	#
@@ -95,23 +95,27 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libmath.ref
 )
 
 # Testing
-enable_testing()
-add_test(ydbposixtest_m ${CMAKE_M_COMPILER} -run %ydbposixtest)
-set_tests_properties(ydbposixtest_m PROPERTIES FAIL_REGULAR_EXPRESSION "FAIL;YDB-E-")
-set_tests_properties(ydbposixtest_m PROPERTIES
-	ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so ${mumps_dir}/libyottadbutil.so;ydb_chset=M;ASAN_OPTIONS=detect_leaks=0")
+# Register the tests only when YDBPosix is the top-level project. Otherwise, a project that includes YDBPosix with
+# add_subdirectory() or FetchContent (e.g. YDBOcto) would get these tests in its own ctest list.
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+	enable_testing()
+	add_test(ydbposixtest_m ${CMAKE_M_COMPILER} -run %ydbposixtest)
+	set_tests_properties(ydbposixtest_m PROPERTIES FAIL_REGULAR_EXPRESSION "FAIL;YDB-E-")
+	set_tests_properties(ydbposixtest_m PROPERTIES
+		ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/_ydbposix.so ${mumps_dir}/libyottadbutil.so;ydb_chset=M;ASAN_OPTIONS=detect_leaks=0")
 
-if(EXISTS ${mumps_dir}/utf8)
-	add_test(ydbposixtest_utf8 ${CMAKE_M_COMPILER} -run %ydbposixtest)
-	set_tests_properties(ydbposixtest_utf8 PROPERTIES FAIL_REGULAR_EXPRESSION "FAIL;YDB-E-")
-	set_tests_properties(ydbposixtest_utf8 PROPERTIES
-		ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/utf8/_ydbposix.so ${mumps_dir}/utf8/libyottadbutil.so;ydb_chset=UTF-8;ydb_icu_version=${ydb_icu_version};ASAN_OPTIONS=detect_leaks=0")
-	if(ENABLE_ASAN)
-		set_property(TEST ydbposixtest_utf8 APPEND PROPERTY ENVIRONMENT ";LD_PRELOAD=${LIBASAN_PATH}")
+	if(EXISTS ${mumps_dir}/utf8)
+		add_test(ydbposixtest_utf8 ${CMAKE_M_COMPILER} -run %ydbposixtest)
+		set_tests_properties(ydbposixtest_utf8 PROPERTIES FAIL_REGULAR_EXPRESSION "FAIL;YDB-E-")
+		set_tests_properties(ydbposixtest_utf8 PROPERTIES
+			ENVIRONMENT "ydb_xc_ydbposix=${CMAKE_CURRENT_BINARY_DIR}/ydbposix_test.xc;ydb_routines=${CMAKE_CURRENT_BINARY_DIR}/utf8/_ydbposix.so ${mumps_dir}/utf8/libyottadbutil.so;ydb_chset=UTF-8;ydb_icu_version=${ydb_icu_version};ASAN_OPTIONS=detect_leaks=0")
+		if(ENABLE_ASAN)
+			set_property(TEST ydbposixtest_utf8 APPEND PROPERTY ENVIRONMENT ";LD_PRELOAD=${LIBASAN_PATH}")
+		endif()
+
 	endif()
 
-endif()
-
-if(ENABLE_ASAN)
-	set_property(TEST ydbposixtest_m APPEND PROPERTY ENVIRONMENT ";LD_PRELOAD=${LIBASAN_PATH}")
+	if(ENABLE_ASAN)
+		set_property(TEST ydbposixtest_m APPEND PROPERTY ENVIRONMENT ";LD_PRELOAD=${LIBASAN_PATH}")
+	endif()
 endif()
